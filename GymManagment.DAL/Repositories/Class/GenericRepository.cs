@@ -44,6 +44,23 @@ namespace GymManagment.DAL.Repositories.Class
         public async Task<TEntity?> GetByIdAsync(int id, CancellationToken ct)=>
             await _Set.FindAsync( id , ct);
 
+        public async Task<TEntity?> GetByIdAsync(int id, CancellationToken ct = default, params Expression<Func<TEntity, object>>[] includes)
+        {
+            IQueryable<TEntity> query = _context.Set<TEntity>();
+
+            // 2. Apply includes (Eager Loading)
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            // 3. Return the entity by Id
+            // Note: Make sure your BaseEntity has the Id property correctly defined
+            return await query.FirstOrDefaultAsync(e => e.Id == id, ct);
+        }
 
         public async Task<int> UpdateAsync(TEntity Entity, CancellationToken ct)
         {

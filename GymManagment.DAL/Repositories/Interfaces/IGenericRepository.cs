@@ -11,6 +11,7 @@ namespace GymManagment.DAL.Repositories.Interfaces
         Task<int> AddAsync(TEntity Entity, CancellationToken ct);
         Task<int> DeleteAsync(TEntity Entity, CancellationToken ct);
         Task<int> UpdateAsync(TEntity Entity, CancellationToken ct);
-        Task<bool> AnyAsync(Expression<Func<TEntity, bool>> Predicate, CancellationToken ct=default);
+        Task<bool> AnyAsync(Expression<Func<TEntity, bool>> Predicate, CancellationToken ct = default); 
+        Task<TEntity?> GetByIdAsync(int id, CancellationToken ct = default, params Expression<Func<TEntity, object>>[] includes);
     }
 }
