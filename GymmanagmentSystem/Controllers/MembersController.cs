@@ -5,6 +5,7 @@ using GymMangment.BLL.Common;
 using GymMangment.BLL.Services.Class;
 using GymMangment.BLL.Services.Interfaces;
 using GymMangment.BLL.ViewModels.MemberViewModels;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 namespace GymmanagmentSystem.PL.Controllers
 {
@@ -55,9 +56,9 @@ namespace GymmanagmentSystem.PL.Controllers
         #endregion
 
         // Member Details(int id) - Shows member details localhost:port/Members/MemberDetails/{Id}(Get)
-        public async Task<IActionResult> MemberDetails(int id, CancellationToken ct)
+        public async Task<IActionResult> MemberDetailsAsync(int id, CancellationToken ct)
         {
-            // Use the service here
+            
             var result = await memberservice.GetMemberDetailsByIdAsync(id, ct);
 
             if (!result.Succeeded)
@@ -69,24 +70,83 @@ namespace GymmanagmentSystem.PL.Controllers
         }
 
         // HealthRecord Details(int id) - Shows health record details localhost:port/Members/HealthRecordDetails/{Id}(Get)
-        //public IActionResult HealthRecordDetails(int id , CancellationToken ct)
-        //{
-        //    //Get HealthRecord details using id and pass to view
-        //    //Check if HealthRecord exists, if not return NotFound()
-        //    // IF HealthRecord not Null Return view with HealthRecord details
-        //}
+        public async Task<IActionResult> HealthRecordDetails(int id, CancellationToken ct)
+        {
+            //Get HealthRecord details using id and pass to view
+            var result= await memberservice.GetMemberHealthRecordAsync(id, ct);
+            //Check if HealthRecord exists, if not return NotFound()
+            // IF HealthRecord not Null Return view with HealthRecord details
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = result.Error;
+                return RedirectToAction(nameof(Index));
+
+            }
+            return View(result.Data);
+        }
 
         #region MemberEdit
         //MemberEdit(int id) - Displays edit form localhost:port/Members/MemberEdit/{Id}(Get)
+        [HttpGet]
+        public async Task<IActionResult> EditMember(int id, CancellationToken ct)
+        {
+            var result = await memberservice.GetMemberToUpdateAsync(id, ct);
+
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = result.Error;
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(result.Data);
+
+        }
 
         //MemberEdit() - Processes update submission localhost:port/Members/MemberEdit(Post)
+        [HttpPost]
+        public async Task<IActionResult> EditMember(int id, MemberToUpdateViewModel model, CancellationToken ct = default)
+        {
+            if(!ModelState.IsValid)return View(model);
+            var result= await memberservice.UpdateMemberAsync(id, model, ct);
 
+            TempData[result.Succeeded ? "SuccessMessage" : "ErrorMessage"]
+                = result.Succeeded ? "Member Updated successfully!" : result.Error;
+
+            return RedirectToAction(nameof(Index));
+
+
+        }
 
         #endregion
 
         #region MemberDelete
         //Delete(int id) - Shows deletion confirmation page localhost:port/Members/Delete/{Id}(Get)
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id,CancellationToken ct)
+        {
+            var member =await memberservice.GetMemberToUpdateAsync(id, ct);
+            if (!member.Succeeded)
+            {
+                TempData["ErrorMessage"] = member.Error;
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(member.Data);
+
+        }
         //DeleteConfirmed(int id) - Processes deletion localhost:port/Members/DeleteConfirmed/{Id}(Post)
+        [HttpPost]
+        public async Task<IActionResult> DeleteConfirmed(int id,CancellationToken ct)
+        {
+            var member= await memberservice.DeleteMemberAsync(id, ct);
+            if (!member.Succeeded)
+            {
+                TempData["ErrorMessage"] = member.Error;
+                return RedirectToAction(nameof(Index));
+            }
+            TempData["SuccessMessage"] = "Member deleted successfully!";
+            return RedirectToAction(nameof(Index));
+        }
 
         #endregion
 

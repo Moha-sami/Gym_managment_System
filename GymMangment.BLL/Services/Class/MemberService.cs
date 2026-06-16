@@ -3,7 +3,9 @@ using GymManagment.DAL.Models;
 using GymManagment.DAL.Repositories.Interfaces;
 using GymMangment.BLL.Common;
 using GymMangment.BLL.Services.Interfaces;
+using GymMangment.BLL.ViewModels.HealthRecordsViewModels;
 using GymMangment.BLL.ViewModels.MemberViewModels;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GymMangment.BLL.Services.Class
 {
@@ -29,7 +31,7 @@ namespace GymMangment.BLL.Services.Class
             if (phoneExists)
                 return Result.Failure("A member with this phone number already exists.");
 
-            var member = _mapper.Map<Member>(model);
+            var member = _mapper.Map<GymManagment.DAL.Models.Member>(model);
 
             var rows = await _unitOfWork.Members.AddAsync(member, ct);
 
@@ -37,6 +39,7 @@ namespace GymMangment.BLL.Services.Class
                 ? Result.Success()
                 : Result.Failure("Failed to create member. Please try again.");
         }
+
 
         public async Task<IEnumerable<MemberViewModel>> GetAllMembersAsync(CancellationToken ct = default)
         {
@@ -51,22 +54,14 @@ namespace GymMangment.BLL.Services.Class
             var member = await _unitOfWork.Members.GetByIdAsync(
                 id,
                 ct,
-                m => m.Memberships
-               
+                m => m.Memberships            
             );
-
             if (member == null)
             {
-                return Result<MemberViewModel?>.Failure("عفواً، لا يوجد عضو بهذا الكود.");
+                return Result<MemberViewModel?>.Failure("Invaild Member");
             }
-
             // 2. التحويل الأساسي للـ ViewModel
             var model = _mapper.Map<MemberViewModel>(member);
-
-            // 3. تطبيق الـ Logic الخاص بالاشتراك (Membership)
-            // بنشوف هل فيه اشتراك نشط (EndDate أكبر من تاريخ النهاردة)
-            // 1. طلع الاشتراك النشط من القائمة أولاً
-          
 
             var activeMembership = member.Memberships
      .FirstOrDefault(m => m.EndDate >= DateTime.Now);
@@ -89,6 +84,60 @@ namespace GymMangment.BLL.Services.Class
             return Result<MemberViewModel?>.Success(model);
         }
 
+        public async Task<Result<HealthRecordViewModel?>> GetMemberHealthRecordAsync(int memberID, CancellationToken ct = default)
+        {
+            var record = await _unitOfWork.HealthRecords.FirstOrDefaultAsync(x => x.MemberId == memberID, false, ct);
+           
+            if(record == null)
+            {
+                return Result<HealthRecordViewModel?>.Failure("No record for This member");
+            }
+            
+            
+                var model= _mapper.Map<HealthRecordViewModel>(record);
+            
+            return Result<HealthRecordViewModel?>.Success(model);
+        }
 
+        public async Task<Result<MemberToUpdateViewModel?>> GetMemberToUpdateAsync(int memberId, CancellationToken ct = default)
+        {
+            var result = await _unitOfWork.Members.GetByIdAsync(memberId, ct);
+            if (result == null)
+            {
+                return Result<MemberToUpdateViewModel?>.Failure("No Member Available");
+            }
+            var model= _mapper.Map<MemberToUpdateViewModel>(result);
+            return Result<MemberToUpdateViewModel?>.Success(model);
+        }
+
+        public async Task<Result?> UpdateMemberAsync(int id, MemberToUpdateViewModel model, CancellationToken ct = default)
+        {
+            var member = await _unitOfWork.Members.GetByIdAsync(id, ct);
+            if (member == null)
+            {
+                return Result.Failure("No Member Available");
+            }
+
+            var emailExist = await _unitOfWork.Members.AnyAsync(m => m.Email == model.Email && m.Id != id);
+            var phoneExist = await _unitOfWork.Members.AnyAsync(m => m.Phone == model.Phone && m.Id != id);
+            if (emailExist || phoneExist)
+            {
+                return Result.Failure("Email or Phone already exists");
+            }
+
+            _mapper.Map(model, member);
+            await _unitOfWork.Members.UpdateAsync(member, ct);
+            return Result.Success();
+        }
+        public async Task<Result> DeleteMemberAsync(int memberId, CancellationToken ct = default)
+        {
+            var result = await _unitOfWork.Members.GetByIdAsync(memberId, ct);
+            if(result == null)
+            {
+                return Result.Failure("No Member Available");
+            }
+            await _unitOfWork.Members.DeleteAsync(result, ct);
+            return Result.Success();
+        }
     }
 }

@@ -40,6 +40,25 @@ namespace GymMangment.BLL.Mapping
 
             // HealthRecord -> HealthRecordViewModel (for details/edit later)
             CreateMap<HealthRecord, HealthRecordViewModel>();
+
+
+            // Member -> MemberToUpdateViewModel (for pre-filling the edit form)
+            CreateMap<Member, MemberToUpdateViewModel>()
+                .ForMember(dest => dest.BuildingNumber, opt => opt.MapFrom(src => src.Address.BuildingNumber))
+                .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.Address.City))
+                .ForMember(dest => dest.Street, opt => opt.MapFrom(src => src.Address.Street));
+
+            // MemberToUpdateViewModel -> Member (for saving changes)
+            CreateMap<MemberToUpdateViewModel, Member>()
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => new Address
+                {
+                    BuildingNumber = src.BuildingNumber,
+                    City = src.City,
+                    Street = src.Street
+                }))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.Now))
+                .ForMember(dest => dest.Name, opt => opt.Ignore())   // not editable
+                .ForMember(dest => dest.Photo, opt => opt.Ignore());  // not editable
         }
     }
 }
