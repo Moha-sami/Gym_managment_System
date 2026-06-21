@@ -1,6 +1,6 @@
 # 🏋️ Gym Management System
 
-A full-featured gym management web application built with **ASP.NET Core MVC** using a clean **3-Tier Architecture**. Designed to streamline gym operations including member registration, health tracking, and membership management.
+A full-featured gym management web application built with **ASP.NET Core MVC** using a clean **3-Tier Architecture**. Designed to streamline gym operations including member registration, health tracking, trainer management, and membership plans.
 
 ---
 
@@ -37,18 +37,27 @@ GymmanagmentSystem/
 - ✅ Member details
 - ✅ Health record details
 - ✅ Edit member profile
-- ✅ Delete member (with confirmation page)
+- ✅ Delete member (with confirmation page, hard delete)
 
 ### Trainers
-- 🔲 CRUD _(planned)_
+- ✅ List all trainers (table view with specialization badges)
+- ✅ Create trainer
+- ✅ Trainer details
+- ✅ Edit trainer (name/DOB/gender locked)
+- ✅ Delete trainer (with confirmation page, hard delete)
 
-### Plans & Memberships
-- 🔲 CRUD plans _(planned)_
-- 🔲 Assign member to plan _(planned)_
+### Plans
+- ✅ List all plans (active & inactive)
+- ✅ Plan details (visual style adapts to active/inactive status)
+- ✅ Edit plan (name locked, price/duration/description editable)
+- ✅ Activate / Deactivate plan (soft delete via `IsActive` toggle)
 
 ### Sessions & Bookings
 - 🔲 CRUD sessions _(planned)_
 - 🔲 Book a session _(planned)_
+
+### Memberships
+- 🔲 Assign member to plan _(planned)_
 
 ### Authentication
 - 🔲 Login / Register _(planned)_
@@ -79,6 +88,7 @@ GymmanagmentSystem/
 | **Unit of Work** | `IUnitOfWork` wrapping all repositories |
 | **Result Pattern** | `Result<T>` returned from all service methods |
 | **AutoMapper** | `MappingProfile` in BLL |
+| **TempData Alert System** | Global success/warning/error banners in `_Layout.cshtml`, auto-dismiss after 3s |
 
 ---
 
@@ -135,7 +145,7 @@ GymManagment.DAL/
 │   ├── Membership.cs
 │   ├── Session.cs
 │   ├── Booking.cs
-│   └── Enum/Gender.cs
+│   └── Enum/ (Gender, Specialty)
 ├── DbContext/
 │   └── GymDbcontext.cs
 └── Repositories/
@@ -152,26 +162,44 @@ GymMangment.BLL/
 ├── Mapping/
 │   └── MappingProfile.cs
 ├── Services/
-│   ├── Interfaces/ImemberService.cs
-│   └── Class/MemberService.cs
+│   ├── Interfaces/
+│   │   ├── ImemberService.cs
+│   │   ├── IPlanServices.cs
+│   │   └── ITrainerService.cs
+│   └── Class/
+│       ├── MemberService.cs
+│       ├── PlanService.cs
+│       └── TrainerService.cs
 └── ViewModels/
     ├── MemberViewModels/
-    │   ├── MemberViewModel.cs
-    │   ├── CreateMemberViewModel.cs
-    │   └── MemberToUpdateViewModel.cs
-    └── HealthRecordsViewModels/
-        └── HealthRecordViewModel.cs
+    ├── HealthRecordsViewModels/
+    ├── PlansViewModels/
+    └── TrainerViewModels/
 
 GymmanagmentSystem/
 ├── Controllers/
-│   └── MembersController.cs
+│   ├── MembersController.cs
+│   ├── PlansController.cs
+│   └── TrainersController.cs
 ├── Views/
-│   └── Members/
+│   ├── Shared/
+│   │   └── _Layout.cshtml
+│   ├── Members/
+│   │   ├── Index.cshtml
+│   │   ├── Create.cshtml
+│   │   ├── MemberDetails.cshtml
+│   │   ├── HealthRecordDetails.cshtml
+│   │   ├── EditMember.cshtml
+│   │   └── Delete.cshtml
+│   ├── Plans/
+│   │   ├── Index.cshtml
+│   │   ├── Details.cshtml
+│   │   └── EditPlan.cshtml
+│   └── Trainers/
 │       ├── Index.cshtml
 │       ├── Create.cshtml
-│       ├── MemberDetails.cshtml
-│       ├── HealthRecordDetails.cshtml
-│       ├── EditMember.cshtml
+│       ├── Details.cshtml
+│       ├── EditTrainer.cshtml
 │       └── Delete.cshtml
 └── wwwroot/
 ```
