@@ -144,7 +144,7 @@ namespace GymmanagmentSystem.PL.Controllers
                 TempData["ErrorMessage"] = member.Error;
                 return RedirectToAction(nameof(Index));
             }
-            TempData["SuccessMessage"] = "Member deleted successfully!";
+            TempData["WarningMessage"] = "Member deleted successfully!";
             return RedirectToAction(nameof(Index));
         }
 

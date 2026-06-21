@@ -1,36 +1,86 @@
-﻿using GymManagment.DAL.Models;
-using GymManagment.DAL.Repositories.Interfaces;
+﻿using GymMangment.BLL.Services.Interfaces;
+using GymMangment.BLL.ViewModels.PlansViewModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-namespace GymmanagmentSystem.Controllers
+namespace GymmanagmentSystem.PL.Controllers
 {
-    public class PlanController : Controller
+    public class PlansController : Controller
     {
-        //Data base connection with dependency injection
-        private readonly IGenericRepository<Plans> PlanRepository;
-        public PlanController(IGenericRepository<Plans> planRepository)
+        private readonly IPlanServices _planService;
+
+        public PlansController(IPlanServices planService)
         {
-            PlanRepository=planRepository;
+            _planService = planService;
         }
 
-
-        //get all plans localhost:port/Plan/Index
+        // GET: Plans/Index
         public async Task<IActionResult> Index(CancellationToken ct)
         {
-            var plans = await PlanRepository.GetAllAsync(ct: ct);//Pass by Name
-            return View(plans);
+            var result = await _planService.GetAllPlansAsync(ct);
+            return View(result.Data);
         }
-        //get plan details localhost:port/Plan/Details/1
-        public   async Task<IActionResult> Details(int Id,CancellationToken ct)
-        {
-            var plan = await PlanRepository.GetByIdAsync(Id, ct);
 
-            if (plan == null)
+        // GET: Plans/Details/5
+        [HttpGet]
+        public async Task<IActionResult> Details(int id, CancellationToken ct)
+        {
+            var result = await _planService.GetPlanByIdAsync(id, ct);
+            if (!result.Succeeded)
             {
+                TempData["ErrorMessage"] = result.Error;
                 return RedirectToAction(nameof(Index));
             }
-            return View(plan);
+            return View(result.Data);
+        }
+
+        // GET: Plans/EditPlan/5
+        [HttpGet]
+        public async Task<IActionResult> EditPlan(int id, CancellationToken ct)
+        {
+            var result = await _planService.GetPlanByIdAsync(id, ct);
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = result.Error;
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Map PlanViewModel -> EditPlanViewModel for the form
+            var editModel = new EditPlanViewModel
+            {
+                Id = result.Data!.Id,
+                Name = result.Data.Name,
+                Description = result.Data.Description,
+                Price = result.Data.Price,
+                DurationInDays = result.Data.DurationInDays
+            };
+
+            return View(editModel);
+        }
+
+        // POST: Plans/EditPlan/5
+        [HttpPost]
+        public async Task<IActionResult> EditPlan(int id, EditPlanViewModel model, CancellationToken ct)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var result = await _planService.EditPlanAsync(id, model, ct);
+
+            TempData[result.Succeeded ? "SuccessMessage" : "ErrorMessage"]
+                = result.Succeeded ? "Plan updated successfully!" : result.Error;
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // POST: Plans/ToggleActivation/5
+        [HttpPost]
+        public async Task<IActionResult> ToggleActivation(int id, CancellationToken ct)
+        {
+            var result = await _planService.ToggleActivationAsync(id, ct);
+
+            TempData[result.Succeeded ? "SuccessMessage" : "ErrorMessage"]
+                = result.Succeeded ? "Plan status changed!" : result.Error;
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

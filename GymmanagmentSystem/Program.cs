@@ -20,10 +20,12 @@ namespace GymmanagmentSystem
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-              
+
 
             //builder.Services.AddScoped<IPlanRepository, PlanRepository>();
             builder.Services.AddScoped<ImemberService, MemberService>();
+            builder.Services.AddScoped<IPlanServices, PlanService>();
+            builder.Services.AddScoped<ITrainerService, TrainerService>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<GymMangment.BLL.Mapping.MappingProfile>());
