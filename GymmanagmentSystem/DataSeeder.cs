@@ -377,30 +377,51 @@ namespace GymmanagmentSystem
                 return;
             }
 
-            var members = memberDtos.Select(m => new Member
+            var maleAvatars = new[] { "/images/avatars/male-avatar-1.png", "/images/avatars/male-avatar-2.png" };
+            var femaleAvatar = "/images/avatars/female-avatar-1.png";
+            int maleIndex = 0;
+
+            var members = memberDtos.Select(m =>
             {
-                Name = m.Name,
-                Email = m.Email,
-                Phone = m.Phone,
-                DateOFBirth = DateOnly.Parse(m.DateOfBirth),
-                Gender = (Gender)m.Gender,
-                Address = new Address
+                var gender = (Gender)m.Gender;
+                string photo;
+
+                if (gender == Gender.Male)
                 {
-                    BuildingNumber = m.BuildingNumber,
-                    Street = m.Street,
-                    City = m.City
-                },
-                HealthRecord = new HealthRecord
+                    photo = maleAvatars[maleIndex % maleAvatars.Length];
+                    maleIndex++;
+                }
+                else
                 {
-                    Height = m.Height,
-                    Weight = m.Weight,
-                    BloodType = m.BloodType,
-                    Note = m.Note,
+                    photo = femaleAvatar;
+                }
+
+                return new Member
+                {
+                    Name = m.Name,
+                    Email = m.Email,
+                    Phone = m.Phone,
+                    DateOFBirth = DateOnly.Parse(m.DateOfBirth),
+                    Gender = gender,
+                    Photo = photo,
+                    Address = new Address
+                    {
+                        BuildingNumber = m.BuildingNumber,
+                        Street = m.Street,
+                        City = m.City
+                    },
+                    HealthRecord = new HealthRecord
+                    {
+                        Height = m.Height,
+                        Weight = m.Weight,
+                        BloodType = m.BloodType,
+                        Note = m.Note,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
+                    },
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
-                },
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
+                };
             }).ToList();
 
             await context.Member.AddRangeAsync(members);

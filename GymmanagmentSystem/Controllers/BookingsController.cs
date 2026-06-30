@@ -1,5 +1,7 @@
-﻿using GymMangment.BLL.Services.Interfaces;
+﻿using GymManagment.DAL.Models;
+using GymMangment.BLL.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymmanagmentSystem.PL.Controllers
@@ -8,16 +10,36 @@ namespace GymmanagmentSystem.PL.Controllers
     public class BookingsController : Controller
     {
         private readonly IScheduleService _scheduleService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public BookingsController(IScheduleService scheduleService)
+        public BookingsController(IScheduleService scheduleService, UserManager<AppUser> userManager)
         {
             _scheduleService = scheduleService;
+            _userManager = userManager;
         }
 
         // GET: Bookings/Index
+        // GET: Bookings/Index
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Index(CancellationToken ct)
         {
             var result = await _scheduleService.GetAllBookingsAsync(ct);
+            return View(result.Data);
+        }
+        // GET: Bookings/MyBookings
+        [Authorize(Roles = "Member")]
+        public async Task<IActionResult> MyBookings(CancellationToken ct)
+        {
+            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.FindByIdAsync(userId!);
+
+            if (user?.MemberId == null)
+            {
+                TempData["ErrorMessage"] = "Your account is not linked to a member profile.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var result = await _scheduleService.GetMemberBookingsAsync(user.MemberId.Value, ct);
             return View(result.Data);
         }
 

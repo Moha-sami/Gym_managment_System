@@ -65,6 +65,25 @@
                                     <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5" asp-controller="Admin" asp-action="Users">Users</a>
                                 </li>
                             }
+                            @if (User.IsInRole("Member"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5" asp-controller="Members" asp-action="MyProfile">My Profile</a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Member"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5" asp-controller="Memberships" asp-action="MyMembership">My Membership</a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Member"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5" asp-controller="Bookings" asp-action="MyBookings">My Bookings</a>
+                                </li>
+                            }
+
 
                             <li class="nav-item">
                                 <form asp-action="Logout" asp-controller="Account" method="post" class="d-inline">

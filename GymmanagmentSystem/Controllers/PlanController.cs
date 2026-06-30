@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GymmanagmentSystem.PL.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    
     public class PlansController : Controller
     {
         private readonly IPlanServices _planService;
@@ -16,6 +16,7 @@ namespace GymmanagmentSystem.PL.Controllers
         }
 
         // GET: Plans/Index
+        [Authorize(Roles = "Admin,Member")]
         public async Task<IActionResult> Index(CancellationToken ct)
         {
             var result = await _planService.GetAllPlansAsync(ct);
@@ -23,7 +24,9 @@ namespace GymmanagmentSystem.PL.Controllers
         }
 
         // GET: Plans/Details/5
+        
         [HttpGet]
+        [Authorize(Roles = "Admin,Member")]
         public async Task<IActionResult> Details(int id, CancellationToken ct)
         {
             var result = await _planService.GetPlanByIdAsync(id, ct);
@@ -37,6 +40,7 @@ namespace GymmanagmentSystem.PL.Controllers
 
         // GET: Plans/EditPlan/5
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditPlan(int id, CancellationToken ct)
         {
             var result = await _planService.GetPlanByIdAsync(id, ct);
@@ -61,6 +65,7 @@ namespace GymmanagmentSystem.PL.Controllers
 
         // POST: Plans/EditPlan/5
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditPlan(int id, EditPlanViewModel model, CancellationToken ct)
         {
             if (!ModelState.IsValid) return View(model);
@@ -75,6 +80,7 @@ namespace GymmanagmentSystem.PL.Controllers
 
         // POST: Plans/ToggleActivation/5
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ToggleActivation(int id, CancellationToken ct)
         {
             var result = await _planService.ToggleActivationAsync(id, ct);

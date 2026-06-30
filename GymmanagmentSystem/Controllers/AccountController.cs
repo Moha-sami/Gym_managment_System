@@ -1,4 +1,6 @@
 ﻿using GymManagment.DAL.Models;
+using GymManagment.DAL.Models.Enum;
+using GymManagment.DAL.Repositories.Interfaces;
 using GymMangment.BLL.ViewModels.AccountViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,11 +13,13 @@ namespace GymmanagmentSystem.PL.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,IUnitOfWork unitOfWork)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: Account/Login
@@ -48,12 +52,72 @@ namespace GymmanagmentSystem.PL.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
+            var emailExists = await _unitOfWork.Members.AnyAsync(x => x.Email == model.Email);
+            var phoneExists = await _unitOfWork.Members.AnyAsync(x => x.Phone == model.Phone);
+
+            if (emailExists)
+            {
+                ModelState.AddModelError("Email", "A member with this email already exists.");
+                return View(model);
+            }
+
+            if (phoneExists)
+            {
+                ModelState.AddModelError("Phone", "A member with this phone number already exists.");
+                return View(model);
+            }
+
+            var member = new Member
+            {
+                Name = model.FullName,
+                Email = model.Email,
+                Phone = model.Phone,
+                DateOFBirth = model.DateOfBirth,
+                Gender = model.Gender,
+                Address = new Address
+                {
+                    BuildingNumber = model.BuildingNumber,
+                    Street = model.Street,
+                    City = model.City
+                },
+                HealthRecord = new HealthRecord
+                {
+                    Height = 0,
+                    Weight = 0,
+                    BloodType = "Unknown",
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+
+            await _unitOfWork.Members.AddAsync(member, default);
+            // Auto-assign Basic Plan membership
+            var basicPlan = (await _unitOfWork.Plans.GetAllAsync())
+                .FirstOrDefault(p => p.Name == "Basic Plan" && p.IsActive);
+
+            if (basicPlan != null)
+            {
+                var membership = new Membership
+                {
+                    MemberID = member.Id,
+                    PlansID = basicPlan.Id,
+                    EndDate = DateTime.Now.AddDays(basicPlan.DurationInDays),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+
+                await _unitOfWork.Memberships.AddAsync(membership, default);
+            }
+
             var user = new AppUser
             {
                 FullName = model.FullName,
                 UserName = model.Email,
                 Email = model.Email,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                MemberId = member.Id
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -64,12 +128,13 @@ namespace GymmanagmentSystem.PL.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
+            await _unitOfWork.Members.DeleteAsync(member, default);
+
             foreach (var error in result.Errors)
                 ModelState.AddModelError("", error.Description);
 
             return View(model);
         }
-
         // POST: Account/Logout
         [HttpPost]
         public async Task<IActionResult> Logout()

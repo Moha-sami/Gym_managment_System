@@ -7,24 +7,28 @@ using GymMangment.BLL.Services.Interfaces;
 using GymMangment.BLL.ViewModels.MemberViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 namespace GymmanagmentSystem.PL.Controllers
 {
-    [Authorize(Roles = "Admin,Manager")]
+    
     public class MembersController : Controller
     {
         private readonly ImemberService memberservice;
         private readonly IFileService _fileService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly UserManager<AppUser> _userManager;
 
-        public MembersController(ImemberService _memberservice , IFileService fileService,IUnitOfWork unitOfWork)
+        public MembersController(ImemberService _memberservice , IFileService fileService,IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
         {
             memberservice = _memberservice;
             _fileService = fileService;
             _unitOfWork = unitOfWork;
+            _userManager = userManager;
         }
         #region GetAllMembers
         //index list all members localhost:port/Members/Index(Get)
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Index(CancellationToken ct)
         {
             var members = await memberservice.GetAllMembersAsync(ct);
@@ -37,9 +41,11 @@ namespace GymmanagmentSystem.PL.Controllers
         #region MemberCreate
         // Create Shows member registration form localhost:port/Members/Create(Get)
         [HttpGet]
+        [Authorize(Roles = "Admin,Manager")]
         public IActionResult Create() => View();
         //CreateMember Processes form submission localhost:port/Members/CreateMember(Post) 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> CreateMember(CreateMemberViewModel model, CancellationToken ct = default)
         {
             if (model.Photo == null || model.Photo.Length == 0)
@@ -76,6 +82,7 @@ namespace GymmanagmentSystem.PL.Controllers
         #endregion
 
         // Member Details(int id) - Shows member details localhost:port/Members/MemberDetails/{Id}(Get)
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> MemberDetailsAsync(int id, CancellationToken ct)
         {
             
@@ -90,6 +97,7 @@ namespace GymmanagmentSystem.PL.Controllers
         }
 
         // HealthRecord Details(int id) - Shows health record details localhost:port/Members/HealthRecordDetails/{Id}(Get)
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> HealthRecordDetails(int id, CancellationToken ct)
         {
             //Get HealthRecord details using id and pass to view
@@ -108,6 +116,7 @@ namespace GymmanagmentSystem.PL.Controllers
         #region MemberEdit
         //MemberEdit(int id) - Displays edit form localhost:port/Members/MemberEdit/{Id}(Get)
         [HttpGet]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> EditMember(int id, CancellationToken ct)
         {
             var result = await memberservice.GetMemberToUpdateAsync(id, ct);
@@ -124,6 +133,7 @@ namespace GymmanagmentSystem.PL.Controllers
 
         //MemberEdit() - Processes update submission localhost:port/Members/MemberEdit(Post)
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> EditMember(int id, MemberToUpdateViewModel model, CancellationToken ct = default)
         {
             if(!ModelState.IsValid)return View(model);
@@ -171,6 +181,55 @@ namespace GymmanagmentSystem.PL.Controllers
         }
 
         #endregion
+
+        
+
+        // GET: Members/MyProfile
+        [Authorize(Roles = "Member")]
+        public async Task<IActionResult> MyProfile(CancellationToken ct)
+        {
+            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.FindByIdAsync(userId!);
+
+            if (user?.MemberId == null)
+            {
+                TempData["ErrorMessage"] = "Your account is not linked to a member profile.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var result = await memberservice.GetMemberToUpdateAsync(user.MemberId.Value, ct);
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = result.Error;
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View(result.Data);
+        }
+
+        // POST: Members/MyProfile
+        [HttpPost]
+        [Authorize(Roles = "Member")]
+        public async Task<IActionResult> MyProfile(MemberToUpdateViewModel model, CancellationToken ct = default)
+        {
+            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.FindByIdAsync(userId!);
+
+            if (user?.MemberId == null)
+            {
+                TempData["ErrorMessage"] = "Your account is not linked to a member profile.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!ModelState.IsValid) return View(model);
+
+            var result = await memberservice.UpdateMemberAsync(user.MemberId.Value, model, ct);
+
+            TempData[result.Succeeded ? "SuccessMessage" : "ErrorMessage"]
+                = result.Succeeded ? "Profile updated successfully!" : result.Error;
+
+            return RedirectToAction(nameof(MyProfile));
+        }
 
     }
 }

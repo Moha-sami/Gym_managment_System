@@ -1,0 +1,78 @@
+﻿@using GymMangment.BLL.ViewModels.MemberViewModels
+@model MemberToUpdateViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container mt-4">
+    <header class="mb-4">
+        <h3 class="text-primary-color">My Profile</h3>
+        <p class="text-muted">Update your personal information</p>
+    </header>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <div class="mb-4 pb-3 border-bottom">
+                        <small class="text-muted d-block mb-1">Profile For</small>
+                        <h4 class="mb-0 text-black">@Model.Name</h4>
+                    </div>
+                    <form asp-controller="Members" asp-action="MyProfile" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="Name" />
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label fw-semibold">
+                                    Email Address <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Email" type="email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Phone" class="form-label fw-semibold">
+                                    Phone Number <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Phone" type="tel" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="BuildingNumber" class="form-label fw-semibold">
+                                    Building Number <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="BuildingNumber" class="form-control" />
+                                <span asp-validation-for="BuildingNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="City" class="form-label fw-semibold">
+                                    City <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="City" class="form-control" />
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Street" class="form-label fw-semibold">
+                                    Street <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Street" class="form-control" />
+                                <span asp-validation-for="Street" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                            <button type="submit" class="btn btn-fill">
+                                <i class="bi bi-check-lg me-1"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -104,5 +104,74 @@ namespace GymMangment.BLL.Services.Class
             await _unitOfWork.Memberships.DeleteAsync(membership, ct);
             return Result.Success();
         }
+
+        public async Task<Result<MyMembershipViewModel?>> GetMyMembershipAsync(int memberId, CancellationToken ct = default)
+        {
+            var memberships = await _unitOfWork.Memberships.GetAllAsync(
+                false, ct,
+                m => m.Member,
+                m => m.Plans);
+
+            var membership = memberships
+                .Where(m => m.MemberID == memberId)
+                .OrderByDescending(m => m.EndDate)
+                .FirstOrDefault();
+
+            if (membership == null)
+                return Result<MyMembershipViewModel?>.Failure("You don't have an active membership yet.");
+
+            var model = new MyMembershipViewModel
+            {
+                PlanName = membership.Plans.Name,
+                PlanDescription = membership.Plans.Description,
+                Price = membership.Plans.Price,
+                StartDate = membership.CreatedAt,
+                EndDate = membership.EndDate,
+                IsActive = membership.IsActive,
+                DaysRemaining = Math.Max(0, (membership.EndDate - DateTime.Now).Days)
+            };
+
+            return Result<MyMembershipViewModel?>.Success(model);
+        }
+
+        public async Task<Result> UpgradePlanAsync(int memberId, int newPlanId, CancellationToken ct = default)
+        {
+            var plan = await _unitOfWork.Plans.GetByIdAsync(newPlanId, ct);
+            if (plan == null || !plan.IsActive)
+                return Result.Failure("This plan is not available.");
+
+            var memberships = await _unitOfWork.Memberships.GetAllAsync(ct: ct);
+            var currentMembership = memberships
+                .Where(m => m.MemberID == memberId)
+                .OrderByDescending(m => m.EndDate)
+                .FirstOrDefault();
+
+            if (currentMembership != null && currentMembership.PlansID == newPlanId)
+                return Result.Failure("You are already subscribed to this plan.");
+
+            if (currentMembership != null && currentMembership.IsActive)
+            {
+                // Replace current active membership with new plan
+                currentMembership.PlansID = newPlanId;
+                currentMembership.EndDate = DateTime.Now.AddDays(plan.DurationInDays);
+                currentMembership.UpdatedAt = DateTime.Now;
+                await _unitOfWork.Memberships.UpdateAsync(currentMembership, ct);
+            }
+            else
+            {
+                // No active membership, create a new one
+                var newMembership = new Membership
+                {
+                    MemberID = memberId,
+                    PlansID = newPlanId,
+                    EndDate = DateTime.Now.AddDays(plan.DurationInDays),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+                await _unitOfWork.Memberships.AddAsync(newMembership, ct);
+            }
+
+            return Result.Success();
+        }
     }
 }

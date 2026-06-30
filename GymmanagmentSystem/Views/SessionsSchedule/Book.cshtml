@@ -1,44 +1,31 @@
-﻿@using GymMangment.BLL.ViewModels.BookingViewModels
-@model CreateBookingViewModel
+﻿@model GymMangment.BLL.ViewModels.BookingViewModels.CreateBookingViewModel
 @{
     ViewData["Title"] = "Book Session";
 }
 
 <div class="container mt-4">
     <header class="mb-4">
-        <h3 class="text-primary-color">Book Session</h3>
-        <p class="text-muted">Select a member to book this session</p>
+        <h3 class="text-primary-color">Confirm Booking</h3>
+        <p class="text-muted">You're about to book this session</p>
     </header>
 
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
+                <div class="card-body p-4 text-center">
+                    <i class="bi bi-calendar-check display-4 text-primary-color mb-3"></i>
+                    <p class="mb-4">Click confirm below to book your spot in this session.</p>
+
                     <form asp-controller="SessionsSchedule" asp-action="Book" method="post">
                         <input type="hidden" asp-for="SessionId" />
-
-                        <div class="mb-4">
-                            <label asp-for="MemberId" class="form-label fw-semibold">
-                                Member <span class="text-danger">*</span>
-                            </label>
-                            <select asp-for="MemberId" asp-items="Model.Members" class="form-select">
-                                <option value="">-- Select Member --</option>
-                            </select>
-                            <small class="text-muted">Only members with active memberships are shown</small>
-                            <span asp-validation-for="MemberId" class="text-danger d-block"></span>
-                        </div>
-
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle me-2"></i>
-                            Only members with an active membership can book sessions.
-                        </div>
+                        <input type="hidden" asp-for="MemberId" />
 
                         <div class="d-flex justify-content-between mt-4 pt-3 border-top">
                             <a asp-controller="SessionsSchedule" asp-action="Index" class="btn btn-outline">
                                 <i class="bi bi-arrow-left me-1"></i>Cancel
                             </a>
                             <button type="submit" class="btn btn-fill">
-                                <i class="bi bi-calendar-plus me-1"></i>Confirm Booking
+                                <i class="bi bi-check-lg me-1"></i>Confirm Booking
                             </button>
                         </div>
                     </form>
@@ -47,7 +34,6 @@
         </div>
     </div>
 </div>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

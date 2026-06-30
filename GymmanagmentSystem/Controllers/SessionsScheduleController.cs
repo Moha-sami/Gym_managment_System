@@ -1,6 +1,8 @@
-﻿using GymMangment.BLL.Services.Interfaces;
+﻿using GymManagment.DAL.Models;
+using GymMangment.BLL.Services.Interfaces;
 using GymMangment.BLL.ViewModels.BookingViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymmanagmentSystem.PL.Controllers
@@ -9,10 +11,12 @@ namespace GymmanagmentSystem.PL.Controllers
     public class SessionsScheduleController : Controller
     {
         private readonly IScheduleService _scheduleService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public SessionsScheduleController(IScheduleService scheduleService)
+        public SessionsScheduleController(IScheduleService scheduleService, UserManager<AppUser> userManager)
         {
             _scheduleService = scheduleService;
+            _userManager = userManager;
         }
 
         // GET: SessionsSchedule/Index
@@ -22,30 +26,31 @@ namespace GymmanagmentSystem.PL.Controllers
             return View(result.Data);
         }
 
-        // GET: SessionsSchedule/Book/5
+        // GET: SessionsSchedule/Book/5    
         [HttpGet]
         public async Task<IActionResult> Book(int id, CancellationToken ct)
         {
-            var result = await _scheduleService.GetBookingFormDataAsync(id, ct);
-            if (!result.Succeeded)
+            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.FindByIdAsync(userId!);
+
+            if (user?.MemberId == null)
             {
-                TempData["ErrorMessage"] = result.Error;
+                TempData["ErrorMessage"] = "Your account is not linked to a member profile.";
                 return RedirectToAction(nameof(Index));
             }
-            return View(result.Data);
+
+            var model = new CreateBookingViewModel
+            {
+                SessionId = id,
+                MemberId = user.MemberId.Value
+            };
+
+            return View(model);
         }
 
-        // POST: SessionsSchedule/Book
         [HttpPost]
         public async Task<IActionResult> Book(CreateBookingViewModel model, CancellationToken ct = default)
         {
-            if (!ModelState.IsValid)
-            {
-                var formData = await _scheduleService.GetBookingFormDataAsync(model.SessionId, ct);
-                model.Members = formData.Data!.Members;
-                return View(model);
-            }
-
             var result = await _scheduleService.BookSessionAsync(model.SessionId, model.MemberId, ct);
 
             TempData[result.Succeeded ? "SuccessMessage" : "ErrorMessage"]
