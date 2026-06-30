@@ -24,7 +24,7 @@ A full-featured gym management web application built with **ASP.NET Core MVC** u
 
 | Admin — User Management | Admin — Delete Requests |
 | :---: | :---: |
-| ![User Management](screenshots/User_Management_page.png) | ![Delete Requests](screenshots/DeleteRequest_page.png) |
+| ![User Management](screenshots/UserManagement_page.png) | ![Delete Requests](screenshots/DeleteRequest_page.png) |
 
 ## 🏗️ Architecture
 
