@@ -1,0 +1,62 @@
+﻿@using GymMangment.BLL.ViewModels.MembershipViewModels
+@model CreateMembershipViewModel
+@{
+    ViewData["Title"] = "Add Membership";
+}
+
+<div class="container mt-4">
+    <header class="mb-4">
+        <h3 class="text-primary-color">Add Membership</h3>
+        <p class="text-muted">Assign a member to a plan</p>
+    </header>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form asp-controller="Memberships" asp-action="Create" method="post">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="MemberID" class="form-label fw-semibold">
+                                    Member <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="MemberID" asp-items="Model.Members" class="form-select">
+                                    <option value="">Select Member</option>
+                                </select>
+                                <span asp-validation-for="MemberID" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="PlansID" class="form-label fw-semibold">
+                                    Plan <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="PlansID" asp-items="Model.Plans" class="form-select">
+                                    <option value="">Select Plan</option>
+                                </select>
+                                <span asp-validation-for="PlansID" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            The membership end date will be automatically calculated based on the selected plan's duration.
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                            <a asp-controller="Memberships" asp-action="Index" class="btn btn-outline">
+                                <i class="bi bi-arrow-left me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-fill">
+                                <i class="bi bi-check-lg me-1"></i>Create Membership
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

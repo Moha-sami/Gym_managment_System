@@ -1,5 +1,6 @@
 ﻿@using GymMangment.BLL.ViewModels.TrainerViewModels
 @model IEnumerable<TrainerViewModel>
+@using GymManagment.DAL.Models.Enum
 @{
     ViewData["Title"] = "Trainers";
 }
@@ -59,12 +60,28 @@
                                             </a>
                                         </li>
                                         <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <a asp-controller="Trainers" asp-action="Delete" asp-route-id="@trainer.Id" class="dropdown-item d-flex align-items-center gap-3 text-danger">
-                                                <i class="bi bi-trash"></i>
-                                                <span>Delete</span>
-                                            </a>
-                                        </li>
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <li>
+                                                <a asp-controller="Trainers" asp-action="Delete" asp-route-id="@trainer.Id" class="dropdown-item d-flex align-items-center gap-3 text-danger">
+                                                    <i class="bi bi-trash"></i>
+                                                    <span>Delete</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        else if (User.IsInRole("Manager"))
+                                        {
+                                            <li>
+                                                <form asp-controller="DeleteRequests" asp-action="SubmitRequest" method="post">
+                                                    <input type="hidden" name="targetType" value="@DeleteTargetType.Trainer" />
+                                                    <input type="hidden" name="targetId" value="@trainer.Id" />
+                                                    <button type="submit" class="dropdown-item d-flex align-items-center gap-3 text-danger">
+                                                        <i class="bi bi-send"></i>
+                                                        <span>Request Delete</span>
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
                                     </ul>
                                 </div>
                             </td>

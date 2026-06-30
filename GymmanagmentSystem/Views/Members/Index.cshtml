@@ -1,33 +1,11 @@
 ﻿@model IEnumerable<MemberViewModel>
+@using GymManagment.DAL.Models.Enum
 @{
     ViewData["Title"] = "Members Index";
 }
 
 <div class="container">
     <main role="main" class="pb-3">
-
-       
-        
-        @if (TempData["SuccessMessage"] != null)
-        {
-            
-        <div id="Alert" class="alert alert-success alert-dismissible fade show">
-            <i class="bi bi-check-circle-fill me-2"></i>
-                @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        }
-        else if (TempData["ErrorMessage"] != null)
-        {
-
-        <div id="Alert" class="alert alert-danger alert-dismissible fade show">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                @TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        }
-        
-        
 
         <div class="container">
             <header class="d-flex justify-content-end mt-5 mb-4 align-items-center">
@@ -59,8 +37,16 @@
                             <tr>
                             <td>
                                 <span class="avatar">
-                                    <img src="~/images/@member.photo" alt="Default Avatar" class="rounded-circle"
-                                         style="width: 40px; height: 40px;" />
+                                            @if (!string.IsNullOrEmpty(member.photo))
+                                            {
+                                                <img src="@member.photo" alt="@member.Name" class="rounded-circle"
+                                                     style="width: 40px; height: 40px;" />
+                                            }
+                                            else
+                                            {
+                                                <img src="~/images/User.jpg" alt="Default Avatar" class="rounded-circle"
+                                                     style="width: 40px; height: 40px;" />
+                                            }
                                 </span>
                             </td>
                             <td><span>@member.Name</span></td>
@@ -107,14 +93,31 @@
                                         <li>
                                             <hr class="dropdown-divider">
                                         </li>
-                                        <li>
-                                            <a asp-controller="Members" asp-action="Delete" asp-route-id="@member.Id"
-                                               class="dropdown-item d-flex align-items-center gap-3 text-danger">
-                                                <img src="~/images/x-circle 1.jpg" alt="delete icon"
-                                                     style="width: 20px; height: 20px;" />
-                                                <span>Delete</span>
-                                            </a>
-                                        </li>
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <li>
+                                                <a asp-controller="Members" asp-action="Delete" asp-route-id="@member.Id"
+                                                   class="dropdown-item d-flex align-items-center gap-3 text-danger">
+                                                    <img src="~/images/x-circle 1.jpg" alt="delete icon"
+                                                         style="width: 20px; height: 20px;" />
+                                                    <span>Delete</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        else if (User.IsInRole("Manager"))
+                                        {
+                                            <li>
+                                                <form asp-controller="DeleteRequests" asp-action="SubmitRequest" method="post">
+                                                    <input type="hidden" name="targetType" value="@DeleteTargetType.Member" />
+                                                    <input type="hidden" name="targetId" value="@member.Id" />
+                                                    <button type="submit" class="dropdown-item d-flex align-items-center gap-3 text-danger">
+                                                        <img src="~/images/x-circle 1.jpg" alt="delete request icon"
+                                                             style="width: 20px; height: 20px;" />
+                                                        <span>Request Delete</span>
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
                                     </ul>
 
                              

@@ -1,5 +1,6 @@
 ﻿@using GymMangment.BLL.ViewModels.SessionsViewModels
 @model IEnumerable<SessionViewModel>
+@using GymManagment.DAL.Models.Enum
 @{
     ViewData["Title"] = "Sessions";
 }
@@ -65,9 +66,22 @@
                                     <a asp-controller="Sessions" asp-action="EditSession" asp-route-id="@session.Id" class="btn btn-outline btn-sm flex-fill">
                                         <i class="bi bi-pencil me-1"></i>Edit
                                     </a>
-                                    <a asp-controller="Sessions" asp-action="Delete" asp-route-id="@session.Id" class="btn btn-outline text-danger btn-sm flex-fill">
-                                        <i class="bi bi-trash me-1"></i>Delete
-                                    </a>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a asp-controller="Sessions" asp-action="Delete" asp-route-id="@session.Id" class="btn btn-outline text-danger btn-sm flex-fill">
+                                            <i class="bi bi-trash me-1"></i>Delete
+                                        </a>
+                                    }
+                                    else if (User.IsInRole("Manager"))
+                                    {
+                                        <form asp-controller="DeleteRequests" asp-action="SubmitRequest" method="post" class="flex-fill">
+                                            <input type="hidden" name="targetType" value="@DeleteTargetType.Session" />
+                                            <input type="hidden" name="targetId" value="@session.Id" />
+                                            <button type="submit" class="btn btn-outline text-danger btn-sm w-100">
+                                                <i class="bi bi-send me-1"></i>Request Delete
+                                            </button>
+                                        </form>
+                                    }
                                 </div>
                             </div>
                         </div>

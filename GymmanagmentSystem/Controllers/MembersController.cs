@@ -5,19 +5,23 @@ using GymMangment.BLL.Common;
 using GymMangment.BLL.Services.Class;
 using GymMangment.BLL.Services.Interfaces;
 using GymMangment.BLL.ViewModels.MemberViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 namespace GymmanagmentSystem.PL.Controllers
 {
+    [Authorize(Roles = "Admin,Manager")]
     public class MembersController : Controller
     {
         private readonly ImemberService memberservice;
-        
+        private readonly IFileService _fileService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public MembersController(ImemberService _memberservice )
+        public MembersController(ImemberService _memberservice , IFileService fileService,IUnitOfWork unitOfWork)
         {
             memberservice = _memberservice;
-            
+            _fileService = fileService;
+            _unitOfWork = unitOfWork;
         }
         #region GetAllMembers
         //index list all members localhost:port/Members/Index(Get)
@@ -34,11 +38,27 @@ namespace GymmanagmentSystem.PL.Controllers
         // Create Shows member registration form localhost:port/Members/Create(Get)
         [HttpGet]
         public IActionResult Create() => View();
-        //CreateMember Processes form submission localhost:port/Members/CreateMember(Post)
+        //CreateMember Processes form submission localhost:port/Members/CreateMember(Post) 
         [HttpPost]
         public async Task<IActionResult> CreateMember(CreateMemberViewModel model, CancellationToken ct = default)
         {
+            if (model.Photo == null || model.Photo.Length == 0)
+                ModelState.AddModelError("Photo", "Profile photo is required.");
+
             if (!ModelState.IsValid) return View(nameof(Create), model);
+            if (!ModelState.IsValid) return View(nameof(Create), model);
+
+            // Handle photo upload in controller before calling service
+            if (model.Photo != null)
+            {
+                var photoPath = await _fileService.SaveImageAsync(model.Photo, "uploads");
+                if (photoPath == null)
+                {
+                    ModelState.AddModelError("Photo", "Invalid photo. Please upload a JPG, PNG or WebP image under 2MB.");
+                    return View(nameof(Create), model);
+                }
+                model.PhotoPath = photoPath;
+            }
 
             var result = await memberservice.CreateMemberAsync(model, ct);
 
@@ -122,6 +142,7 @@ namespace GymmanagmentSystem.PL.Controllers
         #region MemberDelete
         //Delete(int id) - Shows deletion confirmation page localhost:port/Members/Delete/{Id}(Get)
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id,CancellationToken ct)
         {
             var member =await memberservice.GetMemberToUpdateAsync(id, ct);
@@ -136,6 +157,7 @@ namespace GymmanagmentSystem.PL.Controllers
         }
         //DeleteConfirmed(int id) - Processes deletion localhost:port/Members/DeleteConfirmed/{Id}(Post)
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id,CancellationToken ct)
         {
             var member= await memberservice.DeleteMemberAsync(id, ct);

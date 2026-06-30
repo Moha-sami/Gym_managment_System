@@ -16,6 +16,8 @@ namespace GymManagment.DAL.Repositories.Class
         private IGenericRepository<Category>? _categories;
         private IGenericRepository<Membership>? _memberships;
         private IGenericRepository<Trainer>? _trainers;
+        private IGenericRepository<DeleteRequest>? _deleteRequests;
+        private IGenericRepository<WeightProgressRecord>? _weightProgressRecords;
 
         public UnitOfWork(GymDbcontext context, ISessionRepository sessionRepository)
         {
@@ -46,6 +48,12 @@ namespace GymManagment.DAL.Repositories.Class
 
         public IGenericRepository<Trainer> Trainers =>
             _trainers ??= new GenericRepository<Trainer>(_context);
+
+        public IGenericRepository<DeleteRequest> DeleteRequests =>
+            _deleteRequests ??= new GenericRepository<DeleteRequest>(_context);
+
+        public IGenericRepository<WeightProgressRecord> WeightProgressRecords =>
+            _weightProgressRecords ??= new GenericRepository<WeightProgressRecord>(_context);
 
         public ISessionRepository SessionRepository {  get;  }
 

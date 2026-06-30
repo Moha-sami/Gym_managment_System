@@ -10,6 +10,7 @@
          public ICollection<Membership> Memberships { get; set; } = [];
 
         public ICollection<Booking> MemberSessions { get; set; } = [];
+        public ICollection<WeightProgressRecord> WeightProgressRecords { get; set; } = [];
         #endregion
     }
 }

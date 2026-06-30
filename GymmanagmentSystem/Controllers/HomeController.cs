@@ -1,10 +1,12 @@
-using GymMangment.BLL.Services.Interfaces;
 using GymmanagmentSystem.Models;
+using GymMangment.BLL.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace GymmanagmentSystem.Controllers
 {
+    [Authorize(Roles = "Admin,Manager,Member,Trainer")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

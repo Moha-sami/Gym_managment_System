@@ -1,24 +1,30 @@
 using GymManagment.DAL.DbContext;
+using GymManagment.DAL.Models;
 using GymManagment.DAL.Repositories.Class;
 using GymManagment.DAL.Repositories.Interfaces;
+using GymmanagmentSystem.PL.Services;
 using GymMangment.BLL.Services.Class;
 using GymMangment.BLL.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymmanagmentSystem
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // ✅ ALL services registered BEFORE app.Build()
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.Filters.Add(new Microsoft.AspNetCore.Mvc.Authorization.AuthorizeFilter());
+            });
             builder.Services.AddDbContext<GymDbcontext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+    // السطر ده هو اللي بيحل المشكلة:
+    sqlServerOptions => sqlServerOptions.MigrationsAssembly("GymManagment.DAL")));
 
 
 
@@ -29,13 +35,36 @@ namespace GymmanagmentSystem
             builder.Services.AddScoped<ISessionRepository, SessionRepository>();
             builder.Services.AddScoped<ISessionService, SessionService>();
             builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+            builder.Services.AddScoped<IMembershipService, MembershipService>();
+            builder.Services.AddScoped<IScheduleService, ScheduleService>();
+            builder.Services.AddScoped<IFileService, FileService>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<GymMangment.BLL.Mapping.MappingProfile>());
 
 
+            builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.SignIn.RequireConfirmedEmail = false;
+            })
+                .AddEntityFrameworkStores<GymDbcontext>()
+                   .AddDefaultTokenProviders();
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+            });
+
 
             var app = builder.Build(); // ✅ Build LAST
+                                       // Data Seeding
+            var logger = app.Services.GetRequiredService<ILogger<Program>>();
+            await DataSeeder.SeedAsync(app.Services, logger);
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -46,6 +75,7 @@ namespace GymmanagmentSystem
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();

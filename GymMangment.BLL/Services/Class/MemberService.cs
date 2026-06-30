@@ -32,8 +32,18 @@ namespace GymMangment.BLL.Services.Class
                 return Result.Failure("A member with this phone number already exists.");
 
             var member = _mapper.Map<GymManagment.DAL.Models.Member>(model);
-
+            member.Photo = null;
+            member.Photo = model.PhotoPath; 
             var rows = await _unitOfWork.Members.AddAsync(member, ct);
+
+            if (rows > 0)
+            {
+                await AddWeightProgressRecordAsync(
+                    member.Id,
+                    model.HealthRecordViewModel.Weight,
+                    "Initial member health record",
+                    ct);
+            }
 
             return rows > 0
                 ? Result.Success()
@@ -95,6 +105,7 @@ namespace GymMangment.BLL.Services.Class
             
             
                 var model= _mapper.Map<HealthRecordViewModel>(record);
+            model.WeightProgress = await GetWeightProgressLastSixMonthsAsync(memberID, record.Weight, record.CreatedAt, ct);
             
             return Result<HealthRecordViewModel?>.Success(model);
         }
@@ -138,6 +149,53 @@ namespace GymMangment.BLL.Services.Class
             }
             await _unitOfWork.Members.DeleteAsync(result, ct);
             return Result.Success();
+        }
+
+        private async Task AddWeightProgressRecordAsync(int memberId, decimal weight, string? note, CancellationToken ct)
+        {
+            var progressRecord = new WeightProgressRecord
+            {
+                MemberId = memberId,
+                Weight = weight,
+                RecordedAt = DateTime.Now,
+                Note = note,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+
+            await _unitOfWork.WeightProgressRecords.AddAsync(progressRecord, ct);
+        }
+
+        private async Task<IEnumerable<WeightProgressPointViewModel>> GetWeightProgressLastSixMonthsAsync(
+            int memberId,
+            decimal currentWeight,
+            DateTime healthRecordCreatedAt,
+            CancellationToken ct)
+        {
+            var sixMonthsAgo = DateTime.Now.AddMonths(-6);
+            var progressRecords = await _unitOfWork.WeightProgressRecords.GetAllAsync(ct: ct);
+            var memberProgress = progressRecords
+                .Where(r => r.MemberId == memberId && r.RecordedAt >= sixMonthsAgo)
+                .OrderBy(r => r.RecordedAt)
+                .ToList();
+
+            if (!memberProgress.Any() && healthRecordCreatedAt >= sixMonthsAgo)
+            {
+                await AddWeightProgressRecordAsync(memberId, currentWeight, "Imported from current health record", ct);
+                memberProgress.Add(new WeightProgressRecord
+                {
+                    MemberId = memberId,
+                    Weight = currentWeight,
+                    RecordedAt = healthRecordCreatedAt,
+                    Note = "Imported from current health record"
+                });
+            }
+
+            return memberProgress.Select(r => new WeightProgressPointViewModel
+            {
+                DateLabel = r.RecordedAt.ToString("MMM dd"),
+                Weight = r.Weight
+            });
         }
     }
 }

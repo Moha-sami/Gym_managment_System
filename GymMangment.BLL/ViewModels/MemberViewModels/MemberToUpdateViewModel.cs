@@ -22,12 +22,12 @@ namespace GymMangment.BLL.ViewModels.MemberViewModels
         public int BuildingNumber { get; set; }
 
         [Required(ErrorMessage = "City Is Required")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "City must be between 2 and 100 characters")]
+        [StringLength(30, MinimumLength = 2, ErrorMessage = "City must be between 2 and 100 characters")]
         [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "City can only contain letters and spaces")]
         public string City { get; set; } = default!;
 
         [Required(ErrorMessage = "Street Is Required")]
-        [StringLength(150, MinimumLength = 2, ErrorMessage = "Street must be between 2 and 150 characters")]
+        [StringLength(30, MinimumLength = 2, ErrorMessage = "Street must be between 2 and 150 characters")]
         [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Street can only contain letters, numbers, and spaces")]
         public string Street { get; set; } = default!;
     }

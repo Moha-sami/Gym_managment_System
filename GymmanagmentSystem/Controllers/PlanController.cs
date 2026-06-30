@@ -1,9 +1,11 @@
 ﻿using GymMangment.BLL.Services.Interfaces;
 using GymMangment.BLL.ViewModels.PlansViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymmanagmentSystem.PL.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class PlansController : Controller
     {
         private readonly IPlanServices _planService;

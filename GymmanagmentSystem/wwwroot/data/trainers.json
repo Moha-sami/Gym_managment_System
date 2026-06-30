@@ -1,0 +1,46 @@
+[
+  {
+    "Name": "Ahmed Hassan",
+    "Email": "ahmed.hassan@gymfit.com",
+    "Phone": "01012345678",
+    "DateOfBirth": "1990-05-15",
+    "Gender": 1,
+    "Specialty": 1,
+    "BuildingNumber": 10,
+    "Street": "Tahrir Street",
+    "City": "Cairo"
+  },
+  {
+    "Name": "Sara Mohamed",
+    "Email": "sara.mohamed@gymfit.com",
+    "Phone": "01123456789",
+    "DateOfBirth": "1992-08-20",
+    "Gender": 2,
+    "Specialty": 2,
+    "BuildingNumber": 25,
+    "Street": "Corniche Road",
+    "City": "Alexandria"
+  },
+  {
+    "Name": "Omar Khalil",
+    "Email": "omar.khalil@gymfit.com",
+    "Phone": "01234567890",
+    "DateOfBirth": "1988-03-10",
+    "Gender": 1,
+    "Specialty": 3,
+    "BuildingNumber": 7,
+    "Street": "Nile Avenue",
+    "City": "Giza"
+  },
+  {
+    "Name": "Nour Ali",
+    "Email": "nour.ali@gymfit.com",
+    "Phone": "01512345678",
+    "DateOfBirth": "1995-11-25",
+    "Gender": 2,
+    "Specialty": 4,
+    "BuildingNumber": 15,
+    "Street": "Garden Street",
+    "City": "Cairo"
+  }
+]

@@ -1,9 +1,11 @@
 ﻿using GymMangment.BLL.Services.Interfaces;
 using GymMangment.BLL.ViewModels.SessionsViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymmanagmentSystem.PL.Controllers
 {
+    [Authorize(Roles = "Admin,Manager")]
     public class SessionsController : Controller
     {
         private readonly ISessionService _sessionService;
@@ -103,6 +105,7 @@ namespace GymmanagmentSystem.PL.Controllers
 
         // GET: Sessions/Delete/5
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id, CancellationToken ct)
         {
             var result = await _sessionService.GetSessionByIdAsync(id, ct);
@@ -116,6 +119,7 @@ namespace GymmanagmentSystem.PL.Controllers
 
         // POST: Sessions/DeleteConfirmed/5
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id, CancellationToken ct)
         {
             var result = await _sessionService.DeleteSessionAsync(id, ct);

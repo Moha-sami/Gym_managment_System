@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using GymManagment.DAL.Models;
+using GymMangment.BLL.ViewModels.BookingViewModels;
 using GymMangment.BLL.ViewModels.HealthRecordsViewModels;
+using GymMangment.BLL.ViewModels.MembershipViewModels;
 using GymMangment.BLL.ViewModels.MemberViewModels;
 using GymMangment.BLL.ViewModels.PlansViewModels;
 using GymMangment.BLL.ViewModels.SessionsViewModels;
@@ -14,27 +16,27 @@ namespace GymMangment.BLL.Mapping
         {
             // Member -> MemberViewModel (list display)
             CreateMap<Member, MemberViewModel>()
-                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
-                .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
-                .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender.ToString()))
-                .ForMember(dest => dest.photo, opt => opt.MapFrom(src => src.Photo));
+    .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+    .ForMember(dest => dest.Phone, opt => opt.MapFrom(src => src.Phone))
+    .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender.ToString()))
+    .ForMember(dest => dest.photo, opt => opt.MapFrom(src => src.Photo))
+    .ForMember(dest => dest.Address, opt => opt.MapFrom(src => $"{src.Address.Street} - {src.Address.City} - {src.Address.BuildingNumber}"))
+    .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOFBirth.ToString()));
 
             // CreateMemberViewModel -> Member (creation)
             CreateMap<CreateMemberViewModel, Member>()
-                .ForMember(dest => dest.DateOFBirth, opt => opt.MapFrom(src => src.DateOfBirth))
-                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => new Address
-                {
-                    BuildingNumber = src.BuildingNumber,
-                    City = src.City,
-                    Street = src.Street
-                }))
+       .ForMember(dest => dest.DateOFBirth, opt => opt.MapFrom(src => src.DateOfBirth))
+       .ForMember(dest => dest.Address, opt => opt.MapFrom(src => new Address
+       {
+           BuildingNumber = src.BuildingNumber,
+           City = src.City,
+           Street = src.Street
+       }))
+       .ForMember(dest => dest.HealthRecord, opt => opt.MapFrom(src => src.HealthRecordViewModel))
+       .ForMember(dest => dest.Photo, opt => opt.Ignore()) 
                 .ForMember(dest => dest.HealthRecord, opt => opt.MapFrom(src => src.HealthRecordViewModel));
-            // Member-> MemberDetails
-            CreateMap<Member, MemberViewModel>()
-     .ForMember(dest => dest.Address, opt => opt.MapFrom(src => $"{src.Address.Street} - {src.Address.City}- {src.Address.BuildingNumber}"))
-     .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender.ToString()))
-     .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOFBirth.ToString()));
-     
+
+           
     
      
 
@@ -135,6 +137,38 @@ namespace GymMangment.BLL.Mapping
                 .ForMember(dest => dest.Capacity, opt => opt.Ignore())
                 .ForMember(dest => dest.SessionMembers, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.Now));
+
+            // Membership -> MembershipViewModel
+            CreateMap<Membership, MembershipViewModel>()
+                .ForMember(dest => dest.MemberName, opt => opt.MapFrom(src => src.Member.Name))
+                .ForMember(dest => dest.PlanName, opt => opt.MapFrom(src => src.Plans.Name))
+                .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.CreatedAt))
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status));
+
+            // CreateMembershipViewModel -> Membership
+            CreateMap<CreateMembershipViewModel, Membership>()
+                .ForMember(dest => dest.Member, opt => opt.Ignore())
+                .ForMember(dest => dest.Plans, opt => opt.Ignore());
+
+            // Session -> SessionScheduleViewModel
+            CreateMap<Session, SessionScheduleViewModel>()
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.CategoryName.ToString()))
+                .ForMember(dest => dest.TrainerName, opt => opt.MapFrom(src => src.Trainer.Name))
+                .ForMember(dest => dest.DateDisplay, opt => opt.MapFrom(src => src.StartDate.ToString("MMM dd, yyyy")))
+                .ForMember(dest => dest.TimeRangeDisplay, opt => opt.MapFrom(src => $"{src.StartDate:hh:mm tt} - {src.EndDate:hh:mm tt}"))
+                .ForMember(dest => dest.AvailableSlots, opt => opt.MapFrom(src => src.Capacity - src.SessionMembers.Count))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
+                    src.StartDate > DateTime.Now ? "Upcoming" :
+                    src.EndDate >= DateTime.Now ? "Ongoing" : "Completed"));
+
+            // Booking -> BookingViewModel
+            CreateMap<Booking, BookingViewModel>()
+                .ForMember(dest => dest.MemberName, opt => opt.MapFrom(src => src.Member.Name))
+                .ForMember(dest => dest.SessionCategory, opt => opt.MapFrom(src => src.Session.Category.CategoryName.ToString()))
+                .ForMember(dest => dest.SessionDate, opt => opt.MapFrom(src => src.Session.StartDate.ToString("MMM dd, yyyy")))
+                .ForMember(dest => dest.SessionTime, opt => opt.MapFrom(src => $"{src.Session.StartDate:hh:mm tt} - {src.Session.EndDate:hh:mm tt}"))
+                .ForMember(dest => dest.BookingDate, opt => opt.MapFrom(src => src.CreatedAt));
         }
     }
 }

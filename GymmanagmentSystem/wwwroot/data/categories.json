@@ -1,0 +1,6 @@
+[
+    { "CategoryName": 1, "Name": "Cardio" },
+    { "CategoryName": 2, "Name": "Strength" },
+    { "CategoryName": 3, "Name": "Training" },
+    { "CategoryName": 4, "Name": "Yoga" }
+]

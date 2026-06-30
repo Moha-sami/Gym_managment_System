@@ -1,5 +1,6 @@
 ﻿using GymManagment.DAL.Models.Enum;
 using GymMangment.BLL.ViewModels.HealthRecordsViewModels;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace GymMangment.BLL.ViewModels.MemberViewModels
@@ -7,6 +8,7 @@ namespace GymMangment.BLL.ViewModels.MemberViewModels
     public class CreateMemberViewModel
     {
         [Required(ErrorMessage = "Name Is Required")]
+        [StringLength(50, MinimumLength = 3, ErrorMessage = "City must be between 2 and 30 characters")]
         [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Name can only contain letters and spaces")]
         public string Name { get; set; } = default!;
 
@@ -34,16 +36,22 @@ namespace GymMangment.BLL.ViewModels.MemberViewModels
         public int BuildingNumber { get; set; }
 
         [Required(ErrorMessage = "City Is Required")]
-        [StringLength(100, MinimumLength = 2, ErrorMessage = "City must be between 2 and 100 characters")]
+        [StringLength(30, MinimumLength = 2, ErrorMessage = "City must be between 2 and 30 characters")]
         [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "City can only contain letters and spaces")]
         public string City { get; set; } = default!;
 
         [Required(ErrorMessage = "Street Is Required")]
-        [StringLength(150, MinimumLength = 2, ErrorMessage = "Street must be between 2 and 150 characters")]
+        [StringLength(30, MinimumLength = 2, ErrorMessage = "Street must be between 2 and 30 characters")]
         [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Street can only contain letters, numbers, and spaces")]
         public string Street { get; set; } = default!;
 
         [Required(ErrorMessage = "Health record is required")]
         public HealthRecordViewModel HealthRecordViewModel { get; set; } = default!;
+        
+        [DataType(DataType.Upload)]
+        [Required(ErrorMessage = "Profile photo is required")]
+        public IFormFile Photo { get; set; } = default!;     // the uploaded file
+
+        public string? PhotoPath { get; set; }     // the saved path (set by controller)
     }
 }

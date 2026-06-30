@@ -4,6 +4,8 @@ namespace GymMangment.BLL.ViewModels.HealthRecordsViewModels
 {
     public class HealthRecordViewModel
     {
+        public int MemberId { get; set; }
+
         [Range(0.1, 300, ErrorMessage = "Height must be greater than 0")]
         public decimal Height { get; set; }
 
@@ -14,5 +16,7 @@ namespace GymMangment.BLL.ViewModels.HealthRecordsViewModels
         [StringLength(3, ErrorMessage = "Blood type must be 3 characters or less")]
         public string BloodType { get; set; } = default!;
         public string? Note { get; set; } = default!;
+
+        public IEnumerable<WeightProgressPointViewModel> WeightProgress { get; set; } = [];
     }
 }

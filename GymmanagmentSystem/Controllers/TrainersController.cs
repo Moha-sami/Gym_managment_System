@@ -1,9 +1,11 @@
 ﻿using GymMangment.BLL.Services.Interfaces;
 using GymMangment.BLL.ViewModels.TrainerViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymmanagmentSystem.PL.Controllers
 {
+    [Authorize(Roles = "Admin,Manager")]
     public class TrainersController : Controller
     {
         private readonly ITrainerService _trainerService;
@@ -80,6 +82,7 @@ namespace GymmanagmentSystem.PL.Controllers
 
         // GET: Trainers/Delete/5
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id, CancellationToken ct)
         {
             var result = await _trainerService.GetTrainerByIdAsync(id, ct);
@@ -93,6 +96,7 @@ namespace GymmanagmentSystem.PL.Controllers
 
         // POST: Trainers/DeleteConfirmed/5
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id, CancellationToken ct)
         {
             var result = await _trainerService.DeleteTrainerAsync(id, ct);
