@@ -1,6 +1,6 @@
 # 🏋️ Gym Management System
 
-A full-featured gym management web application built with **ASP.NET Core MVC** using a clean **3-Tier Architecture**. Designed to streamline gym operations including member registration, health tracking, trainer management, and membership plans.
+A full-featured gym management web application built with **ASP.NET Core MVC** using a clean **3-Tier Architecture**. Supports member registration, health tracking, trainer management, session scheduling, bookings, and role-based authentication.
 
 ---
 
@@ -16,52 +16,62 @@ This project follows the **3-Tier Architecture** pattern, separating concerns ac
 
 ```
 GymmanagmentSystem/
-├── GymManagment.DAL/        # Data Access Layer  — Models, DbContext, Repositories, UnitOfWork
+├── GymManagment.DAL/        # Data Access Layer  — Models, DbContext, Repositories, UnitOfWork, Identity
 ├── GymMangment.BLL/         # Business Logic Layer — Services, ViewModels, Mapping, Result Pattern
-└── GymmanagmentSystem/      # Presentation Layer  — Controllers, Views, wwwroot
+└── GymmanagmentSystem.PL/   # Presentation Layer  — Controllers, Views, wwwroot
 ```
 
 | Layer | Project | Responsibility |
 |-------|---------|----------------|
-| **DAL** | `GymManagment.DAL` | Database models, EF Core, Generic Repository, Unit of Work |
+| **DAL** | `GymManagment.DAL` | Database models, EF Core, Identity, Generic Repository, Unit of Work |
 | **BLL** | `GymMangment.BLL` | Business logic, service interfaces, ViewModels, AutoMapper profiles |
-| **PL**  | `GymmanagmentSystem` | MVC Controllers, Razor Views, UI |
+| **PL**  | `GymmanagmentSystem.PL` | MVC Controllers, Razor Views, UI, File uploads |
 
 ---
 
 ## ✨ Features
 
 ### Members
-- ✅ List all members
-- ✅ Create member (with health record)
-- ✅ Member details
-- ✅ Health record details
-- ✅ Edit member profile
-- ✅ Delete member (with confirmation page, hard delete)
+- ✅ List, create, view details, edit, delete (with confirmation)
+- ✅ Health record tracking (Height, Weight, Blood Type, Notes) integrated into Create flow
+- ✅ Profile photo upload (required on Create)
 
 ### Trainers
-- ✅ List all trainers (table view with specialization badges)
-- ✅ Create trainer
-- ✅ Trainer details
-- ✅ Edit trainer (name/DOB/gender locked)
-- ✅ Delete trainer (with confirmation page, hard delete)
+- ✅ Full CRUD with specialty tracking (Cardio, Strength, Boxing, CrossFit)
+- ✅ Locked fields on edit (Name, DOB, Gender)
 
 ### Plans
-- ✅ List all plans (active & inactive)
-- ✅ Plan details (visual style adapts to active/inactive status)
-- ✅ Edit plan (name locked, price/duration/description editable)
-- ✅ Activate / Deactivate plan (soft delete via `IsActive` toggle)
+- ✅ List, view details, edit
+- ✅ Activate / Deactivate (soft delete via `IsActive` toggle)
 
-### Sessions & Bookings
-- 🔲 CRUD sessions _(planned)_
-- 🔲 Book a session _(planned)_
+### Sessions
+- ✅ Full CRUD with trainer/category specialty matching validation
+- ✅ Status-aware UI (Upcoming / Ongoing / Completed)
 
 ### Memberships
-- 🔲 Assign member to plan _(planned)_
+- ✅ Assign member to a plan, auto-calculated end date based on plan duration
+- ✅ Prevents duplicate active memberships per member
 
-### Authentication
-- 🔲 Login / Register _(planned)_
-- 🔲 Roles (Admin, Trainer, Member) _(planned)_
+### Sessions Schedule & Bookings
+- ✅ Browse available sessions and book a spot (requires active membership)
+- ✅ Cancel bookings, attendance tracking
+- ✅ Capacity and slot availability enforcement
+
+### Home Dashboard
+- ✅ Live KPIs: Total Members, Active Members, Trainers, Upcoming/Ongoing/Completed Sessions
+- ✅ Public landing page with Register/Login CTAs for guests
+
+### Authentication & Authorization
+- ✅ ASP.NET Core Identity (custom `AppUser`)
+- ✅ Roles: **Admin**, **Manager**, **Member**, **Trainer**
+- ✅ Public registration → automatically assigned **Member** role
+- ✅ Admin can assign/change roles via User Management page
+- ✅ Manager can create Members/Trainers/Sessions but cannot delete directly — submits a **Delete Request** for Admin approval/rejection
+
+### Data Seeding
+- ✅ Plans, Categories, Trainers, Members, and 7 days of upcoming Sessions seeded automatically on first run
+- ✅ Roles (Admin, Manager, Member, Trainer) and a default Admin account seeded on startup
+- ✅ Idempotent — skips seeding if data already exists
 
 ---
 
@@ -71,6 +81,7 @@ GymmanagmentSystem/
 |------------|-------|
 | ASP.NET Core MVC (.NET 9) | Web framework |
 | Entity Framework Core 9 | ORM / Database access |
+| ASP.NET Core Identity | Authentication & Authorization |
 | SQL Server | Database |
 | AutoMapper | Object mapping (ViewModel ↔ Entity) |
 | Bootstrap 5 | UI styling |
@@ -84,11 +95,24 @@ GymmanagmentSystem/
 | Pattern | Where Used |
 |---------|-----------|
 | **3-Tier Architecture** | Full project structure |
-| **Generic Repository** | `IGenericRepository<T>` in DAL |
+| **Generic Repository** | `IGenericRepository<T>` in DAL, with `Include` overloads for eager loading |
 | **Unit of Work** | `IUnitOfWork` wrapping all repositories |
 | **Result Pattern** | `Result<T>` returned from all service methods |
 | **AutoMapper** | `MappingProfile` in BLL |
 | **TempData Alert System** | Global success/warning/error banners in `_Layout.cshtml`, auto-dismiss after 3s |
+| **Approval Workflow** | Manager-submitted Delete Requests reviewed by Admin before destructive actions execute |
+
+---
+
+## 🔐 Default Seeded Accounts
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@gymmanagement.com` | `Admin@1234` |
+| Manager | `manager1@gymmanagement.com` | `Manager@1234` |
+| Manager | `manager2@gymmanagement.com` | `Manager@1234` |
+
+> ⚠️ Change these credentials before deploying to production.
 
 ---
 
@@ -110,7 +134,7 @@ GymmanagmentSystem/
 
 2. **Set up the connection string**
 
-   In `GymmanagmentSystem/appsettings.json`, update:
+   In `GymmanagmentSystem.PL/appsettings.json`, update:
    ```json
    "ConnectionStrings": {
      "DefaultConnection": "Server=YOUR_SERVER;Database=GymDB;Trusted_Connection=True;"
@@ -119,15 +143,17 @@ GymmanagmentSystem/
 
 3. **Apply migrations**
    ```bash
-   dotnet ef database update --project GymManagment.DAL --startup-project GymmanagmentSystem
+   dotnet ef database update --project GymManagment.DAL --startup-project GymmanagmentSystem.PL
    ```
 
 4. **Run the application**
    ```bash
-   dotnet run --project GymmanagmentSystem
+   dotnet run --project GymmanagmentSystem.PL
    ```
 
-5. Open your browser at `https://localhost:PORT`
+   On first run, the database will be automatically seeded with sample Plans, Categories, Trainers, Members, Sessions, Roles, and an Admin account.
+
+5. Open your browser at `https://localhost:PORT` and log in with the Admin account above.
 
 ---
 
@@ -138,6 +164,7 @@ GymManagment.DAL/
 ├── Models/
 │   ├── BaseEntity.cs
 │   ├── GymUser.cs (abstract)
+│   ├── AppUser.cs (Identity)
 │   ├── Member.cs
 │   ├── HealthRecord.cs
 │   ├── Trainer.cs
@@ -145,16 +172,13 @@ GymManagment.DAL/
 │   ├── Membership.cs
 │   ├── Session.cs
 │   ├── Booking.cs
-│   └── Enum/ (Gender, Specialty)
+│   ├── DeleteRequest.cs
+│   └── Enum/ (Gender, Specialty, Categories, DeleteTargetType, DeleteRequestStatus)
 ├── DbContext/
-│   └── GymDbcontext.cs
+│   └── GymDbcontext.cs (IdentityDbContext)
 └── Repositories/
-    ├── Interfaces/
-    │   ├── IGenericRepository.cs
-    │   └── IUnitOfWork.cs
-    └── Class/
-        ├── GenericRepository.cs
-        └── UnitOfWork.cs
+    ├── Interfaces/ (IGenericRepository, IUnitOfWork)
+    └── Class/ (GenericRepository, UnitOfWork)
 
 GymMangment.BLL/
 ├── Common/
@@ -163,45 +187,39 @@ GymMangment.BLL/
 │   └── MappingProfile.cs
 ├── Services/
 │   ├── Interfaces/
-│   │   ├── ImemberService.cs
-│   │   ├── IPlanServices.cs
-│   │   └── ITrainerService.cs
-│   └── Class/
-│       ├── MemberService.cs
-│       ├── PlanService.cs
-│       └── TrainerService.cs
+│   └── Class/ (MemberService, PlanService, TrainerService, SessionService,
+│                MembershipService, ScheduleService, AnalyticsService, FileService)
 └── ViewModels/
     ├── MemberViewModels/
     ├── HealthRecordsViewModels/
     ├── PlansViewModels/
-    └── TrainerViewModels/
+    ├── TrainerViewModels/
+    ├── SessionsViewModels/
+    ├── MembershipViewModels/
+    ├── BookingViewModels/
+    └── AccountViewModels/ (Login, Register, User)
 
-GymmanagmentSystem/
+GymmanagmentSystem.PL/
 ├── Controllers/
+│   ├── HomeController.cs
 │   ├── MembersController.cs
 │   ├── PlansController.cs
-│   └── TrainersController.cs
+│   ├── TrainersController.cs
+│   ├── SessionsController.cs
+│   ├── MembershipsController.cs
+│   ├── SessionsScheduleController.cs
+│   ├── BookingsController.cs
+│   ├── AccountController.cs
+│   ├── AdminController.cs
+│   └── DeleteRequestsController.cs
+├── Services/
+│   └── FileService.cs (implements IFileService)
+├── DataSeeder.cs
 ├── Views/
-│   ├── Shared/
-│   │   └── _Layout.cshtml
-│   ├── Members/
-│   │   ├── Index.cshtml
-│   │   ├── Create.cshtml
-│   │   ├── MemberDetails.cshtml
-│   │   ├── HealthRecordDetails.cshtml
-│   │   ├── EditMember.cshtml
-│   │   └── Delete.cshtml
-│   ├── Plans/
-│   │   ├── Index.cshtml
-│   │   ├── Details.cshtml
-│   │   └── EditPlan.cshtml
-│   └── Trainers/
-│       ├── Index.cshtml
-│       ├── Create.cshtml
-│       ├── Details.cshtml
-│       ├── EditTrainer.cshtml
-│       └── Delete.cshtml
+│   └── (one folder per controller, plus Shared/_Layout.cshtml)
 └── wwwroot/
+    ├── data/ (plans.json, members.json, trainers.json — seed sources)
+    └── images/uploads/ (member profile photos)
 ```
 
 ---
