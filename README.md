@@ -1,7 +1,7 @@
 # 🏋️ Gym Management System
 
 A full-featured gym management web application built with **ASP.NET Core MVC** using a clean **3-Tier Architecture**. Supports member self-service, health tracking, trainer management, session scheduling, bookings, and role-based authentication with an approval workflow for sensitive actions.
-
+Live Demo: Check out the full gym system here https://fullgymsystem.runasp.net/Account/Login
 ---
 
 ### 📸 Screenshots
