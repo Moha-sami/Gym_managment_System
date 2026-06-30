@@ -164,11 +164,13 @@ namespace GymMangment.BLL.Mapping
 
             // Booking -> BookingViewModel
             CreateMap<Booking, BookingViewModel>()
-                .ForMember(dest => dest.MemberName, opt => opt.MapFrom(src => src.Member.Name))
-                .ForMember(dest => dest.SessionCategory, opt => opt.MapFrom(src => src.Session.Category.CategoryName.ToString()))
-                .ForMember(dest => dest.SessionDate, opt => opt.MapFrom(src => src.Session.StartDate.ToString("MMM dd, yyyy")))
-                .ForMember(dest => dest.SessionTime, opt => opt.MapFrom(src => $"{src.Session.StartDate:hh:mm tt} - {src.Session.EndDate:hh:mm tt}"))
-                .ForMember(dest => dest.BookingDate, opt => opt.MapFrom(src => src.CreatedAt));
+    .ForMember(dest => dest.MemberId, opt => opt.MapFrom(src => src.MemberId))
+    .ForMember(dest => dest.SessionId, opt => opt.MapFrom(src => src.SessionId))
+    .ForMember(dest => dest.MemberName, opt => opt.MapFrom(src => src.Member.Name))
+    .ForMember(dest => dest.SessionCategory, opt => opt.MapFrom(src => src.Session.Category.CategoryName.ToString()))
+    .ForMember(dest => dest.SessionDate, opt => opt.MapFrom(src => src.Session.StartDate.ToString("MMM dd, yyyy")))
+    .ForMember(dest => dest.SessionTime, opt => opt.MapFrom(src => $"{src.Session.StartDate:hh:mm tt} - {src.Session.EndDate:hh:mm tt}"))
+    .ForMember(dest => dest.BookingDate, opt => opt.MapFrom(src => src.CreatedAt));
         }
     }
 }

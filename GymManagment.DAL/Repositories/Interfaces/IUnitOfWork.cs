@@ -5,10 +5,11 @@ namespace GymManagment.DAL.Repositories.Interfaces
     public interface IUnitOfWork : IDisposable
     {
         IGenericRepository<Member> Members { get; }
+
         IGenericRepository<HealthRecord> HealthRecords { get; }
         IGenericRepository<Plans> Plans { get; }
         IGenericRepository<Session> Sessions { get; }
-        IGenericRepository<Booking> Bookings { get; }
+        IBookingRepository Bookings { get; }
         IGenericRepository<Category> Categories { get; }
         IGenericRepository<Membership> Memberships { get; }
         IGenericRepository<Trainer> Trainers { get; }

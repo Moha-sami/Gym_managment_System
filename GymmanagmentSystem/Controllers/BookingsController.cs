@@ -72,9 +72,11 @@ namespace GymmanagmentSystem.PL.Controllers
 
         // POST: Bookings/DeleteConfirmed/5
         [HttpPost]
-        public async Task<IActionResult> DeleteConfirmed(int id, CancellationToken ct)
+        [HttpPost]
+        public async Task<IActionResult> DeleteConfirmed(int memberId, int sessionId, CancellationToken ct = default)
         {
-            var result = await _scheduleService.CancelBookingAsync(id, ct);
+            // هنا بننادي على الميثود الجديدة اللي بتاخد القيمتين
+            var result = await _scheduleService.CancelBookingAsync(memberId, sessionId, ct);
 
             TempData[result.Succeeded ? "WarningMessage" : "ErrorMessage"]
                 = result.Succeeded ? "Booking cancelled successfully!" : result.Error;

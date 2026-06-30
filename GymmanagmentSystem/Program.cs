@@ -38,6 +38,7 @@ namespace GymmanagmentSystem
             builder.Services.AddScoped<IMembershipService, MembershipService>();
             builder.Services.AddScoped<IScheduleService, ScheduleService>();
             builder.Services.AddScoped<IFileService, FileService>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddAutoMapper(cfg => cfg.AddProfile<GymMangment.BLL.Mapping.MappingProfile>());

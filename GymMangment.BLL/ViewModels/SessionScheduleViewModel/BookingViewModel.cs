@@ -8,6 +8,8 @@
         public string SessionDate { get; set; } = default!;
         public string SessionTime { get; set; } = default!;
         public bool IsAttended { get; set; }
+        public int MemberId { get; set; }
+        public int SessionId { get; set; }
         public DateTime BookingDate { get; set; }
     }
 }

@@ -18,7 +18,13 @@
                     <p class="mb-1"><i class="bi bi-calendar3 me-2"></i>@Model.SessionDate</p>
                     <p class="mb-1"><i class="bi bi-clock me-2"></i>@Model.SessionTime</p>
                 </div>
-                <form asp-controller="Bookings" asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post" class="mt-4">
+
+                <form asp-controller="Bookings"
+                      asp-action="DeleteConfirmed"
+                      asp-route-memberId="@Model.MemberId"
+                      asp-route-sessionId="@Model.SessionId"
+                      method="post" class="mt-4">
+
                     <div class="buttons d-flex justify-content-between gap-3">
                         <a asp-controller="Bookings" asp-action="Index" class="btn-outline flex-fill">NO</a>
                         <button type="submit" class="btn-fill flex-fill">Yes, Cancel</button>

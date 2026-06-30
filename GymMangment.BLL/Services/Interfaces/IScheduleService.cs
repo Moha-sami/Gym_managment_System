@@ -10,6 +10,6 @@ namespace GymMangment.BLL.Services.Interfaces
         Task<Result<IEnumerable<BookingViewModel>>> GetMemberBookingsAsync(int memberId, CancellationToken ct = default);
         Task<Result<CreateBookingViewModel>> GetBookingFormDataAsync(int sessionId, CancellationToken ct = default);
         Task<Result> BookSessionAsync(int sessionId, int memberId, CancellationToken ct = default);
-        Task<Result> CancelBookingAsync(int bookingId, CancellationToken ct = default);
+        Task<Result> CancelBookingAsync(int memberId, int sessionId, CancellationToken ct = default);
     }
 }

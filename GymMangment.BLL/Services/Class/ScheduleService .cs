@@ -129,14 +129,22 @@ namespace GymMangment.BLL.Services.Class
                 : Result.Failure("Failed to create booking. Please try again.");
         }
 
-        public async Task<Result> CancelBookingAsync(int bookingId, CancellationToken ct = default)
+        public async Task<Result> CancelBookingAsync(int memberId, int sessionId, CancellationToken ct = default)
         {
-            var booking = await _unitOfWork.Bookings.GetByIdAsync(bookingId, ct);
+            //  Composite Key
+            var booking = await _unitOfWork.Bookings.GetByIdsAsync(memberId, sessionId, ct);
+
             if (booking == null)
                 return Result.Failure("Booking not found.");
 
             await _unitOfWork.Bookings.DeleteAsync(booking, ct);
+
+            // Save 
+            await _unitOfWork.CompleteAsync(ct);
+
             return Result.Success();
         }
+
+       
     }
 }

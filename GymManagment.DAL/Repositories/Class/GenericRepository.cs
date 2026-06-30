@@ -47,8 +47,11 @@ namespace GymManagment.DAL.Repositories.Class
             return await query.ToListAsync();
         }
 
-        public async Task<TEntity?> GetByIdAsync(int id, CancellationToken ct)=>
-            await _Set.FindAsync( id , ct);
+        public async Task<TEntity?> GetByIdAsync(int id, CancellationToken ct = default)
+        {
+
+            return await _Set.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id, ct);
+        }
 
         public async Task<TEntity?> GetByIdAsync(int id, CancellationToken ct = default, params Expression<Func<TEntity, object>>[] includes)
         {

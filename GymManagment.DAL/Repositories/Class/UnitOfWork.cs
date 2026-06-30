@@ -12,17 +12,18 @@ namespace GymManagment.DAL.Repositories.Class
         private IGenericRepository<HealthRecord>? _healthRecords;
         private IGenericRepository<Plans>? _plans;
         private IGenericRepository<Session>? _sessions;
-        private IGenericRepository<Booking>? _bookings;
         private IGenericRepository<Category>? _categories;
         private IGenericRepository<Membership>? _memberships;
         private IGenericRepository<Trainer>? _trainers;
         private IGenericRepository<DeleteRequest>? _deleteRequests;
         private IGenericRepository<WeightProgressRecord>? _weightProgressRecords;
+        private IBookingRepository? _bookings;
 
         public UnitOfWork(GymDbcontext context, ISessionRepository sessionRepository)
         {
             _context = context;
             SessionRepository = sessionRepository;
+            
         }
 
         public IGenericRepository<Member> Members =>
@@ -37,8 +38,8 @@ namespace GymManagment.DAL.Repositories.Class
         public IGenericRepository<Session> Sessions =>
             _sessions ??= new GenericRepository<Session>(_context);
 
-        public IGenericRepository<Booking> Bookings =>
-            _bookings ??= new GenericRepository<Booking>(_context);
+        public IBookingRepository Bookings =>
+         _bookings ??= new BookingRepository(_context);
 
         public IGenericRepository<Category> Categories =>
             _categories ??= new GenericRepository<Category>(_context);
@@ -56,6 +57,9 @@ namespace GymManagment.DAL.Repositories.Class
             _weightProgressRecords ??= new GenericRepository<WeightProgressRecord>(_context);
 
         public ISessionRepository SessionRepository {  get;  }
+
+        public IBookingRepository _Bookings =>
+         _bookings ??= new BookingRepository(_context);
 
         public async Task<int> CompleteAsync(CancellationToken ct = default) =>
             await _context.SaveChangesAsync(ct);
