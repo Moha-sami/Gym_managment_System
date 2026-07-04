@@ -4,147 +4,438 @@
     ViewData["Title"] = "Members Index";
 }
 
+<style>
+    /* ===== MOBILE: Table to Cards (up to 767px) ===== */
+    @@media (max-width: 767.98px) {
+        .members-table thead {
+            display: none !important;
+        }
+
+        .members-table tbody tr {
+            display: block !important;
+            background: white !important;
+            border: 1px solid #e9ecef !important;
+            border-radius: 12px !important;
+            padding: 0.75rem !important;
+            margin-bottom: 1rem !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+        }
+
+        .members-table tbody td {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0.25rem 0 !important;
+            border-bottom: 1px solid #f1f3f5 !important;
+            text-align: center !important;
+            font-size: 0.85rem !important;
+            word-break: break-word !important;
+        }
+
+            .members-table tbody td:last-child {
+                border-bottom: none !important;
+            }
+            /* Label on top - smaller */
+            .members-table tbody td::before {
+                content: attr(data-label) !important;
+                font-weight: 600 !important;
+                color: #6c757d !important;
+                font-size: 0.6rem !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.5px !important;
+                margin-bottom: 0.1rem !important;
+                display: block !important;
+                text-align: center !important;
+                width: 100% !important;
+            }
+            /* Value below - smaller */
+            .members-table tbody td span {
+                font-size: 0.85rem !important;
+                font-weight: 500 !important;
+                color: #212529 !important;
+                display: block !important;
+                width: 100% !important;
+                text-align: center !important;
+            }
+            /* Email - keep on ONE LINE with ellipsis if too long */
+            .members-table tbody td[data-label="Email"] span {
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                max-width: 100% !important;
+                display: block !important;
+                padding: 0 0.1rem !important;
+                font-size: 0.75rem !important;
+            }
+            /* Phone - prevent breaking */
+            .members-table tbody td[data-label="Phone"] span {
+                word-break: keep-all !important;
+                white-space: nowrap !important;
+                text-align: center !important;
+                font-size: 0.85rem !important;
+            }
+            /* Name - smaller */
+            .members-table tbody td[data-label="Name"] span {
+                font-size: 0.9rem !important;
+            }
+            /* Avatar in card view - centered */
+            .members-table tbody td[data-label="Photo"] {
+                align-items: center !important;
+                justify-content: center !important;
+                border-bottom: none !important;
+                padding-top: 0 !important;
+                padding-bottom: 0.25rem !important;
+            }
+
+                .members-table tbody td[data-label="Photo"]::before {
+                    display: none !important;
+                }
+
+                .members-table tbody td[data-label="Photo"] .avatar {
+                    display: flex !important;
+                    justify-content: center !important;
+                    align-items: center !important;
+                    width: 100% !important;
+                }
+
+                    .members-table tbody td[data-label="Photo"] .avatar img {
+                        width: 50px !important;
+                        height: 50px !important;
+                        object-fit: cover !important;
+                    }
+            /* Action dropdown in card view - centered */
+            .members-table tbody td[data-label="Action"] {
+                border-bottom: none !important;
+                padding-bottom: 0 !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+
+                .members-table tbody td[data-label="Action"]::before {
+                    display: none !important;
+                }
+
+                .members-table tbody td[data-label="Action"] .dropdown {
+                    display: flex !important;
+                    justify-content: center !important;
+                    width: 100% !important;
+                }
+
+                    .members-table tbody td[data-label="Action"] .dropdown button {
+                        display: flex !important;
+                        justify-content: center !important;
+                        align-items: center !important;
+                    }
+
+                        .members-table tbody td[data-label="Action"] .dropdown button img {
+                            width: 20px !important;
+                            height: 20px !important;
+                        }
+        /* Add Member button - full width on mobile */
+        .add-member-header {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 0.75rem !important;
+        }
+
+            .add-member-header .btn {
+                width: 100% !important;
+                text-align: center !important;
+                font-size: 0.9rem !important;
+                padding: 0.6rem !important;
+            }
+        /* Prevent any horizontal scroll */
+        body, html {
+            overflow-x: hidden !important;
+            max-width: 100% !important;
+        }
+
+        .container {
+            overflow-x: hidden !important;
+            max-width: 100% !important;
+            padding-left: 10px !important;
+            padding-right: 10px !important;
+        }
+
+        .members-table-wrapper {
+            overflow-x: hidden !important;
+            max-width: 100% !important;
+        }
+
+        .members-table {
+            width: 100% !important;
+            max-width: 100% !important;
+            table-layout: auto !important;
+        }
+    }
+
+    /* ===== TABLET (768px - 991px) ===== */
+    @@media (min-width: 768px) and (max-width: 991.98px) {
+        .members-table th,
+        .members-table td {
+            font-size: 0.85rem !important;
+            padding: 0.6rem 0.5rem !important;
+        }
+
+            .members-table td .avatar img {
+                width: 32px !important;
+                height: 32px !important;
+                object-fit: cover !important;
+            }
+            /* Hide email on tablet to save space */
+            .members-table th:nth-child(3),
+            .members-table td:nth-child(3) {
+                display: none !important;
+            }
+
+        .members-table {
+            table-layout: auto !important;
+        }
+    }
+
+    /* ===== LAPTOP (992px+) ===== */
+    @@media (min-width: 992px) {
+        .members-table th,
+        .members-table td {
+            padding: 0.75rem 1rem !important;
+            font-size: 1rem !important;
+        }
+
+            .members-table td .avatar img {
+                width: 40px !important;
+                height: 40px !important;
+                object-fit: cover !important;
+            }
+            /* Allow email to display fully on desktop */
+            .members-table td:nth-child(3) {
+                max-width: 250px !important;
+                word-break: break-word !important;
+            }
+
+                .members-table td:nth-child(3) span {
+                    word-break: break-all !important;
+                    white-space: normal !important;
+                }
+
+        .members-table {
+            table-layout: auto !important;
+        }
+    }
+
+    /* ===== COMMON STYLES ===== */
+    .members-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        table-layout: auto !important;
+    }
+
+        .members-table thead th {
+            background: #f8f9fa !important;
+            font-weight: 600 !important;
+            color: #495057 !important;
+            border-bottom: 2px solid #dee2e6 !important;
+            padding: 0.75rem 1rem !important;
+            text-align: left !important;
+            white-space: nowrap !important;
+        }
+
+        .members-table tbody td {
+            vertical-align: middle !important;
+            padding: 0.75rem 1rem !important;
+            border-bottom: 1px solid #f1f3f5 !important;
+        }
+
+        .members-table tbody tr:hover {
+            background: #f8f9fa !important;
+        }
+
+        .members-table .avatar img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+    .dropdown-menu {
+        min-width: 200px !important;
+        border-radius: 12px !important;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+        border: 1px solid #e9ecef !important;
+        padding: 0.5rem !important;
+    }
+
+    .dropdown-item {
+        border-radius: 8px !important;
+        padding: 0.6rem 1rem !important;
+        transition: background 0.2s ease !important;
+    }
+
+        .dropdown-item:hover {
+            background: #f1f3f5 !important;
+        }
+
+        .dropdown-item.text-danger:hover {
+            background: #fee !important;
+        }
+
+    .dropdown-divider {
+        margin: 0.3rem 0 !important;
+    }
+
+    .no-members {
+        padding: 4rem 1rem !important;
+        text-align: center !important;
+    }
+
+        .no-members i {
+            font-size: 4rem !important;
+            color: #adb5bd !important;
+            display: block !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .no-members h4 {
+            color: #6c757d !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        .no-members p {
+            color: #adb5bd !important;
+        }
+</style>
+
 <div class="container">
     <main role="main" class="pb-3">
 
         <div class="container">
-            <header class="d-flex justify-content-end mt-5 mb-4 align-items-center">
+            <header class="d-flex justify-content-end mt-5 mb-4 align-items-center add-member-header">
                 <a asp-controller="Members" asp-action="Create" class="btn btn-fill fw-medium rounded-pill px-3 py-3"> + Add Member </a>
             </header>
 
-            @* Page Content*@
-            
             @if (Model.Any())
             {
-                
-            <div class="table-responsive " style="overflow: visible;">
-                <table class="table table-borderless">
-                    <thead>
-                        <tr>
-                            <th><span>Photo</span></th>
-                            <th><span>Name</span></th>
-                            <th><span>Email</span></th>
-                            <th><span>Gender</span></th>
-                            <th><span>Phone</span></th>
-                            <th><span>Action</span></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @* loop through members and display their data *@
+                <div class="members-table-wrapper">
+                    <table class="members-table table-borderless">
+                        <thead>
+                            <tr>
+                                <th>Photo</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Gender</th>
+                                <th>Phone</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             @foreach (var member in Model)
                             {
-                                
-                            <tr>
-                            <td>
-                                <span class="avatar">
+                                <tr>
+                                    <td data-label="Photo">
+                                        <span class="avatar">
                                             @if (!string.IsNullOrEmpty(member.photo))
                                             {
                                                 <img src="@member.photo" alt="@member.Name" class="rounded-circle"
-                                                     style="width: 40px; height: 40px;" />
+                                                     style="width: 40px; height: 40px; object-fit: cover;" />
                                             }
                                             else
                                             {
                                                 <img src="~/images/User.jpg" alt="Default Avatar" class="rounded-circle"
-                                                     style="width: 40px; height: 40px;" />
+                                                     style="width: 40px; height: 40px; object-fit: cover;" />
                                             }
-                                </span>
-                            </td>
-                            <td><span>@member.Name</span></td>
-                            <td><span>@member.Email</span></td>
-                            <td><span>@member.Gender</span></td>
-                            <td><span>@member.Phone</span></td>
-                            <td class="action position-relative">
-                                <div class="dropdown">
-                                    <button class="btn btn-link p-0 border-0" type="button"
-                                            id="dropdownMenuButton-@member.Id" data-bs-toggle="dropdown"
-                                            aria-expanded="false">
-                                        <img src="~/images/action dots.jpg" alt="action icon" />
-                                    </button>
+                                        </span>
+                                    </td>
+                                    <td data-label="Name"><span>@member.Name</span></td>
+                                    <td data-label="Email"><span>@member.Email</span></td>
+                                    <td data-label="Gender"><span>@member.Gender</span></td>
+                                    <td data-label="Phone"><span>@member.Phone</span></td>
+                                    <td data-label="Action">
+                                        <div class="dropdown">
+                                            <button class="btn btn-link p-0 border-0" type="button"
+                                                    id="dropdownMenuButton-@member.Id" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                <img src="~/images/action dots.jpg" alt="action icon" style="width: 24px; height: 24px;" />
+                                            </button>
 
-                                    <ul class="dropdown-menu dropdown-menu-start"
-                                        aria-labelledby="dropdownMenuButton-@member.Id">
-                                        <li>
-                                            <a asp-controller="Members" asp-action="MemberDetails" asp-route-id="@member.Id"
-                                               class="dropdown-item d-flex align-items-center gap-3">
-                                                <img src="~/images/info 1.jpg" alt="info icon"
-                                                     style="width: 20px; height: 20px;" />
-                                                <span>View Member Data</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a asp-controller="Members" asp-action="HealthRecordDetails" asp-route-id="@member.Id"
-                                               class="dropdown-item d-flex align-items-center gap-3">
-                                                <img src="~/images/info 1.jpg" alt="info icon"
-                                                     style="width: 20px; height: 20px;" />
-                                                <span>View Health Record Data</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                        <li>
-                                            <a asp-controller="Members" asp-action="EditMember" asp-route-id="@member.Id"
-                                               class="dropdown-item d-flex align-items-center gap-3">
-                                                <img src="~/images/edit.jpg" alt="edit icon"
-                                                     style="width: 20px; height: 20px;" />
-                                                <span>Edit Member Data</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                        @if (User.IsInRole("Admin"))
-                                        {
-                                            <li>
-                                                <a asp-controller="Members" asp-action="Delete" asp-route-id="@member.Id"
-                                                   class="dropdown-item d-flex align-items-center gap-3 text-danger">
-                                                    <img src="~/images/x-circle 1.jpg" alt="delete icon"
-                                                         style="width: 20px; height: 20px;" />
-                                                    <span>Delete</span>
-                                                </a>
-                                            </li>
-                                        }
-                                        else if (User.IsInRole("Manager"))
-                                        {
-                                            <li>
-                                                <form asp-controller="DeleteRequests" asp-action="SubmitRequest" method="post">
-                                                    <input type="hidden" name="targetType" value="@DeleteTargetType.Member" />
-                                                    <input type="hidden" name="targetId" value="@member.Id" />
-                                                    <button type="submit" class="dropdown-item d-flex align-items-center gap-3 text-danger">
-                                                        <img src="~/images/x-circle 1.jpg" alt="delete request icon"
+                                            <ul class="dropdown-menu dropdown-menu-end"
+                                                aria-labelledby="dropdownMenuButton-@member.Id">
+                                                <li>
+                                                    <a asp-controller="Members" asp-action="MemberDetails" asp-route-id="@member.Id"
+                                                       class="dropdown-item d-flex align-items-center gap-3">
+                                                        <img src="~/images/info 1.jpg" alt="info icon"
                                                              style="width: 20px; height: 20px;" />
-                                                        <span>Request Delete</span>
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        }
-                                    </ul>
-
-                             
-                                </div>
-                            </td>
-                        </tr>
+                                                        <span>View Member Data</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a asp-controller="Members" asp-action="HealthRecordDetails" asp-route-id="@member.Id"
+                                                       class="dropdown-item d-flex align-items-center gap-3">
+                                                        <img src="~/images/info 1.jpg" alt="info icon"
+                                                             style="width: 20px; height: 20px;" />
+                                                        <span>View Health Record Data</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li>
+                                                    <a asp-controller="Members" asp-action="EditMember" asp-route-id="@member.Id"
+                                                       class="dropdown-item d-flex align-items-center gap-3">
+                                                        <img src="~/images/edit.jpg" alt="edit icon"
+                                                             style="width: 20px; height: 20px;" />
+                                                        <span>Edit Member Data</span>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                @if (User.IsInRole("Admin"))
+                                                {
+                                                    <li>
+                                                        <a asp-controller="Members" asp-action="Delete" asp-route-id="@member.Id"
+                                                           class="dropdown-item d-flex align-items-center gap-3 text-danger">
+                                                            <img src="~/images/x-circle 1.jpg" alt="delete icon"
+                                                                 style="width: 20px; height: 20px;" />
+                                                            <span>Delete</span>
+                                                        </a>
+                                                    </li>
+                                                }
+                                                else if (User.IsInRole("Manager"))
+                                                {
+                                                    <li>
+                                                        <form asp-controller="DeleteRequests" asp-action="SubmitRequest" method="post">
+                                                            <input type="hidden" name="targetType" value="@DeleteTargetType.Member" />
+                                                            <input type="hidden" name="targetId" value="@member.Id" />
+                                                            <button type="submit" class="dropdown-item d-flex align-items-center gap-3 text-danger">
+                                                                <img src="~/images/x-circle 1.jpg" alt="delete request icon"
+                                                                     style="width: 20px; height: 20px;" />
+                                                                <span>Request Delete</span>
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
                             }
-                           
-                      
-                    </tbody>
-                </table>
-            </div>
+                        </tbody>
+                    </table>
+                </div>
             }
             else
             {
-                
-            <div class="text-center py-5">
-                <i class="bi bi-person-workspace display-1 text-muted"></i>
-                <h4 class="mt-3 text-muted">No Members Available</h4>
-                <p class="text-muted">Add your first Member to get started</p>
-            </div>
+                <div class="no-members">
+                    <i class="bi bi-person-workspace"></i>
+                    <h4>No Members Available</h4>
+                    <p>Add your first Member to get started</p>
+                </div>
             }
-            
+
         </div>
     </main>
 </div>
+
 @section Scripts {
     <partial name="_AlertboxScript" />
-
 }

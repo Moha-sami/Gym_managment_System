@@ -1,29 +1,298 @@
 ﻿@model MemberViewModel
 
+<style>
+    /* ===== MOBILE (up to 767px) ===== */
+    @@media (max-width: 767.98px) {
+        /* Card adjustments */
+        .card-details {
+            margin: 0 0.25rem !important;
+            padding: 0.5rem !important;
+            border-radius: 16px !important;
+        }
+            /* Avatar - smaller on mobile, centered */
+            .card-details .avatar-wrapper {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                padding-top: 0 !important;
+                padding-bottom: 0.25rem !important;
+            }
+
+                .card-details .avatar-wrapper img {
+                    width: 60px !important;
+                    height: 60px !important;
+                    border-radius: 50% !important;
+                    object-fit: cover !important;
+                    border: 3px solid #fff !important;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+                    margin-top: 0 !important;
+                }
+            /* Name - blue color matching button, ONE line */
+            .card-details .card-body h2 {
+                font-size: 1.1rem !important;
+                color: #0d6efd !important;
+                text-align: center !important;
+                margin-top: 0 !important;
+                margin-bottom: 0.15rem !important;
+                white-space: nowrap !important;
+                overflow: visible !important;
+            }
+            /* Plan name - ONE line */
+            .card-details .card-body h4 {
+                font-size: 0.75rem !important;
+                color: #6c757d !important;
+                text-align: center !important;
+                margin-bottom: 0.25rem !important;
+                padding-bottom: 0.25rem !important;
+                white-space: nowrap !important;
+                overflow: visible !important;
+                border-bottom: 1px solid #dee2e6 !important;
+                display: block !important;
+            }
+            /* Each info row - full width (stack vertically) */
+            .card-details .row .col-6 {
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+            }
+            /* Info boxes - full width */
+            .card-details .row .col-12,
+            .card-details .row .col-6 {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            /* Info box - centered text, label on top, value below */
+            .card-details .p-3 {
+                padding: 0.3rem 0.5rem !important;
+                text-align: center !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+            }
+            /* Labels - on top, centered, ONE line */
+            .card-details small.text-muted {
+                font-size: 0.5rem !important;
+                display: block !important;
+                text-align: center !important;
+                margin-bottom: 0.05rem !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.5px !important;
+                white-space: nowrap !important;
+                overflow: visible !important;
+                width: 100% !important;
+            }
+            /* Values - below label, centered */
+            .card-details strong {
+                font-size: 0.75rem !important;
+                display: block !important;
+                text-align: center !important;
+                word-break: break-word !important;
+                max-width: 100% !important;
+                font-weight: 600 !important;
+                color: #212529 !important;
+                width: 100% !important;
+            }
+            /* Email - smaller, stays on one line */
+            .card-details .row .col-12:first-child strong {
+                font-size: 0.65rem !important;
+                word-break: break-word !important;
+                overflow-wrap: break-word !important;
+                hyphens: none !important;
+            }
+            /* Phone - stays on one line */
+            .card-details .row .col-12:nth-child(2) strong {
+                font-size: 0.75rem !important;
+                white-space: nowrap !important;
+            }
+            /* Date fields - stay on one line */
+            .card-details .row .col-6 strong {
+                font-size: 0.7rem !important;
+                white-space: nowrap !important;
+            }
+            /* Address - smaller */
+            .card-details .row .col-12:last-child strong {
+                font-size: 0.7rem !important;
+                word-break: break-word !important;
+            }
+            /* Back button - consistent with Add Member */
+            .card-details .d-flex {
+                flex-direction: column !important;
+                gap: 0.5rem !important;
+                padding: 0 0.5rem 0.5rem 0.5rem !important;
+            }
+
+                .card-details .d-flex .btn {
+                    width: 100% !important;
+                    text-align: center !important;
+                    font-size: 0.85rem !important;
+                    padding: 0.5rem !important;
+                    border-radius: 50px !important;
+                    background: #0d6efd !important;
+                    color: white !important;
+                    border: none !important;
+                    transition: all 0.3s ease !important;
+                    font-weight: 500 !important;
+                }
+
+                    .card-details .d-flex .btn:hover {
+                        background: #0b5ed7 !important;
+                        color: white !important;
+                        transform: translateY(-2px) !important;
+                        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.35) !important;
+                    }
+        /* Prevent any horizontal scroll */
+        body, html {
+            overflow-x: hidden !important;
+            max-width: 100% !important;
+        }
+
+        .container {
+            overflow-x: hidden !important;
+            max-width: 100% !important;
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+        }
+
+        .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        .col-md-8, .col-lg-6 {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        .justify-content-center {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+    }
+
+    /* ===== TABLET (768px - 991px) ===== */
+    @@media (min-width: 768px) and (max-width: 991.98px) {
+        .card-details .row .col-6 {
+            flex: 0 0 50% !important;
+            max-width: 50% !important;
+        }
+
+        .card-details .p-3 {
+            padding: 0.5rem 0.75rem !important;
+        }
+
+        .card-details strong {
+            font-size: 0.85rem !important;
+        }
+
+        .card-details small.text-muted {
+            font-size: 0.6rem !important;
+            white-space: nowrap !important;
+        }
+
+        .card-details .avatar-wrapper img {
+            width: 80px !important;
+            height: 80px !important;
+        }
+
+        .card-details .card-body h2 {
+            font-size: 1.3rem !important;
+            color: #0d6efd !important;
+        }
+    }
+
+    /* ===== LAPTOP (992px+) ===== */
+    @@media (min-width: 992px) {
+        .card-details .row .col-6 {
+            flex: 0 0 50% !important;
+            max-width: 50% !important;
+        }
+
+        .card-details .avatar-wrapper img {
+            width: 120px !important;
+            height: 120px !important;
+            margin-top: 0 !important;
+        }
+
+        .card-details .card-body h2 {
+            color: #0d6efd !important;
+        }
+        /* Button consistent on laptop */
+        .card-details .btn-fill {
+            background: #0d6efd !important;
+            color: white !important;
+            border-radius: 50px !important;
+            border: none !important;
+            transition: all 0.3s ease !important;
+            font-weight: 500 !important;
+            padding: 0.6rem 1.5rem !important;
+        }
+
+            .card-details .btn-fill:hover {
+                background: #0b5ed7 !important;
+                color: white !important;
+                transform: translateY(-2px) !important;
+                box-shadow: 0 4px 12px rgba(13, 110, 253, 0.35) !important;
+            }
+    }
+
+    /* ===== COMMON STYLES ===== */
+    .card-details {
+        border-radius: 16px !important;
+        overflow: visible !important;
+        background: white !important;
+    }
+
+        .card-details .bg-light {
+            background-color: #f8f9fa !important;
+            border-radius: 8px !important;
+        }
+
+        .card-details .avatar-wrapper {
+            display: flex !important;
+            justify-content: center !important;
+        }
+
+    /* Button style matching Add Member - applies to all screen sizes */
+    .btn-fill {
+        background: #0d6efd !important;
+        color: white !important;
+        border-radius: 50px !important;
+        border: none !important;
+        transition: all 0.3s ease !important;
+        font-weight: 500 !important;
+        padding: 0.6rem 1.5rem !important;
+        font-size: 1rem !important;
+    }
+
+        .btn-fill:hover {
+            background: #0b5ed7 !important;
+            color: white !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.35) !important;
+        }
+</style>
 
 <div class="container">
     <main role="main" class="pb-3">
         <div class="container mt-5">
             <div class="row justify-content-center">
-                <div class="col-md-6">
+                <div class="col-md-8 col-lg-6">
                     <div class="card card-details border-0 p-2 shadow">
-                        <div class="text-center mt-3">
+                        <div class="avatar-wrapper">
                             @if (!string.IsNullOrEmpty(Model.photo))
                             {
                                 <img src="@Model.photo" alt="@Model.Name" class="rounded-circle"
-                                     style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; margin-top: -60px;" />
+                                     style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; margin-top: 0;" />
                             }
                             else
                             {
                                 <img src="~/images/User.jpg" alt="MemberName" class="rounded-circle"
-                                     style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; margin-top: -60px;" />
+                                     style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; margin-top: 0;" />
                             }
-                            
                         </div>
                         <div class="card-body text-center">
-                            <h2 class="mb-1 text-primary-color">@Model.Name</h2>
-                            <h4 class="mb-2 pb-1 border-bottom d-block">@(Model.PlanName ?? "No Plan") </h4>
-                            <div class="mt-4 text-start">
+                            <h2 class="mb-1">@Model.Name</h2>
+                            <h4 class="mb-2 pb-1 border-bottom d-block">@(Model.PlanName ?? "No Plan")</h4>
+                            <div class="mt-4">
                                 <div class="row g-3">
                                     <div class="col-12">
                                         <div class="p-3 bg-light rounded">
@@ -49,7 +318,6 @@
                                             <strong>@Model.DateOfBirth</strong>
                                         </div>
                                     </div>
-
                                     <div class="col-6">
                                         <div class="p-3 bg-light rounded">
                                             <small class="text-muted d-block mb-1">Membership Start Date</small>
@@ -79,6 +347,5 @@
                 </div>
             </div>
         </div>
-
     </main>
 </div>

@@ -12,140 +12,995 @@
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Thambi+2:wght@400..800&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
           rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
-    <!-- ^ Bootstrap 5.3.8 css file -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
-    <!-- ^ Our main css file -->
     <link rel="stylesheet" href="~/css/style.css" />
     <title>Power fitness | Home</title>
+
+    <style>
+            /* Fix for bar overflow - prevent horizontal scroll */
+            .bar {
+                overflow: hidden !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+                .bar p {
+                    overflow: hidden !important;
+                    text-overflow: ellipsis !important;
+                    white-space: nowrap !important;
+                    max-width: 100% !important;
+                    margin: 0 !important;
+                    padding: 0 1rem !important;
+                }
+
+            /* ----- Mobile (up to 767px) ----- */
+            @@media (max-width: 767.98px) {
+                .info header h2.display-2 {
+                    font-size: 2rem !important;
+                    text-align: center !important;
+                }
+
+                .info header p {
+                    font-size: 0.95rem !important;
+                    text-align: center !important;
+                }
+
+                    .info header p br {
+                        display: none !important;
+                    }
+
+                .stats-bar {
+                    display: flex !important;
+                    flex-wrap: wrap !important;
+                    justify-content: center !important;
+                }
+
+                    .stats-bar .row {
+                        width: 100% !important;
+                        margin-bottom: 0.5rem !important;
+                    }
+
+                    .stats-bar .stat span.fs-5 {
+                        font-size: 1.3rem !important;
+                    }
+
+                    .stats-bar .stat h3.fs-5 {
+                        font-size: 0.85rem !important;
+                    }
+
+                .info .buttons {
+                    display: flex !important;
+                    flex-wrap: wrap !important;
+                    justify-content: center !important;
+                    gap: 0.75rem !important;
+                }
+
+                    .info .buttons .btn {
+                        font-size: 0.9rem !important;
+                        padding: 0.5rem 1.5rem !important;
+                        margin-right: 0 !important;
+                    }
+
+                .character {
+                    margin-bottom: 1.5rem !important;
+                }
+
+                    .character img {
+                        max-width: 180px !important;
+                        height: auto !important;
+                    }
+                /* About */
+                .about {
+                    text-align: center !important;
+                }
+
+                    .about .title h2.fs-5 {
+                        font-size: 1.8rem !important;
+                        font-weight: 700 !important;
+                    }
+
+                    .about .characters {
+                        display: flex !important;
+                        justify-content: center !important;
+                        flex-wrap: wrap !important;
+                        gap: 1rem !important;
+                    }
+
+                        .about .characters .image {
+                            position: relative !important;
+                            margin-bottom: 1rem !important;
+                            width: 100% !important;
+                            display: flex !important;
+                            justify-content: center !important;
+                        }
+
+                            .about .characters .image img {
+                                width: 100% !important;
+                                max-width: 320px !important;
+                                height: auto !important;
+                                border-radius: 1rem !important;
+                                display: block !important;
+                            }
+
+                        .about .characters .position-absolute.d-none.d-lg-block {
+                            display: none !important;
+                        }
+
+                    .about .title {
+                        justify-content: center !important;
+                    }
+
+                    .about header p.display-6 {
+                        font-size: 1.8rem !important;
+                        text-align: center !important;
+                    }
+
+                    .about header p.text {
+                        font-size: 1rem !important;
+                        text-align: center !important;
+                        padding: 0 0.5rem !important;
+                    }
+
+                    .about .features .row {
+                        display: flex !important;
+                        flex-direction: column !important;
+                        align-items: center !important;
+                    }
+
+                    .about .features .feature {
+                        width: 100% !important;
+                        max-width: 300px !important;
+                        margin: 0 auto 1rem auto !important;
+                        text-align: center !important;
+                    }
+
+                        .about .features .feature .title {
+                            justify-content: center !important;
+                        }
+
+                        .about .features .feature .info p {
+                            text-align: center !important;
+                        }
+
+                    .about .features .btn {
+                        display: block !important;
+                        margin: 1rem auto 0 auto !important;
+                    }
+                /* Workout */
+                .workout .title {
+                    text-align: center !important;
+                }
+
+                    .workout .title h2 {
+                        font-size: 2.2rem !important;
+                        letter-spacing: 2px !important;
+                        white-space: nowrap !important;
+                        overflow: visible !important;
+                    }
+
+                    .workout .title p.fs-2 {
+                        font-size: 1.5rem !important;
+                        text-align: center !important;
+                        padding: 0 0.5rem !important;
+                    }
+
+                .workout .row {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                }
+
+                    .workout .row > div {
+                        width: 100% !important;
+                        max-width: 350px !important;
+                        margin: 0 auto !important;
+                    }
+
+                .workout .card img {
+                    height: 250px !important;
+                    object-fit: cover !important;
+                    width: 100% !important;
+                }
+
+                .workout .card-footer {
+                    text-align: center !important;
+                }
+
+                .indicators {
+                    display: flex !important;
+                    justify-content: center !important;
+                    gap: 0.75rem !important;
+                    margin-top: 1.5rem !important;
+                }
+
+                    .indicators .indicator {
+                        width: 12px !important;
+                        height: 12px !important;
+                        border-radius: 50% !important;
+                        background: #ccc !important;
+                        display: inline-block !important;
+                    }
+
+                        .indicators .indicator.active {
+                            background: #007bff !important;
+                            width: 16px !important;
+                            height: 16px !important;
+                        }
+                /* Why Us */
+                .why-us {
+                    text-align: center !important;
+                }
+
+                    .why-us .title {
+                        justify-content: center !important;
+                    }
+
+                    .why-us header p.display-5 {
+                        font-size: 2rem !important;
+                        text-align: center !important;
+                    }
+
+                    .why-us header p.text {
+                        font-size: 1rem !important;
+                        text-align: center !important;
+                        padding: 0 0.5rem !important;
+                    }
+
+                    .why-us .feature {
+                        display: flex !important;
+                        flex-direction: column !important;
+                        align-items: center !important;
+                        text-align: center !important;
+                        gap: 0.5rem !important;
+                        padding: 1rem !important;
+                        background: #f8f9fa !important;
+                        border-radius: 1rem !important;
+                        margin-bottom: 1rem !important;
+                    }
+
+                        .why-us .feature .count {
+                            font-size: 2rem !important;
+                            font-weight: 700 !important;
+                            color: #007bff !important;
+                        }
+
+                        .why-us .feature .text h3 {
+                            font-size: 1.1rem !important;
+                            text-align: center !important;
+                        }
+
+                        .why-us .feature .text p {
+                            font-size: 0.95rem !important;
+                            text-align: center !important;
+                        }
+
+                    .why-us .characters.d-none.d-lg-block {
+                        display: none !important;
+                    }
+                /* Footer */
+                .footer-content .row {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    text-align: center !important;
+                    gap: 2rem !important;
+                }
+
+                    .footer-content .row > div {
+                        width: 100% !important;
+                        max-width: 300px !important;
+                        text-align: center !important;
+                    }
+
+                .footer-content .logo .inner {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                }
+
+                .footer-content .logo .image img {
+                    max-width: 150px !important;
+                    height: auto !important;
+                }
+
+                .footer-content ul {
+                    padding-left: 0 !important;
+                    list-style: none !important;
+                }
+
+                    .footer-content ul li {
+                        justify-content: center !important;
+                    }
+                /* Bar - Fix overflow on mobile */
+                .bar {
+                    overflow: hidden !important;
+                    width: 100% !important;
+                    max-width: 100% !important;
+                }
+
+                    .bar p {
+                        font-size: 0.6rem !important;
+                        white-space: nowrap !important;
+                        overflow: hidden !important;
+                        text-overflow: ellipsis !important;
+                        padding: 0 0.5rem !important;
+                        max-width: 100% !important;
+                    }
+
+                        .bar p img {
+                            width: 10px !important;
+                            height: 10px !important;
+                        }
+                /* Prevent horizontal scroll on body */
+                body {
+                    overflow-x: hidden !important;
+                    max-width: 100% !important;
+                }
+
+                .container {
+                    overflow-x: hidden !important;
+                    max-width: 100% !important;
+                    padding-left: 10px !important;
+                    padding-right: 10px !important;
+                }
+            }
+
+            /* ----- Very small phones (below 576px) ----- */
+            @@media (max-width: 575.98px) {
+                .info header h2.display-2 {
+                    font-size: 1.6rem !important;
+                }
+
+                .character img {
+                    max-width: 140px !important;
+                }
+
+                .stats-bar .stat span.fs-5 {
+                    font-size: 1.1rem !important;
+                }
+
+                .stats-bar .stat h3.fs-5 {
+                    font-size: 0.7rem !important;
+                }
+
+                .about header p.display-6 {
+                    font-size: 1.4rem !important;
+                }
+
+                .why-us header p.display-5 {
+                    font-size: 1.6rem !important;
+                }
+
+                .workout .title h2 {
+                    font-size: 1.8rem !important;
+                    white-space: nowrap !important;
+                }
+
+                .workout .title p.fs-2 {
+                    font-size: 1.2rem !important;
+                }
+
+                .workout .card img {
+                    height: 200px !important;
+                }
+
+                .bar p {
+                    font-size: 0.5rem !important;
+                }
+            }
+
+            /* ----- TABLET (768px – 991px) ----- */
+            @@media (min-width: 768px) and (max-width: 991.98px) {
+                /* Center and enlarge About Us heading */
+                .about .title {
+                    justify-content: center !important;
+                }
+
+                    .about .title h2.fs-5 {
+                        font-size: 2.2rem !important;
+                        font-weight: 700 !important;
+                    }
+
+                .about header p.display-6 {
+                    font-size: 2rem !important;
+                    text-align: center !important;
+                }
+
+                .about header p.text {
+                    text-align: center !important;
+                    font-size: 1.1rem !important;
+                    padding: 0 1rem !important;
+                }
+
+                .about .features .row {
+                    justify-content: center !important;
+                }
+
+                .about .features .feature {
+                    text-align: center !important;
+                }
+
+                    .about .features .feature .title {
+                        justify-content: center !important;
+                    }
+
+                .about .features .btn {
+                    display: block !important;
+                    margin: 1rem auto 0 auto !important;
+                }
+
+                .about .characters .image {
+                    display: flex !important;
+                    justify-content: center !important;
+                }
+
+                    .about .characters .image img {
+                        max-width: 350px !important;
+                        width: 100% !important;
+                        height: auto !important;
+                    }
+
+                .about .characters .position-absolute.d-none.d-lg-block {
+                    display: none !important;
+                }
+                /* Center and enlarge Why Us heading */
+                .why-us .title {
+                    justify-content: center !important;
+                }
+
+                .why-us header p.display-5 {
+                    font-size: 2.5rem !important;
+                    text-align: center !important;
+                }
+
+                .why-us header p.text {
+                    text-align: center !important;
+                    font-size: 1.1rem !important;
+                    padding: 0 1rem !important;
+                }
+
+                .why-us .feature {
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    text-align: center !important;
+                    padding: 1.5rem !important;
+                    background: #f8f9fa !important;
+                    border-radius: 1rem !important;
+                    margin-bottom: 1rem !important;
+                }
+
+                    .why-us .feature .count {
+                        font-size: 2.2rem !important;
+                    }
+
+                    .why-us .feature .text h3 {
+                        text-align: center !important;
+                        font-size: 1.2rem !important;
+                    }
+
+                    .why-us .feature .text p {
+                        text-align: center !important;
+                        font-size: 1rem !important;
+                    }
+
+                .why-us .characters.d-none.d-lg-block {
+                    display: none !important;
+                }
+                /* Hero section */
+                .info {
+                    text-align: center !important;
+                }
+
+                    .info .stats-bar {
+                        justify-content: center !important;
+                    }
+
+                    .info .buttons {
+                        justify-content: center !important;
+                    }
+
+                    .info header p br {
+                        display: none !important;
+                    }
+
+                .character {
+                    display: flex !important;
+                    justify-content: center !important;
+                    margin-bottom: 1.5rem !important;
+                }
+
+                    .character img {
+                        max-width: 200px !important;
+                        height: auto !important;
+                    }
+                /* Workout cards */
+                .workout .row > div {
+                    max-width: 280px !important;
+                    margin: 0 auto !important;
+                }
+
+                .workout .card img {
+                    height: 220px !important;
+                    object-fit: cover !important;
+                }
+
+                .workout .title {
+                    text-align: center !important;
+                }
+
+                    .workout .title h2 {
+                        font-size: 2.5rem !important;
+                        white-space: nowrap !important;
+                    }
+
+                    .workout .title p.fs-2 {
+                        font-size: 1.8rem !important;
+                        text-align: center !important;
+                    }
+                /* Indicators - centered */
+                .indicators {
+                    display: flex !important;
+                    justify-content: center !important;
+                    gap: 0.75rem !important;
+                    margin-top: 1.5rem !important;
+                }
+
+                    .indicators .indicator {
+                        width: 14px !important;
+                        height: 14px !important;
+                        border-radius: 50% !important;
+                        background: #ccc !important;
+                        display: inline-block !important;
+                    }
+
+                        .indicators .indicator.active {
+                            background: #007bff !important;
+                            width: 18px !important;
+                            height: 18px !important;
+                        }
+                /* Footer - fix alignment */
+                .footer-content .row {
+                    display: flex !important;
+                    flex-wrap: wrap !important;
+                    justify-content: center !important;
+                    text-align: center !important;
+                    gap: 2rem !important;
+                }
+
+                    .footer-content .row > div {
+                        flex: 0 0 calc(50% - 1rem) !important;
+                        max-width: calc(50% - 1rem) !important;
+                        text-align: center !important;
+                    }
+
+                .footer-content .logo .inner {
+                    align-items: center !important;
+                }
+
+                .footer-content ul {
+                    padding-left: 0 !important;
+                    list-style: none !important;
+                }
+
+                    .footer-content ul li {
+                        justify-content: center !important;
+                    }
+
+                .footer-content .logo .image img {
+                    max-width: 120px !important;
+                    height: auto !important;
+                }
+                /* Bar - fix overflow on tablet */
+                .bar {
+                    overflow: hidden !important;
+                    width: 100% !important;
+                    max-width: 100% !important;
+                }
+
+                    .bar p {
+                        font-size: 0.8rem !important;
+                        white-space: nowrap !important;
+                        overflow: hidden !important;
+                        text-overflow: ellipsis !important;
+                        padding: 0 1rem !important;
+                        max-width: 100% !important;
+                    }
+
+                        .bar p img {
+                            width: 12px !important;
+                            height: 12px !important;
+                        }
+            }
+
+            /* ----- LAPTOP (992px – 1199px) ----- */
+            @@media (min-width: 992px) and (max-width: 1199.98px) {
+                /* About Us - fix text hidden under image */
+                .about .characters .image img {
+                    max-width: 100% !important;
+                    height: auto !important;
+                    display: block !important;
+                }
+
+                .about .characters .position-absolute.d-none.d-lg-block {
+                    display: none !important;
+                }
+
+                .about .characters {
+                    display: flex !important;
+                    justify-content: center !important;
+                }
+
+                    .about .characters .image {
+                        position: relative !important;
+                        width: 100% !important;
+                    }
+
+                .about .features .feature .info p {
+                    font-size: 0.9rem !important;
+                }
+                /* Why Us - make bigger */
+                .why-us header p.display-5 {
+                    font-size: 2.8rem !important;
+                }
+
+                .why-us .feature .text h3 {
+                    font-size: 1.2rem !important;
+                }
+
+                .why-us .feature .text p {
+                    font-size: 0.95rem !important;
+                }
+                /* Indicators - fix position */
+                .indicators {
+                    display: flex !important;
+                    justify-content: center !important;
+                    gap: 0.75rem !important;
+                    margin-top: 1.5rem !important;
+                }
+
+                    .indicators .indicator {
+                        width: 14px !important;
+                        height: 14px !important;
+                        border-radius: 50% !important;
+                        background: #ccc !important;
+                        display: inline-block !important;
+                    }
+
+                        .indicators .indicator.active {
+                            background: #007bff !important;
+                            width: 18px !important;
+                            height: 18px !important;
+                        }
+                /* Bar - fix overflow on laptop */
+                .bar {
+                    overflow: hidden !important;
+                    width: 100% !important;
+                    max-width: 100% !important;
+                }
+
+                    .bar p {
+                        font-size: 0.9rem !important;
+                        white-space: nowrap !important;
+                        overflow: hidden !important;
+                        text-overflow: ellipsis !important;
+                        padding: 0 1.5rem !important;
+                        max-width: 100% !important;
+                    }
+            }
+
+            /* ----- Large screens (1200px+) ----- */
+            @@media (min-width: 1200px) {
+                .bar p {
+                    white-space: nowrap !important;
+                    overflow: hidden !important;
+                    text-overflow: ellipsis !important;
+                }
+            }
+
+            /* Global fix - prevent any horizontal scroll */
+            * {
+                box-sizing: border-box !important;
+            }
+
+            html, body {
+                overflow-x: hidden !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .container {
+                overflow-x: hidden !important;
+                max-width: 100% !important;
+            }
+
+            .row {
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            [class*="col-"] {
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+            }
+    </style>
 </head>
 
 <body>
-  
-        <div class="container">
-            <main role="main" class="pb-3">
-                <div class="row">
-                    <div class="col-md-6 col-lg-7 col-12">
-                        <div class="info mt-4">
-                            <header class="text-black-alternative">
-                                <h2 class="fw-bolder display-2 mb-4">
-                                    Your body can
-                                    <span class="text-primary-color">stand almost</span> anything
-                                </h2>
 
-                                <p class="mb-6">
-                                    It's your mind that needs convincing. Push past your limits,
-                                    stay <br />
-                                    committed, and watch as your body transform into powerhouse of
-                                    <br />
-                                    strength and resilience. Start your journey today & truly
-                                    capable of!
-                                </p>
-                            </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            <div class="row">
+                <div class="col-md-6 col-lg-7 col-12">
+                    <div class="info mt-4">
+                        <header class="text-black-alternative">
+                            <h2 class="fw-bolder display-2 mb-4">
+                                Your body can
+                                <span class="text-primary-color">stand almost</span> anything
+                            </h2>
 
-                            <div class="stats-bar">
-                                <div class="row g-0">
-                                    <div class="col-4">
-                                        <div class="stat">
+                            <p class="mb-6">
+                                It's your mind that needs convincing. Push past your limits,
+                                stay <br />
+                                committed, and watch as your body transform into powerhouse of
+                                <br />
+                                strength and resilience. Start your journey today & truly
+                                capable of!
+                            </p>
+                        </header>
+
+                        <div class="stats-bar">
+                            <div class="row g-0">
+                                <div class="col-4">
+                                    <div class="stat">
                                         <span class="fw-bolder fs-5 d-block mb-1">@Model.TotalMembers</span>
-                                            <h3 class="fs-5 fw-normal">Total Members</h3>
-                                        </div>
+                                        <h3 class="fs-5 fw-normal">Total Members</h3>
                                     </div>
-                                    <div class="col-4">
-                                        <div class="stat">
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat">
                                         <span class="fw-bolder fs-5 d-block mb-1">@Model.ActiveMembers</span>
-                                            <h3 class="fs-5 fw-normal">Active Members</h3>
-                                        </div>
+                                        <h3 class="fs-5 fw-normal">Active Members</h3>
                                     </div>
-                                    <div class="col-4">
-                                        <div class="stat">
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat">
                                         <span class="fw-bolder fs-5 d-block mb-1">@Model.TotalTrainers</span>
-                                            <h3 class="fs-5 fw-normal">Trainers</h3>
-                                        </div>
+                                        <h3 class="fs-5 fw-normal">Trainers</h3>
                                     </div>
                                 </div>
-                                <div class="row g-0">
-                                    <div class="col-4">
-                                        <div class="stat">
+                            </div>
+                            <div class="row g-0">
+                                <div class="col-4">
+                                    <div class="stat">
                                         <span class="fw-bolder fs-5 d-block mb-1">@Model.UpcomingSessions</span>
-                                            <h3 class="fs-5 fw-normal">Upcoming Sessions</h3>
-                                        </div>
+                                        <h3 class="fs-5 fw-normal">Upcoming Sessions</h3>
                                     </div>
-                                    <div class="col-4">
-                                        <div class="stat">
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat">
                                         <span class="fw-bolder fs-5 d-block mb-1">@Model.OngoingSessions</span>
-                                            <h3 class="fs-5 fw-normal">Ongoing Sessions</h3>
-                                        </div>
+                                        <h3 class="fs-5 fw-normal">Ongoing Sessions</h3>
                                     </div>
-                                    <div class="col-4">
-                                        <div class="stat">
+                                </div>
+                                <div class="col-4">
+                                    <div class="stat">
                                         <span class="fw-bolder fs-5 d-block mb-1">@Model.CompletedSessions</span>
-                                            <h3 class="fs-5 fw-normal">Completed Sessions</h3>
-                                        </div>
+                                        <h3 class="fs-5 fw-normal">Completed Sessions</h3>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="buttons my-4">
-                                <button class="get-started bg-primary-color text-white btn rounded-5 fw-medium px-3 py-2 me-5 border-2 border-primary-color">
-                                    Get Started
-                                </button>
-
-                                <button class="explore-more border-primary-color btn rounded-5 fw-medium px-3 py-2 border-2 text-primary-color fw-medium">
-                                    Explore More
-                                </button>
-                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-md-1 offset-md-2 col-12 order-first order-md-last">
-                        <div class="character d-md-block d-flex justify-content-center">
-                            <img src="./images/Theo Vance.jpg" alt="Theo Vance" />
+                        <div class="buttons my-4">
+                            <button class="get-started bg-primary-color text-white btn rounded-5 fw-medium px-3 py-2 me-5 border-2 border-primary-color">
+                                Get Started
+                            </button>
+
+                            <button class="explore-more border-primary-color btn rounded-5 fw-medium px-3 py-2 border-2 text-primary-color fw-medium">
+                                Explore More
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="bar bg-primary-color d-flex py-4 text-white fw-bolder align-items-center">
-                    <p class="py-0 my-0 overflow-hidden text-nowrap">
-                        outdoor & online trainers
-                        <img src="./images/star.svg" alt="star icon" /> personal training
-                        <img src="./images/star.svg" alt="star icon" /> live classes
-                        <img src="./images/star.svg" alt="star icon" /> personal trainers
-                        <img src="./images/star.svg" alt="star icon" /> personal training
-                    </p>
+                <div class="col-md-1 offset-md-2 col-12 order-first order-md-last">
+                    <div class="character d-md-block d-flex justify-content-center">
+                        <img src="./images/Theo Vance.jpg" alt="Theo Vance" />
+                    </div>
                 </div>
+            </div>
 
-                <!-- ^ all other section -->
-                <main>
-                    <!-- ^ about section -->
-                    <section class="about my-5 text-black-alternative">
-                        <div class="container">
-                            <div class="row g-5 justify-content-center">
-                                <div class="col-12 col-lg-6 w-50 w-md-100">
-                                    <div class="characters position-relative">
-                                        <div class="image">
-                                            <img class="" src="./images/about p1.jpg" alt="person" />
-                                        </div>
+            <div class="bar bg-primary-color d-flex py-4 text-white fw-bolder align-items-center">
+                <p class="py-0 my-0 overflow-hidden text-nowrap">
+                    outdoor & online trainers
+                    <img src="./images/star.svg" alt="star icon" /> personal training
+                    <img src="./images/star.svg" alt="star icon" /> live classes
+                    <img src="./images/star.svg" alt="star icon" /> personal trainers
+                    <img src="./images/star.svg" alt="star icon" /> personal training
+                </p>
+            </div>
 
-                                        <div class="image position-absolute d-none d-lg-block">
-                                            <img src="./images/about p2.jpg" alt="person" />
-                                        </div>
+            <!-- ^ all other section -->
+            <main>
+                <!-- ^ about section -->
+                <section class="about my-5 text-black-alternative">
+                    <div class="container">
+                        <div class="row g-5 justify-content-center">
+                            <div class="col-12 col-lg-6 w-50 w-md-100">
+                                <div class="characters position-relative">
+                                    <div class="image">
+                                        <img class="" src="./images/about p1.jpg" alt="person" />
+                                    </div>
 
-                                        <div class="image position-absolute d-none d-lg-block">
-                                            <img src="./images/about p3.jpg" alt="person" />
-                                        </div>
+                                    <div class="image position-absolute d-none d-lg-block">
+                                        <img src="./images/about p2.jpg" alt="person" />
+                                    </div>
+
+                                    <div class="image position-absolute d-none d-lg-block">
+                                        <img src="./images/about p3.jpg" alt="person" />
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="col-12 col-lg-6">
+                            <div class="col-12 col-lg-6">
+                                <div class="title d-flex justify-content-start align-items-start gap-2">
+                                    <img class="" src="./images/dumbbell.jpg" alt="dumbbell icon" />
+                                    <h2 class="text-primary-color fs-5">About Us</h2>
+                                </div>
+
+                                <header>
+                                    <p class="fw-bolder display-6 mb-4">
+                                        EMPOWERING YOU TO ACHIEVE
+                                        <span class="text-primary-color">YOUR FITNESS</span> GOALS
+                                    </p>
+                                    <p class="text">
+                                        We believe fitness is more than just a workout—it's a
+                                        lifestyle. With top-of- the-line facilities, certified
+                                        trainers, and a supportive community, we're here to inspire
+                                        and guide you every step of the way.
+                                    </p>
+                                </header>
+
+                                <div class="features">
+                                    <div class="row row-cols-1 row-cols-sm-2 gx-3 gy-5">
+                                        <div class="feature">
+                                            <div class="inner">
+                                                <div class="title d-flex gap-2">
+                                                    <img src="./images/feature icon.jpg" alt="icon" />
+                                                    <h3 class="fw-bold">Personal Trainer</h3>
+                                                </div>
+                                                <div class="info">
+                                                    <p>Achieve your fitness goals with the</p>
+                                                    <p>guidance of our certified trainers.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="feature">
+                                            <div class="inner">
+                                                <div class="title d-flex gap-2">
+                                                    <img src="./images/feature icon.jpg" alt="icon" />
+                                                    <h3 class="fw-bold">Personal Trainer</h3>
+                                                </div>
+                                                <div class="info">
+                                                    <p>Achieve your fitness goals with the</p>
+                                                    <p>guidance of our certified trainers.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="feature">
+                                            <div class="inner">
+                                                <div class="title d-flex gap-2">
+                                                    <img src="./images/feature icon.jpg" alt="icon" />
+                                                    <h3 class="fw-bold">Personal Trainer</h3>
+                                                </div>
+                                                <div class="info">
+                                                    <p>Achieve your fitness goals with the</p>
+                                                    <p>guidance of our certified trainers.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="feature">
+                                            <div class="inner">
+                                                <div class="title d-flex gap-2">
+                                                    <img src="./images/feature icon.jpg" alt="icon" />
+                                                    <h3 class="fw-bold">Personal Trainer</h3>
+                                                </div>
+                                                <div class="info">
+                                                    <p>Achieve your fitness goals with the</p>
+                                                    <p>guidance of our certified trainers.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn bg-primary-color rounded-pill text-white fw-medium px-4 py-2 mt-3">
+                                        Get Started
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ^ workout section -->
+                <section class="workout">
+                    <div class="container">
+                        <div class="title">
+                            <h2>WORKOUTS</h2>
+                            <p class="text-white fw-bolder fs-2 mb-4">
+                                Transform Your Body with Our Dynamic Upcoming Workouts
+                            </p>
+                        </div>
+
+                        <div class="row row-cols-md-3 row-cols-12 gy-4 gx-2 gx-md-4">
+                            <div>
+                                <div class="card">
+                                    <img src="./images/workout 1.jpg" class="card-img-top" alt="..." />
+
+                                    <footer class="card-footer bg-white">
+                                        <h5 class="card-title text-black-alternative text-uppercase fw-bolder">
+                                            group workout
+                                        </h5>
+                                        <a href="#" class="">Explore</a>
+                                    </footer>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="card">
+                                    <img src="./images/workout 2.jpg" class="card-img-top" alt="..." />
+
+                                    <footer class="card-footer bg-white">
+                                        <h5 class="card-title text-black-alternative text-uppercase fw-bolder">
+                                            group workout
+                                        </h5>
+                                        <a href="#" class="">Explore</a>
+                                    </footer>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="card">
+                                    <img src="./images/workout 3.jpg" class="card-img-top" alt="..." />
+
+                                    <footer class="card-footer bg-white">
+                                        <h5 class="card-title text-black-alternative text-uppercase fw-bolder">
+                                            group workout
+                                        </h5>
+                                        <a href="#" class="">Explore</a>
+                                    </footer>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="indicators">
+                            <div class="indicator"></div>
+                            <div class="indicator active"></div>
+                            <div class="indicator"></div>
+                            <div class="indicator"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ^ why-us section -->
+                <section class="why-us my-5">
+                    <div class="container">
+                        <div class="row row-cols-1 row-cols-lg-2">
+                            <div class="info">
+                                <div>
                                     <div class="title d-flex justify-content-start align-items-start gap-2">
                                         <img class="" src="./images/dumbbell.jpg" alt="dumbbell icon" />
-                                        <h2 class="text-primary-color fs-5">About Us</h2>
+                                        <h2 class="text-primary-color fs-5">Why Us</h2>
                                     </div>
 
                                     <header>
-                                        <p class="fw-bolder display-6 mb-4">
-                                            EMPOWERING YOU TO ACHIEVE
-                                            <span class="text-primary-color">YOUR FITNESS</span> GOALS
+                                        <p class="fw-bolder display-5 mb-4">
+                                            Elevate fitness with<br />
+                                            <span class="text-primary-color">the best</span> way
+                                            possible
                                         </p>
                                         <p class="text">
                                             We believe fitness is more than just a workout—it's a
@@ -155,279 +1010,131 @@
                                         </p>
                                     </header>
 
-                                    <div class="features">
-                                        <div class="row row-cols-1 row-cols-sm-2 gx-3 gy-5">
-                                            <div class="feature">
-                                                <div class="inner">
-                                                    <div class="title d-flex gap-2">
-                                                        <img src="./images/feature icon.jpg" alt="icon" />
-                                                        <h3 class="fw-bold">Personal Trainer</h3>
-                                                    </div>
-                                                    <div class="info">
-                                                        <p>Achieve your fitness goals with the</p>
-                                                        <p>guidance of our certified trainers.</p>
-                                                    </div>
-                                                </div>
+                                    <ul class="featutes list-unstyled mt-6">
+                                        <li class="feature d-flex gap-4 align-items-center mb-4">
+                                            <div class="count">01</div>
+
+                                            <div class="text">
+                                                <h3 class="text-capitalize fw-bold">
+                                                    personalized fitness plans
+                                                </h3>
+                                                <p class="fs-18">
+                                                    We tailor every workout to fit your unique goals and
+                                                    fitness level ensuring that you make the most progress.
+                                                </p>
                                             </div>
-
-                                            <div class="feature">
-                                                <div class="inner">
-                                                    <div class="title d-flex gap-2">
-                                                        <img src="./images/feature icon.jpg" alt="icon" />
-                                                        <h3 class="fw-bold">Personal Trainer</h3>
-                                                    </div>
-                                                    <div class="info">
-                                                        <p>Achieve your fitness goals with the</p>
-                                                        <p>guidance of our certified trainers.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="feature">
-                                                <div class="inner">
-                                                    <div class="title d-flex gap-2">
-                                                        <img src="./images/feature icon.jpg" alt="icon" />
-                                                        <h3 class="fw-bold">Personal Trainer</h3>
-                                                    </div>
-                                                    <div class="info">
-                                                        <p>Achieve your fitness goals with the</p>
-                                                        <p>guidance of our certified trainers.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="feature">
-                                                <div class="inner">
-                                                    <div class="title d-flex gap-2">
-                                                        <img src="./images/feature icon.jpg" alt="icon" />
-                                                        <h3 class="fw-bold">Personal Trainer</h3>
-                                                    </div>
-                                                    <div class="info">
-                                                        <p>Achieve your fitness goals with the</p>
-                                                        <p>guidance of our certified trainers.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button class="btn bg-primary-color rounded-pill text-white fw-medium px-4 py-2 mt-3">
-                                            Get Started
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- ^ workout section -->
-                    <section class="workout">
-                        <div class="container">
-                            <div class="title">
-                                <h2>WORKOUTS</h2>
-                                <p class="text-white fw-bolder fs-2 mb-4">
-                                    Transform Your Body with Our Dynamic Upcoming Workouts
-                                </p>
-                            </div>
-
-                            <div class="row row-cols-md-3 row-cols-12 gy-4 gx-2 gx-md-4">
-                                <div>
-                                    <div class="card">
-                                        <img src="./images/workout 1.jpg" class="card-img-top" alt="..." />
-
-                                        <footer class="card-footer bg-white">
-                                            <h5 class="card-title text-black-alternative text-uppercase fw-bolder">
-                                                group workout
-                                            </h5>
-                                            <a href="#" class="">Explore</a>
-                                        </footer>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <div class="card">
-                                        <img src="./images/workout 2.jpg" class="card-img-top" alt="..." />
-
-                                        <footer class="card-footer bg-white">
-                                            <h5 class="card-title text-black-alternative text-uppercase fw-bolder">
-                                                group workout
-                                            </h5>
-                                            <a href="#" class="">Explore</a>
-                                        </footer>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <div class="card">
-                                        <img src="./images/workout 3.jpg" class="card-img-top" alt="..." />
-
-                                        <footer class="card-footer bg-white">
-                                            <h5 class="card-title text-black-alternative text-uppercase fw-bolder">
-                                                group workout
-                                            </h5>
-                                            <a href="#" class="">Explore</a>
-                                        </footer>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="indicators">
-                                <div class="indicator"></div>
-                                <div class="indicator active"></div>
-                                <div class="indicator"></div>
-                                <div class="indicator"></div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- ^ why-us section -->
-                    <section class="why-us my-5">
-                        <div class="container">
-                            <div class="row row-cols-1 row-cols-lg-2">
-                                <div class="info">
-                                    <div>
-                                        <div class="title d-flex justify-content-start align-items-start gap-2">
-                                            <img class="" src="./images/dumbbell.jpg" alt="dumbbell icon" />
-                                            <h2 class="text-primary-color fs-5">Why Us</h2>
-                                        </div>
-
-                                        <header>
-                                            <p class="fw-bolder display-5 mb-4">
-                                                Elevate fitness with<br />
-                                                <span class="text-primary-color">the best</span> way
-                                                possible
-                                            </p>
-                                            <p class="text">
-                                                We believe fitness is more than just a workout—it's a
-                                                lifestyle. With top-of- the-line facilities, certified
-                                                trainers, and a supportive community, we're here to inspire
-                                                and guide you every step of the way.
-                                            </p>
-                                        </header>
-
-                                        <ul class="featutes list-unstyled mt-6">
-                                            <li class="feature d-flex gap-4 align-items-center mb-4">
-                                                <div class="count">01</div>
-
-                                                <div class="text">
-                                                    <h3 class="text-capitalize fw-bold">
-                                                        personalized fitness plans
-                                                    </h3>
-                                                    <p class="fs-18">
-                                                        We tailor every workout to fit your unique goals and
-                                                        fitness level ensuring that you make the most progress.
-                                                    </p>
-                                                </div>
-                                            </li>
-
-                                            <li class="feature d-flex gap-4 align-items-center mb-4">
-                                                <div class="count">01</div>
-
-                                                <div class="text">
-                                                    <h3 class="text-capitalize fw-bold">
-                                                        personalized fitness plans
-                                                    </h3>
-                                                    <p class="fs-18">
-                                                        We tailor every workout to fit your unique goals and
-                                                        fitness level ensuring that you make the most progress.
-                                                    </p>
-                                                </div>
-                                            </li>
-
-                                            <li class="feature d-flex gap-4 align-items-center">
-                                                <div class="count">01</div>
-
-                                                <div class="text">
-                                                    <h3 class="text-capitalize fw-bold">
-                                                        personalized fitness plans
-                                                    </h3>
-                                                    <p class="fs-18">
-                                                        We tailor every workout to fit your unique goals and
-                                                        fitness level ensuring that you make the most progress.
-                                                    </p>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-
-                                <div class="characters d-none d-lg-block">
-                                    <div class="images">
-                                        <img class="" src="./images/why us images.svg" alt="characters" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </main>
-                <footer class="mt-5">
-                    <div class="bar bg-primary-color d-flex py-4 text-white fw-bolder align-items-center">
-                        <p class="py-0 my-0 overflow-hidden text-nowrap">
-                            outdoor & online trainers
-                            <img src="../images/star.svg" alt="star icon" /> personal training
-                            <img src="../images/star.svg" alt="star icon" /> live classes
-                            <img src="../images/star.svg" alt="star icon" /> personal trainers
-                            <img src="../images/star.svg" alt="star icon" /> personal training
-                        </p>
-                    </div>
-
-                    <div class="footer-content my-5">
-                        <div class="container">
-                            <div class="row row-cols-2 row-cols-md-4 g-5">
-                                <div class="logo">
-                                    <div class="inner">
-                                        <div class="image">
-                                            <img src="../images/logo.jpg" alt="our logo" />
-                                        </div>
-                                        <p class="fs-18 mt-2">
-                                            Push harder, go further. Your <br />
-                                            fitness journey starts today!
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="contact">
-                                    <h4 class="fw-bolder text-uppercase mb-4">contact us</h4>
-
-                                    <ul>
-                                        <li class="d-flex align-items-center gap-2">
-                                            <div class="icon">
-                                                <img src="../images/phone icon.jpg" alt="phone icon" />
-                                            </div>
-                                            <p>+91 123 456 789</p>
                                         </li>
 
-                                        <li class="d-flex align-items-center gap-2">
-                                            <div class="icon">
-                                                <img src="../images/message icon.jpg" alt="message icon" />
+                                        <li class="feature d-flex gap-4 align-items-center mb-4">
+                                            <div class="count">02</div>
+
+                                            <div class="text">
+                                                <h3 class="text-capitalize fw-bold">
+                                                    expert trainer guidance
+                                                </h3>
+                                                <p class="fs-18">
+                                                    Our certified trainers provide professional support to
+                                                    help you reach your fitness potential safely.
+                                                </p>
                                             </div>
-                                            <p>info@gmail.com</p>
+                                        </li>
+
+                                        <li class="feature d-flex gap-4 align-items-center">
+                                            <div class="count">03</div>
+
+                                            <div class="text">
+                                                <h3 class="text-capitalize fw-bold">
+                                                    community support
+                                                </h3>
+                                                <p class="fs-18">
+                                                    Join a supportive community that motivates you to stay
+                                                    consistent and achieve your goals together.
+                                                </p>
+                                            </div>
                                         </li>
                                     </ul>
                                 </div>
+                            </div>
 
-                                <div class="time">
-                                    <h4 class="fw-bolder text-uppercase mb-4">our gym timing</h4>
-
-                                    <p>
-                                        Mon - Fri : 08:00 AM - 10:00 PM <br />Sat - Sun : 08:00 AM -
-                                        09:00 PM
-                                    </p>
-                                </div>
-
-                                <div class="location">
-                                    <h4 class="fw-bolder text-uppercase mb-4">our location</h4>
-
-                                    <p>
-                                        2715 Ash Dr. San Jose, South <br />
-                                        Dakota 83475
-                                    </p>
+                            <div class="characters d-none d-lg-block">
+                                <div class="images">
+                                    <img class="" src="./images/why us images.svg" alt="characters" />
                                 </div>
                             </div>
                         </div>
                     </div>
-                </footer>
-
+                </section>
             </main>
-        </div>
-    </body>
+            <footer class="mt-5">
+                <div class="bar bg-primary-color d-flex py-4 text-white fw-bolder align-items-center">
+                    <p class="py-0 my-0 overflow-hidden text-nowrap">
+                        outdoor & online trainers
+                        <img src="../images/star.svg" alt="star icon" /> personal training
+                        <img src="../images/star.svg" alt="star icon" /> live classes
+                        <img src="../images/star.svg" alt="star icon" /> personal trainers
+                        <img src="../images/star.svg" alt="star icon" /> personal training
+                    </p>
+                </div>
+
+                <div class="footer-content my-5">
+                    <div class="container">
+                        <div class="row row-cols-2 row-cols-md-4 g-5">
+                            <div class="logo">
+                                <div class="inner">
+                                    <div class="image">
+                                        <img src="../images/logo.jpg" alt="our logo" />
+                                    </div>
+                                    <p class="fs-18 mt-2">
+                                        Push harder, go further. Your <br />
+                                        fitness journey starts today!
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="contact">
+                                <h4 class="fw-bolder text-uppercase mb-4">contact us</h4>
+
+                                <ul>
+                                    <li class="d-flex align-items-center gap-2">
+                                        <div class="icon">
+                                            <img src="../images/phone icon.jpg" alt="phone icon" />
+                                        </div>
+                                        <p>+91 123 456 789</p>
+                                    </li>
+
+                                    <li class="d-flex align-items-center gap-2">
+                                        <div class="icon">
+                                            <img src="../images/message icon.jpg" alt="message icon" />
+                                        </div>
+                                        <p>info@gmail.com</p>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="time">
+                                <h4 class="fw-bolder text-uppercase mb-4">our gym timing</h4>
+
+                                <p>
+                                    Mon - Fri : 08:00 AM - 10:00 PM <br />Sat - Sun : 08:00 AM -
+                                    09:00 PM
+                                </p>
+                            </div>
+
+                            <div class="location">
+                                <h4 class="fw-bolder text-uppercase mb-4">our location</h4>
+
+                                <p>
+                                    2715 Ash Dr. San Jose, South <br />
+                                    Dakota 83475
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
+        </main>
+    </div>
+</body>
 
 </html>

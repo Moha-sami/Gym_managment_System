@@ -588,3 +588,57 @@ footer .footer-content .location p {
         border-color: var(--primary-color);
         -webkit-text-fill-color: #fff; /* ensures text stays visible on hover */
     }
+/* Mobile Navigation Text Improvements */
+@media (max-width: 991.98px) {
+    /* Make nav links larger on mobile */
+    .navbar-nav .nav-link {
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        padding: 0.75rem 1rem !important;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    /* Make brand text larger */
+    .navbar-brand {
+        font-size: 1.8rem !important;
+        font-weight: 700 !important;
+    }
+
+        /* Make brand icon larger */
+        .navbar-brand i {
+            font-size: 2rem !important;
+        }
+
+    /* Make the logout link stand out */
+    .navbar-nav .nav-link.text-danger {
+        color: #dc3545 !important;
+        font-weight: 700 !important;
+    }
+
+    /* Better spacing for mobile nav */
+    .navbar-collapse {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    /* Ensure the toggler button is visible */
+    .navbar-toggler {
+        padding: 0.5rem 0.75rem;
+        font-size: 1.5rem;
+    }
+}
+
+/* Desktop improvements */
+@media (min-width: 992px) {
+    .navbar-nav .nav-link {
+        font-size: 1.05rem !important;
+        font-weight: 500 !important;
+        padding: 0.5rem 1rem !important;
+    }
+
+    .navbar-brand {
+        font-size: 1.6rem !important;
+        font-weight: 700 !important;
+    }
+
+}
