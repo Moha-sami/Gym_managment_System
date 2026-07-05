@@ -23,7 +23,7 @@ namespace GymmanagmentSystem
             });
             builder.Services.AddDbContext<GymDbcontext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
-    // السطر ده هو اللي بيحل المشكلة:
+    
     sqlServerOptions => sqlServerOptions.MigrationsAssembly("GymManagment.DAL")));
 
 
@@ -75,6 +75,7 @@ namespace GymmanagmentSystem
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

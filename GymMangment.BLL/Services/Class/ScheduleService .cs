@@ -26,6 +26,14 @@ namespace GymMangment.BLL.Services.Class
                 s => s.Trainer,
                 s => s.Category,
                 s => s.SessionMembers);
+            //order sessions by status: Upcoming, Ongoing, Completed
+            var now = DateTime.Now;
+
+            // 3. (Upcoming -> Ongoing -> Completed)
+            var sortedSchedule = sessions
+                .OrderBy(s => s.StartDate > now ? 0 : (s.EndDate >= now ? 1 : 2))
+                .ThenBy(s => s.StartDate)
+                .ToList();
 
             var model = _mapper.Map<IEnumerable<SessionScheduleViewModel>>(sessions);
             return Result<IEnumerable<SessionScheduleViewModel>>.Success(model);

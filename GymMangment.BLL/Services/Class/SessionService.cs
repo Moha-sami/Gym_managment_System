@@ -6,6 +6,7 @@ using GymMangment.BLL.Common;
 using GymMangment.BLL.Services.Interfaces;
 using GymMangment.BLL.ViewModels.SessionsViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace GymMangment.BLL.Services.Class
 {
@@ -39,6 +40,17 @@ namespace GymMangment.BLL.Services.Class
                  s => s.Trainer,
                 s => s.Category,
                 s => s.SessionMembers);
+
+            var now = DateTime.Now;
+
+            var orderedSessions = sessions
+                .OrderBy(s => {
+                    if (s.StartDate > now) return 0; // Upcoming
+                    if (s.EndDate >= now) return 1;  // Ongoing
+                    return 2;                        // Completed
+                })
+                .ThenBy(s => s.StartDate)            // الأقدم فالأحدث
+                .ToList();
 
             var model = _mapper.Map<IEnumerable<SessionViewModel>>(sessions);
             return Result<IEnumerable<SessionViewModel>>.Success(model);

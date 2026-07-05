@@ -19,7 +19,9 @@
     @if (Model != null && Model.Any())
     {
         <div class="row g-4">
-            @foreach (var session in Model)
+            @foreach (var session in Model.OrderBy(s => s.Status == "Upcoming" ? 0 : (s.Status == "Ongoing" ? 1 : 2))
+            .ThenBy(s => s.StartDate))
+
             {
                 <div class="col-12 col-md-6 col-lg-4">
                     <div class="card h-100 shadow-sm border-0 session-card">
