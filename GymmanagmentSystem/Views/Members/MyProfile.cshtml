@@ -14,56 +14,109 @@
         <div class="col-md-8">
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4">
-                    <div class="mb-4 pb-3 border-bottom">
-                        <small class="text-muted d-block mb-1">Profile For</small>
-                        <h4 class="mb-0 text-black">@Model.Name</h4>
+                    <div class="mb-4 pb-3 border-bottom d-flex align-items-center gap-3">
+                        @if (!string.IsNullOrEmpty(Model.CurrentPhoto))
+                        {
+                            <img src="@Model.CurrentPhoto" class="rounded-circle"
+                                 style="width:80px;height:80px;object-fit:cover;" />
+                        }
+                        else
+                        {
+                            <img src="~/images/User.jpg" class="rounded-circle"
+                                 style="width:80px;height:80px;object-fit:cover;" />
+                        }
+                        <div>
+                            <small class="text-muted d-block mb-1">Profile For</small>
+                            <h4 class="mb-0 text-black">@Model.Name</h4>
+                        </div>
                     </div>
-                    <form asp-controller="Members" asp-action="MyProfile" method="post">
+
+                    <form asp-controller="Members" asp-action="MyProfile" method="post"
+                          enctype="multipart/form-data">
                         <input type="hidden" asp-for="Id" />
                         <input type="hidden" asp-for="Name" />
 
+                        <!-- Personal Information -->
+                        <div class="section-header mb-3">
+                            <h5 class="text-primary fw-bold">Personal Information</h5>
+                            <hr class="mt-2">
+                        </div>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label asp-for="Email" class="form-label fw-semibold">
-                                    Email Address <span class="text-danger">*</span>
-                                </label>
+                                <label asp-for="Email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
                                 <input asp-for="Email" type="email" class="form-control" />
                                 <span asp-validation-for="Email" class="text-danger"></span>
                             </div>
-
                             <div class="col-md-6">
-                                <label asp-for="Phone" class="form-label fw-semibold">
-                                    Phone Number <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="Phone" type="tel" class="form-control" />
+                                <label asp-for="Phone" class="form-label fw-semibold">Phone <span class="text-danger">*</span></label>
+                                <input asp-for="Phone" class="form-control" />
                                 <span asp-validation-for="Phone" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="BuildingNumber" class="form-label fw-semibold">
-                                    Building Number <span class="text-danger">*</span>
-                                </label>
+                                <label asp-for="BuildingNumber" class="form-label fw-semibold">Building No. <span class="text-danger">*</span></label>
                                 <input asp-for="BuildingNumber" class="form-control" />
                                 <span asp-validation-for="BuildingNumber" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="City" class="form-label fw-semibold">
-                                    City <span class="text-danger">*</span>
-                                </label>
+                                <label asp-for="City" class="form-label fw-semibold">City <span class="text-danger">*</span></label>
                                 <input asp-for="City" class="form-control" />
                                 <span asp-validation-for="City" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="Street" class="form-label fw-semibold">
-                                    Street <span class="text-danger">*</span>
-                                </label>
+                                <label asp-for="Street" class="form-label fw-semibold">Street <span class="text-danger">*</span></label>
                                 <input asp-for="Street" class="form-control" />
                                 <span asp-validation-for="Street" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Photo" class="form-label fw-semibold">Update Photo</label>
+                                <input asp-for="Photo" type="file" class="form-control"
+                                       accept=".jpg,.jpeg,.png,.webp" />
+                                <small class="text-muted">Optional. Max 2MB. JPG, PNG or WebP.</small>
+                            </div>
+                        </div>
+
+                        <!-- Health Record -->
+                        <div class="section-header mb-3 mt-4">
+                            <h5 class="text-primary fw-bold">Health Record</h5>
+                            <hr class="mt-2">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Height" class="form-label fw-semibold">Height (cm)</label>
+                                <input asp-for="Height" type="number" step="0.1" class="form-control" />
+                                <span asp-validation-for="Height" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Weight" class="form-label fw-semibold">Weight (kg)</label>
+                                <input asp-for="Weight" type="number" step="0.1" class="form-control" />
+                                <span asp-validation-for="Weight" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="BloodType" class="form-label fw-semibold">Blood Type</label>
+                                <select asp-for="BloodType" class="form-select">
+                                    <option value="">Select</option>
+                                    <option>A+</option>
+                                    <option>A-</option>
+                                    <option>B+</option>
+                                    <option>B-</option>
+                                    <option>O+</option>
+                                    <option>O-</option>
+                                    <option>AB+</option>
+                                    <option>AB-</option>
+                                </select>
+                                <span asp-validation-for="BloodType" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Note" class="form-label fw-semibold">Notes</label>
+                                <input asp-for="Note" class="form-control" />
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-end mt-4 pt-3 border-top">
-                            <button type="submit" class="btn btn-fill">
-                                <i class="bi bi-check-lg me-1"></i>Save Changes
+                            <button type="submit" class="btn btn-primary" id="saveBtn"
+                                    onclick="showLoading(this)">
+                                <span class="spinner-border spinner-border-sm d-none" id="spinner" role="status" aria-hidden="true"></span>
+                                <span id="btnText">Save Changes</span>
                             </button>
                         </div>
                     </form>
@@ -75,4 +128,29 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    // ضيف ده في الـ Scripts section
+    <script>
+        document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.querySelector('.rounded-circle').src = e.target.result;
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    </script>
+    <script>
+        function showLoading(btn) {
+            // بنخفي النص ونظهر الـ Spinner
+            document.getElementById('btnText').innerText = 'Saving...';
+            document.getElementById('spinner').classList.remove('d-none');
+
+            // بنعمل Disable للزرار عشان ميتداسش مرتين
+            btn.disabled = true;
+
+            // بنبعت الفورم
+            btn.form.submit();
+        }
+    </script>
 }

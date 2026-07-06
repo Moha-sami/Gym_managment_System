@@ -6,6 +6,7 @@ using GymMangment.BLL.ViewModels.AccountViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace GymmanagmentSystem.PL.Controllers
 {
@@ -145,6 +146,178 @@ namespace GymmanagmentSystem.PL.Controllers
                 ModelState.AddModelError("", error.Description);
 
             return View(model);
+        }
+
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public IActionResult ExternalLogin(string provider = "Google")
+        {
+            // هنا نجبر الرابط أن يبدأ بـ https بغض النظر عن بروتوكول الطلب القادم
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", null, "https");
+
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return new ChallengeResult(provider, properties);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
+        {
+            if (remoteError != null) return RedirectToAction("Login");
+
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null) return RedirectToAction("Login");
+
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+
+            if (result.Succeeded) return LocalRedirect(returnUrl ?? "/");
+
+            // لو المستخدم أول مرة يسجل دخول عن طريق جوجل
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var picture = info.Principal.FindFirstValue("urn:google:picture"); // ده الـ Claim الخاص بالصورة
+
+            // هنا هتعمل Redirect لصفحة تكملة البيانات اللي فيها (الاسم، الفون، الصورة)
+            return RedirectToAction(nameof(RegisterExternal));
+        }
+        // GET: Account/RegisterExternal
+        [HttpGet]
+        public async Task<IActionResult> RegisterExternal()
+        {
+            // Get the external login info from the cookie set during callback
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                TempData["ErrorMessage"] = "External login info not found. Please try again.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
+            var fullName = info.Principal.FindFirstValue(ClaimTypes.Name) ?? string.Empty;
+
+            var model = new RegisterExternalViewModel
+            {
+                Email = email,
+                FullName = fullName,
+                Provider = info.LoginProvider
+            };
+
+            return View(model);
+        }
+
+        // POST: Account/RegisterExternal
+        [HttpPost]
+        public async Task<IActionResult> RegisterExternal(RegisterExternalViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                TempData["ErrorMessage"] = "External login session expired. Please try again.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            // Check for duplicate email/phone
+            var emailExists = await _unitOfWork.Members.AnyAsync(x => x.Email == model.Email);
+            var phoneExists = await _unitOfWork.Members.AnyAsync(x => x.Phone == model.Phone);
+
+            if (emailExists)
+            {
+                ModelState.AddModelError("Email", "A member with this email already exists.");
+                return View(model);
+            }
+            if (phoneExists)
+            {
+                ModelState.AddModelError("Phone", "A member with this phone number already exists.");
+                return View(model);
+            }
+
+            // Create Member profile (no photo required for social login)
+            var member = new Member
+            {
+                Name = model.FullName,
+                Email = model.Email,
+                Phone = model.Phone,
+                DateOFBirth = model.DateOfBirth,
+                Gender = model.Gender,
+                Photo = "/images/avatars/male-avatar-1.png", // default avatar
+                Address = new Address
+                {
+                    BuildingNumber = model.BuildingNumber,
+                    Street = model.Street,
+                    City = model.City
+                },
+                HealthRecord = new HealthRecord
+                {
+                    Height = 0,
+                    Weight = 0,
+                    BloodType = "Unknown",
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+
+            await _unitOfWork.Members.AddAsync(member, default);
+
+            // Auto-assign Basic Plan
+            var basicPlan = (await _unitOfWork.Plans.GetAllAsync())
+                .FirstOrDefault(p => p.Name == "Basic Plan" && p.IsActive);
+
+            if (basicPlan != null)
+            {
+                var membership = new Membership
+                {
+                    MemberID = member.Id,
+                    PlansID = basicPlan.Id,
+                    EndDate = DateTime.Now.AddDays(basicPlan.DurationInDays),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+                await _unitOfWork.Memberships.AddAsync(membership, default);
+            }
+
+            // Create Identity user
+            var user = new AppUser
+            {
+                FullName = model.FullName,
+                UserName = model.Email,
+                Email = model.Email,
+                EmailConfirmed = true,
+                MemberId = member.Id
+            };
+
+            var result = await _userManager.CreateAsync(user);
+            if (!result.Succeeded)
+            {
+                await _unitOfWork.Members.DeleteAsync(member, default);
+                foreach (var error in result.Errors)
+                    ModelState.AddModelError("", error.Description);
+                return View(model);
+            }
+
+            // Link Google/Facebook login to this user
+            var addLoginResult = await _userManager.AddLoginAsync(user, info);
+            if (!addLoginResult.Succeeded)
+            {
+                await _userManager.DeleteAsync(user);
+                await _unitOfWork.Members.DeleteAsync(member, default);
+                TempData["ErrorMessage"] = "Failed to link external login. Please try again.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            // Assign Member role
+            await _userManager.AddToRoleAsync(user, "Member");
+
+            // Sign in
+            await _signInManager.SignInAsync(user, isPersistent: false);
+
+            TempData["SuccessMessage"] = $"Welcome {model.FullName}! Your account has been created.";
+            return RedirectToAction("Index", "Home");
         }
         // POST: Account/Logout
         [HttpPost]

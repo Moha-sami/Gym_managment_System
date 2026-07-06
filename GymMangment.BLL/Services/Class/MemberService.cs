@@ -60,30 +60,27 @@ namespace GymMangment.BLL.Services.Class
 
         public async Task<Result<MemberViewModel?>> GetMemberDetailsByIdAsync(int id, CancellationToken ct = default)
         {
-            // 1. جلب العضو مع الـ Navigation Properties الخاصة به (Membership و Plan)
-            // لاحظ استخدام الـ Includes عشان نتجنب الـ Lazy Loading
-            var member = await _unitOfWork.Members.GetByIdAsync(
-                id,
-                ct,
-                m => m.Memberships            
+            var members = await _unitOfWork.Members.GetAllAsync(
+                false, ct,
+                m => m.Memberships,
+                m => m.HealthRecord
             );
+
+            var member = members.FirstOrDefault(m => m.Id == id);
             if (member == null)
-            {
-                return Result<MemberViewModel?>.Failure("Invaild Member");
-            }
-            // 2. التحويل الأساسي للـ ViewModel
+                return Result<MemberViewModel?>.Failure("Invalid Member");
+
             var model = _mapper.Map<MemberViewModel>(member);
 
+            // Load plan separately for the active membership
             var activeMembership = member.Memberships
-     .FirstOrDefault(m => m.EndDate >= DateTime.Now);
+                .FirstOrDefault(m => m.EndDate >= DateTime.Now);
 
-
-            // 2. دلوقتي استخدم activeMembership (اللي هو عنصر واحد من نوع Membership)
             if (activeMembership != null)
             {
-                // هنا تقدر توصل للـ Plan والـ EndDate والـ CreatedAt
-                model.PlanName = activeMembership.Plans?.Name ?? "No Plan";
-                model.MembershipStartDate = activeMembership.CreatedAt.ToString("yyyy-MM-dd"); 
+                var plan = await _unitOfWork.Plans.GetByIdAsync(activeMembership.PlansID, ct);
+                model.PlanName = plan?.Name ?? "No Plan";
+                model.MembershipStartDate = activeMembership.CreatedAt.ToString("yyyy-MM-dd");
                 model.MembershipEndDate = activeMembership.EndDate.ToString("yyyy-MM-dd");
             }
             else
@@ -91,7 +88,6 @@ namespace GymMangment.BLL.Services.Class
                 model.PlanName = "No Plan";
             }
 
-            // 4. إرجاع النتيجة الناجحة
             return Result<MemberViewModel?>.Success(model);
         }
 
@@ -113,31 +109,63 @@ namespace GymMangment.BLL.Services.Class
 
         public async Task<Result<MemberToUpdateViewModel?>> GetMemberToUpdateAsync(int memberId, CancellationToken ct = default)
         {
-            var result = await _unitOfWork.Members.GetByIdAsync(memberId, ct);
-            if (result == null)
-            {
+            var members = await _unitOfWork.Members.GetAllAsync(
+                false, ct,
+                m => m.HealthRecord);
+
+            var member = members.FirstOrDefault(m => m.Id == memberId);
+            if (member == null)
                 return Result<MemberToUpdateViewModel?>.Failure("No Member Available");
-            }
-            var model= _mapper.Map<MemberToUpdateViewModel>(result);
+
+            var model = _mapper.Map<MemberToUpdateViewModel>(member);
             return Result<MemberToUpdateViewModel?>.Success(model);
         }
 
-        public async Task<Result?> UpdateMemberAsync(int id, MemberToUpdateViewModel model, CancellationToken ct = default)
+        public async Task<Result> UpdateMemberAsync(int id, MemberToUpdateViewModel model, CancellationToken ct = default)
         {
-            var member = await _unitOfWork.Members.GetByIdAsync(id, ct);
-            if (member == null)
-            {
-                return Result.Failure("No Member Available");
-            }
+            var members = await _unitOfWork.Members.GetAllAsync(
+                tracking: true, ct,
+                m => m.HealthRecord);
 
-            var emailExist = await _unitOfWork.Members.AnyAsync(m => m.Email == model.Email && m.Id != id);
-            var phoneExist = await _unitOfWork.Members.AnyAsync(m => m.Phone == model.Phone && m.Id != id);
-            if (emailExist || phoneExist)
-            {
+            var member = members.FirstOrDefault(m => m.Id == id);
+            if (member == null)
+                return Result.Failure("No Member Available");
+
+            var emailExists = await _unitOfWork.Members.AnyAsync(m => m.Email == model.Email && m.Id != id, ct);
+            var phoneExists = await _unitOfWork.Members.AnyAsync(m => m.Phone == model.Phone && m.Id != id, ct);
+
+            if (emailExists || phoneExists)
                 return Result.Failure("Email or Phone already exists");
-            }
 
             _mapper.Map(model, member);
+
+            // Handle photo update
+            if (!string.IsNullOrEmpty(model.PhotoPath))
+                member.Photo = model.PhotoPath;
+
+            // Handle health record update
+            if (member.HealthRecord != null)
+            {
+                member.HealthRecord.Height = model.Height;
+                member.HealthRecord.Weight = model.Weight;
+                member.HealthRecord.BloodType = model.BloodType;
+                member.HealthRecord.Note = model.Note;
+                member.HealthRecord.UpdatedAt = DateTime.Now;
+            }
+            else
+            {
+                member.HealthRecord = new HealthRecord
+                {
+                    Height = model.Height,
+                    Weight = model.Weight,
+                    BloodType = model.BloodType,
+                    Note = model.Note,
+                    MemberId = member.Id,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+            }
+
             await _unitOfWork.Members.UpdateAsync(member, ct);
             return Result.Success();
         }

@@ -138,6 +138,7 @@ namespace GymmanagmentSystem.PL.Controllers
         public async Task<IActionResult> EditMember(int id, MemberToUpdateViewModel model, CancellationToken ct = default)
         {
             if(!ModelState.IsValid)return View(model);
+            //model.PhotoPath = await HandlePhotoUpload(model);
             var result= await memberservice.UpdateMemberAsync(id, model, ct);
 
             TempData[result.Succeeded ? "SuccessMessage" : "ErrorMessage"]
@@ -183,20 +184,29 @@ namespace GymmanagmentSystem.PL.Controllers
 
 
 
-        // GET: Members/MyProfile
-        [Authorize(Roles = "Member")]
-        public async Task<IActionResult> MyProfile(CancellationToken ct)
-        {
-            var userId = _userManager.GetUserId(User);
-            var user = await _userManager.FindByIdAsync(userId!);
+        #region MemberProfile
 
-            if (user?.MemberId == null)
+        // GET: Members/MyProfile
+        [HttpGet]
+        [Authorize(Roles = "Member,Admin")]
+        public async Task<IActionResult> MyProfile(int? id, CancellationToken ct)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            bool isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+
+            // المنطق: لو أدمن ومبعوت ID، استخدمه. غير كده استخدم الـ MemberId الخاص باليوزر
+            int targetId = (isAdmin && id.HasValue) ? id.Value : (user.MemberId ?? 0);
+
+            if (targetId == 0)
             {
-                TempData["ErrorMessage"] = "Your account is not linked to a member profile.";
+                TempData["ErrorMessage"] = "No member profile found to display.";
                 return RedirectToAction("Index", "Home");
             }
 
-            var result = await memberservice.GetMemberToUpdateAsync(user.MemberId.Value, ct);
+            var result = await memberservice.GetMemberToUpdateAsync(targetId, ct);
+
             if (!result.Succeeded)
             {
                 TempData["ErrorMessage"] = result.Error;
@@ -208,26 +218,52 @@ namespace GymmanagmentSystem.PL.Controllers
 
         // POST: Members/MyProfile
         [HttpPost]
-        [Authorize(Roles = "Member")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Member,Admin")]
         public async Task<IActionResult> MyProfile(MemberToUpdateViewModel model, CancellationToken ct = default)
         {
-            var userId = _userManager.GetUserId(User);
-            var user = await _userManager.FindByIdAsync(userId!);
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
 
-            if (user?.MemberId == null)
+            bool isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+
+            // تأمين: الـ Member العادي ميقدرش يعدل بروفايل مش بتاعه
+            if (!isAdmin && model.Id != user.MemberId)
             {
-                TempData["ErrorMessage"] = "Your account is not linked to a member profile.";
+                TempData["ErrorMessage"] = "You are not authorized to edit this profile.";
                 return RedirectToAction("Index", "Home");
             }
 
+            // التحقق من صحة البيانات
             if (!ModelState.IsValid) return View(model);
 
-            var result = await memberservice.UpdateMemberAsync(user.MemberId.Value, model, ct);
+            // معالجة الصورة
+            if (model.Photo != null)
+            {
+                model.PhotoPath = await HandlePhotoUpload(model);
+            }
 
-            TempData[result.Succeeded ? "SuccessMessage" : "ErrorMessage"]
-                = result.Succeeded ? "Profile updated successfully!" : result.Error;
+            // التعديل
+            var result = await memberservice.UpdateMemberAsync(model.Id, model, ct);
 
-            return RedirectToAction(nameof(MyProfile));
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Profile updated successfully!";
+                // إعادة التوجيه مع إرسال الـ Id عشان يفتح الصفحة تاني ببياناتها
+                return RedirectToAction(nameof(MyProfile), new { id = model.Id });
+            }
+
+            TempData["ErrorMessage"] = result.Error;
+            return View(model);
+        }
+
+        #endregion
+        private async Task<string?> HandlePhotoUpload(MemberToUpdateViewModel model)
+        {
+            if (model.Photo == null || model.Photo.Length == 0)
+                return null;
+
+            return await _fileService.SaveImageAsync(model.Photo, "uploads");
         }
 
     }

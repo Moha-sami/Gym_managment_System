@@ -4,6 +4,7 @@
 		<TargetFramework>net9.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>902e1140-b589-42c6-8f75-696c1d779c9c</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -11,6 +12,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.17" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.17">
 			<PrivateAssets>all</PrivateAssets>

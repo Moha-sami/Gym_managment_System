@@ -1,0 +1,89 @@
+﻿@using GymManagment.DAL.Models.Enum
+@model GymMangment.BLL.ViewModels.AccountViewModels.RegisterExternalViewModel
+@{
+    ViewData["Title"] = "Complete Registration";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complete Registration - Gym Management</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+</head>
+<body class="bg-light">
+    <div class="container">
+        <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
+            <div class="col-md-6">
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-primary-color text-white text-center py-4">
+                        <i class="bi bi-person-check display-5 mb-2"></i>
+                        <h3 class="mb-0">Complete Your Profile</h3>
+                        <p class="mb-0 opacity-75">Signed in via @Model.Provider — just a few more details</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <form asp-action="RegisterExternal" asp-controller="Account" method="post">
+                            <input type="hidden" asp-for="Email" />
+                            <input type="hidden" asp-for="FullName" />
+                            <input type="hidden" asp-for="Provider" />
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Full Name</label>
+                                <input value="@Model.FullName" class="form-control" readonly />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Email</label>
+                                <input value="@Model.Email" class="form-control" readonly />
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Phone" class="form-label fw-semibold">Phone Number <span class="text-danger">*</span></label>
+                                <input asp-for="Phone" class="form-control" placeholder="01XXXXXXXXX" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="DateOfBirth" class="form-label fw-semibold">Date of Birth <span class="text-danger">*</span></label>
+                                <input asp-for="DateOfBirth" type="date" class="form-control" />
+                                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3">
+                                <label asp-for="Gender" class="form-label fw-semibold">Gender <span class="text-danger">*</span></label>
+                                <select asp-for="Gender" asp-items="Html.GetEnumSelectList<Gender>()" class="form-select">
+                                    <option value="">-- Select Gender --</option>
+                                </select>
+                                <span asp-validation-for="Gender" class="text-danger"></span>
+                            </div>
+                            <div class="row g-2">
+                                <div class="col-4">
+                                    <label asp-for="BuildingNumber" class="form-label fw-semibold">Building No. <span class="text-danger">*</span></label>
+                                    <input asp-for="BuildingNumber" class="form-control" />
+                                    <span asp-validation-for="BuildingNumber" class="text-danger"></span>
+                                </div>
+                                <div class="col-4">
+                                    <label asp-for="City" class="form-label fw-semibold">City <span class="text-danger">*</span></label>
+                                    <input asp-for="City" class="form-control" />
+                                    <span asp-validation-for="City" class="text-danger"></span>
+                                </div>
+                                <div class="col-4">
+                                    <label asp-for="Street" class="form-label fw-semibold">Street <span class="text-danger">*</span></label>
+                                    <input asp-for="Street" class="form-control" />
+                                    <span asp-validation-for="Street" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-fill w-100 py-2 mt-4">
+                                <i class="bi bi-check-circle me-2"></i>Complete Registration
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

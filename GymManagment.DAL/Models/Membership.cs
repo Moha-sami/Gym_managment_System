@@ -1,4 +1,6 @@
-﻿namespace GymManagment.DAL.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace GymManagment.DAL.Models
 {
     public class Membership : BaseEntity
     {
@@ -7,7 +9,8 @@
         public DateTime EndDate { get; set; }
         public bool IsActive => EndDate > DateTime.Now;
         public string Status => EndDate > DateTime.Now ? "Active" : "Expired";
-
+        [Column("StartDate")]
+        public new DateTime CreatedAt { get; set; }
         //Relations
         public Member Member { get; set; } = default!;
         public int MemberID { get; set; }

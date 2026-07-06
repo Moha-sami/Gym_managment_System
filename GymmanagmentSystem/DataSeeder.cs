@@ -22,6 +22,7 @@ namespace GymmanagmentSystem
                 await SeedCategoriesAsync(context, logger);
                 await SeedTrainersAsync(context, logger);
                 await SeedMembersAsync(context, logger);
+                await SeedMemberMembershipsAsync(context, logger);
                 await SeedWeightProgressRecordsAsync(context, logger);
                 await SeedRolesAsync(roleManager, logger);
                 await SeedAdminUserAsync(userManager, logger);
@@ -494,6 +495,42 @@ namespace GymmanagmentSystem
             public int BuildingNumber { get; set; }
             public string Street { get; set; } = default!;
             public string City { get; set; } = default!;
+        }
+        private static async Task SeedMemberMembershipsAsync(GymDbcontext context, ILogger logger)
+        {
+            if (context.Membership.Any())
+            {
+                logger.LogInformation("Memberships already seeded — skipping.");
+                return;
+            }
+
+            var members = context.Member.ToList();
+            var basicPlan = context.Plans.FirstOrDefault(p => p.Name == "Basic Plan" && p.IsActive);
+
+            if (basicPlan == null)
+            {
+                logger.LogWarning("Basic Plan not found — skipping membership seeding.");
+                return;
+            }
+
+            if (!members.Any())
+            {
+                logger.LogWarning("No members found — skipping membership seeding.");
+                return;
+            }
+
+            var memberships = members.Select(m => new Membership
+            {
+                MemberID = m.Id,
+                PlansID = basicPlan.Id,
+                EndDate = DateTime.Now.AddDays(basicPlan.DurationInDays),
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            }).ToList();
+
+            await context.Membership.AddRangeAsync(memberships);
+            await context.SaveChangesAsync();
+            logger.LogInformation("Seeded {Count} memberships for existing members.", memberships.Count);
         }
     }
 }

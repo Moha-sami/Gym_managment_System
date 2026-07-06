@@ -148,11 +148,24 @@ namespace GymMangment.BLL.Services.Class
         public async Task<Result> UpdateSessionAsync(int id, SessionToUpdateViewModel model, CancellationToken ct = default)
         {
             if (model.EndDate <= model.StartDate)
-                return Result.Failure("End date must be after start date");
+                return Result.Failure("End date must be after start date.");
 
             var session = await _unitOfWork.Sessions.GetByIdAsync(id, ct);
             if (session == null)
                 return Result.Failure("Session not found");
+
+            // Validate trainer specialty matches session category
+            var trainer = await _unitOfWork.Trainers.GetByIdAsync(model.TrainerId, ct);
+            if (trainer == null)
+                return Result.Failure("Trainer not found.");
+
+            var category = await _unitOfWork.Categories.GetByIdAsync(session.CategoryId, ct);
+            if (category == null)
+                return Result.Failure("Category not found.");
+
+            if (!_specialtyToCategoryMap.TryGetValue(trainer.Specialty, out var expectedCategory)
+                || expectedCategory != category.CategoryName)
+                return Result.Failure($"Trainer specializes in {trainer.Specialty} which doesn't match this session's category {category.CategoryName}.");
 
             _mapper.Map(model, session);
             await _unitOfWork.Sessions.UpdateAsync(session, ct);

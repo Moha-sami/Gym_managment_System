@@ -47,13 +47,20 @@ namespace GymMangment.BLL.Mapping
             CreateMap<HealthRecord, HealthRecordViewModel>();
 
 
-            // Member -> MemberToUpdateViewModel (for pre-filling the edit form)
             CreateMap<Member, MemberToUpdateViewModel>()
-                .ForMember(dest => dest.BuildingNumber, opt => opt.MapFrom(src => src.Address.BuildingNumber))
-                .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.Address.City))
-                .ForMember(dest => dest.Street, opt => opt.MapFrom(src => src.Address.Street));
+    .ForMember(dest => dest.DateOfBirth, opt => opt.MapFrom(src => src.DateOFBirth))
+    .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.Gender.ToString()))
+    .ForMember(dest => dest.BuildingNumber, opt => opt.MapFrom(src => src.Address.BuildingNumber))
+    .ForMember(dest => dest.City, opt => opt.MapFrom(src => src.Address.City))
+    .ForMember(dest => dest.Street, opt => opt.MapFrom(src => src.Address.Street))
+    .ForMember(dest => dest.CurrentPhoto, opt => opt.MapFrom(src => src.Photo))
+    .ForMember(dest => dest.Photo, opt => opt.Ignore())
+    .ForMember(dest => dest.PhotoPath, opt => opt.Ignore())
+    .ForMember(dest => dest.Height, opt => opt.MapFrom(src => src.HealthRecord != null ? src.HealthRecord.Height : 0))
+    .ForMember(dest => dest.Weight, opt => opt.MapFrom(src => src.HealthRecord != null ? src.HealthRecord.Weight : 0))
+    .ForMember(dest => dest.BloodType, opt => opt.MapFrom(src => src.HealthRecord != null ? src.HealthRecord.BloodType : null))
+    .ForMember(dest => dest.Note, opt => opt.MapFrom(src => src.HealthRecord != null ? src.HealthRecord.Note : null));
 
-            // MemberToUpdateViewModel -> Member (for saving changes)
             CreateMap<MemberToUpdateViewModel, Member>()
                 .ForMember(dest => dest.Address, opt => opt.MapFrom(src => new Address
                 {
@@ -61,12 +68,14 @@ namespace GymMangment.BLL.Mapping
                     City = src.City,
                     Street = src.Street
                 }))
-                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.Now))
-                .ForMember(dest => dest.Name, opt => opt.Ignore())   // not editable
-                .ForMember(dest => dest.Photo, opt => opt.Ignore());  // not editable
-
-                // Plans -> PlanViewModel (list & details)
-                 CreateMap<Plans, PlanViewModel>();
+                .ForMember(dest => dest.Name, opt => opt.Ignore())
+                .ForMember(dest => dest.DateOFBirth, opt => opt.Ignore())
+                .ForMember(dest => dest.Gender, opt => opt.Ignore())
+                .ForMember(dest => dest.Photo, opt => opt.Ignore())
+                .ForMember(dest => dest.HealthRecord, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.Now));
+            // Plans -> PlanViewModel (list & details)
+            CreateMap<Plans, PlanViewModel>();
 
              // Plans -> EditPlanViewModel (pre-fill edit form)
              CreateMap<Plans, EditPlanViewModel>();

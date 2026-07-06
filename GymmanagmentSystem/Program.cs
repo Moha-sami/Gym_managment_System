@@ -54,6 +54,18 @@ namespace GymmanagmentSystem
             })
                 .AddEntityFrameworkStores<GymDbcontext>()
                    .AddDefaultTokenProviders();
+            
+
+           builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["Authentication:Google:ClientId"]
+            ?? throw new ArgumentNullException("ClientId missing");
+        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]
+            ?? throw new ArgumentNullException("ClientSecret missing");
+        options.CallbackPath = "/signin-google";
+    });
+
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
@@ -64,6 +76,10 @@ namespace GymmanagmentSystem
 
             var app = builder.Build(); // ✅ Build LAST
                                        // Data Seeding
+            if (!app.Environment.IsDevelopment())
+            {
+                app.UseHttpsRedirection();
+            }
             var logger = app.Services.GetRequiredService<ILogger<Program>>();
             await DataSeeder.SeedAsync(app.Services, logger);
 

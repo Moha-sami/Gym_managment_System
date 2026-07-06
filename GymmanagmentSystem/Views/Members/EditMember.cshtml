@@ -257,80 +257,125 @@
         }
 </style>
 
-<div class="container">
-    <main role="main" class="pb-3">
-        <div class="container mt-5">
-            <div class="row justify-content-center">
-                <div class="col-md-8 col-lg-6">
-                    <div class="card card-details border-0 p-2 shadow">
-                        <div class="avatar-wrapper">
-                            @if (!string.IsNullOrEmpty(Model.Photo))
-                            {
-                                <img src="~/images/@Model.Photo" alt="@Model.Name" class="rounded-circle"
-                                     style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; margin-top: 0;" />
-                            }
-                            else
-                            {
-                                <img src="~/images/User.jpg" alt="MemberName" class="rounded-circle"
-                                     style="width: 120px; height: 120px; object-fit: cover; border: 3px solid #fff; margin-top: 0;" />
-                            }
-                        </div>
-                        <div class="card-body text-center">
-                            <h2 class="mb-1">@Model.Name</h2>
-                            <form asp-controller="Members" asp-action="EditMember" asp-route-id="@Model.Id" method="post">
-                                <div class="mt-4">
-                                    <div class="row g-3">
-                                        <div class="col-12">
-                                            <div class="p-3 bg-light rounded">
-                                                <small class="text-muted d-block mb-1">Email</small>
-                                                <input asp-for="Email" class="form-control" />
-                                                <span asp-validation-for="Email" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="p-3 bg-light rounded">
-                                                <small class="text-muted d-block mb-1">Phone</small>
-                                                <input asp-for="Phone" class="form-control" />
-                                                <span asp-validation-for="Phone" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="p-3 bg-light rounded">
-                                                <small class="text-muted d-block mb-1">Building Number</small>
-                                                <input asp-for="BuildingNumber" class="form-control" />
-                                                <span asp-validation-for="BuildingNumber" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="p-3 bg-light rounded">
-                                                <small class="text-muted d-block mb-1">City</small>
-                                                <input asp-for="City" class="form-control" />
-                                                <span asp-validation-for="City" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="p-3 bg-light rounded">
-                                                <small class="text-muted d-block mb-1">Street</small>
-                                                <input asp-for="Street" class="form-control" />
-                                                <span asp-validation-for="Street" class="text-danger"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+<div class="container mt-4">
+    <header class="mb-4">
+        <h3 class="text-primary-color">My Profile</h3>
+        <p class="text-muted">Update your personal information</p>
+    </header>
 
-                                <div class="d-flex justify-content-between gap-2 mt-3 px-3 pb-3">
-                                    <a asp-controller="Members" asp-action="Index" class="btn btn-fill flex-fill">Back to List</a>
-                                    <button type="submit" class="btn btn-fill flex-fill">Done</button>
-                                </div>
-                            </form>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <div class="mb-4 pb-3 border-bottom d-flex align-items-center gap-3">
+                        @if (!string.IsNullOrEmpty(Model.CurrentPhoto))
+                        {
+                            <img src="@Model.CurrentPhoto" class="rounded-circle"
+                                 style="width:80px;height:80px;object-fit:cover;" />
+                        }
+                        else
+                        {
+                            <img src="~/images/User.jpg" class="rounded-circle"
+                                 style="width:80px;height:80px;object-fit:cover;" />
+                        }
+                        <div>
+                            <small class="text-muted d-block mb-1">Profile For</small>
+                            <h4 class="mb-0 text-black">@Model.Name</h4>
                         </div>
                     </div>
+
+                    <form asp-controller="Members" asp-action="MyProfile" method="post"
+                          enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="Name" />
+
+                        <!-- Personal Information -->
+                        <div class="section-header mb-3">
+                            <h5 class="text-primary fw-bold">Personal Information</h5>
+                            <hr class="mt-2">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                                <input asp-for="Email" type="email" class="form-control" />
+                                <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Phone" class="form-label fw-semibold">Phone <span class="text-danger">*</span></label>
+                                <input asp-for="Phone" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="BuildingNumber" class="form-label fw-semibold">Building No. <span class="text-danger">*</span></label>
+                                <input asp-for="BuildingNumber" class="form-control" />
+                                <span asp-validation-for="BuildingNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="City" class="form-label fw-semibold">City <span class="text-danger">*</span></label>
+                                <input asp-for="City" class="form-control" />
+                                <span asp-validation-for="City" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Street" class="form-label fw-semibold">Street <span class="text-danger">*</span></label>
+                                <input asp-for="Street" class="form-control" />
+                                <span asp-validation-for="Street" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Photo" class="form-label fw-semibold">Update Photo</label>
+                                <input asp-for="Photo" type="file" class="form-control"
+                                       accept=".jpg,.jpeg,.png,.webp" />
+                                <small class="text-muted">Optional. Max 2MB. JPG, PNG or WebP.</small>
+                            </div>
+                        </div>
+
+                        <!-- Health Record -->
+                        <div class="section-header mb-3 mt-4">
+                            <h5 class="text-primary fw-bold">Health Record</h5>
+                            <hr class="mt-2">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="Height" class="form-label fw-semibold">Height (cm)</label>
+                                <input asp-for="Height" type="number" step="0.1" class="form-control" />
+                                <span asp-validation-for="Height" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Weight" class="form-label fw-semibold">Weight (kg)</label>
+                                <input asp-for="Weight" type="number" step="0.1" class="form-control" />
+                                <span asp-validation-for="Weight" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="BloodType" class="form-label fw-semibold">Blood Type</label>
+                                <select asp-for="BloodType" class="form-select">
+                                    <option value="">Select</option>
+                                    <option>A+</option>
+                                    <option>A-</option>
+                                    <option>B+</option>
+                                    <option>B-</option>
+                                    <option>O+</option>
+                                    <option>O-</option>
+                                    <option>AB+</option>
+                                    <option>AB-</option>
+                                </select>
+                                <span asp-validation-for="BloodType" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Note" class="form-label fw-semibold">Notes</label>
+                                <input asp-for="Note" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                            <button type="submit" class="btn btn-fill">
+                                <i class="bi bi-check-lg me-1"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 </div>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
