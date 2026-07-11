@@ -1,4 +1,4 @@
-﻿using GymManagment.DAL.Models.Enum;
+using GymManagment.DAL.Models.Enum;
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
@@ -49,4 +49,30 @@ public class MemberToUpdateViewModel
     public string? BloodType { get; set; }
 
     public string? Note { get; set; }
+
+    public decimal? BMI
+    {
+        get
+        {
+            if (Height > 0 && Weight > 0)
+            {
+                var heightInMeters = Height / 100;
+                return Math.Round(Weight / (heightInMeters * heightInMeters), 1);
+            }
+            return null;
+        }
+    }
+
+    public string BMICategory
+    {
+        get
+        {
+            var bmi = BMI;
+            if (!bmi.HasValue) return "N/A";
+            if (bmi < 18.5m) return "Underweight";
+            if (bmi < 25.0m) return "Normal weight";
+            if (bmi < 30.0m) return "Overweight";
+            return "Obese";
+        }
+    }
 }

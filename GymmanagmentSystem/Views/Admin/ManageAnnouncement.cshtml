@@ -1,0 +1,70 @@
+@using GymMangment.BLL.ViewModels
+@model AnnouncementViewModel
+@{
+    ViewData["Title"] = "Manage Announcement";
+}
+
+<div class="container mt-5">
+    <header class="mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h3 class="text-primary-color mb-0">Announcement Noticeboard</h3>
+            <p class="text-muted">Broadcast a gym-wide message to all members and guests</p>
+        </div>
+        <a asp-controller="Admin" asp-action="Users" class="btn btn-outline fw-medium rounded-pill px-4 py-3">
+            <i class="bi bi-arrow-left me-2"></i>Back to Users
+        </a>
+    </header>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form asp-controller="Admin" asp-action="ManageAnnouncement" method="post">
+                        <!-- Alert Message -->
+                        <div class="mb-3">
+                            <label asp-for="Message" class="form-label fw-semibold">Announcement Message <span class="text-danger">*</span></label>
+                            <textarea asp-for="Message" rows="4" class="form-control" placeholder="Write your announcement message here..."></textarea>
+                            <span asp-validation-for="Message" class="text-danger small"></span>
+                        </div>
+
+                        <!-- Style Theme Selection -->
+                        <div class="mb-3">
+                            <label asp-for="StyleClass" class="form-label fw-semibold">Style Class (Theme Color)</label>
+                            <select asp-for="StyleClass" class="form-select">
+                                <option value="info">Info (Blue Banner)</option>
+                                <option value="warning">Warning (Yellow/Orange Banner)</option>
+                                <option value="danger">Danger (Red Banner)</option>
+                                <option value="success">Success (Green Banner)</option>
+                            </select>
+                            <span asp-validation-for="StyleClass" class="text-danger small"></span>
+                            <small class="text-muted">Choose a theme color based on the urgency of the announcement.</small>
+                        </div>
+
+                        <!-- Active Toggle -->
+                        <div class="mb-4 mt-3">
+                            <div class="form-check form-switch p-0 d-flex align-items-center gap-3">
+                                <label asp-for="IsActive" class="form-check-label fw-semibold m-0" style="cursor: pointer;">Activate Announcement</label>
+                                <input asp-for="IsActive" class="form-check-input ms-0" type="checkbox" role="switch" style="cursor: pointer; width: 2.5em; height: 1.25em;" />
+                            </div>
+                            <small class="text-muted d-block mt-1">If unchecked, the announcement banner will be hidden globally.</small>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                            <a asp-controller="Admin" asp-action="Users" class="btn btn-outline py-2 px-4">
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary py-2 px-4" id="saveAnnouncementBtn">
+                                Save Announcement
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

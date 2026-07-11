@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -68,6 +68,7 @@
     </style>
 </head>
 <body>
+    @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
     @{
         var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
 
@@ -75,6 +76,30 @@
         {
             return controllers.Contains(currentController, StringComparer.OrdinalIgnoreCase) ? "active" : "";
         }
+
+        // Load gym announcement from JSON file
+        var announcementPath = System.IO.Path.Combine(Env.WebRootPath, "data", "announcement.json");
+        GymMangment.BLL.ViewModels.AnnouncementViewModel? announcement = null;
+        if (System.IO.File.Exists(announcementPath))
+        {
+            try
+            {
+                var json = System.IO.File.ReadAllText(announcementPath);
+                announcement = System.Text.Json.JsonSerializer.Deserialize<GymMangment.BLL.ViewModels.AnnouncementViewModel>(json);
+            }
+            catch { }
+        }
+    }
+
+    @if (announcement != null && announcement.IsActive && !string.IsNullOrEmpty(announcement.Message))
+    {
+        <div class="alert alert-@announcement.StyleClass alert-dismissible fade show rounded-0 mb-0 border-0 text-center py-3 position-relative" id="announcementBanner" role="alert" style="z-index: 1050; font-size: 1rem; font-weight: 500;">
+            <div class="container d-flex align-items-center justify-content-center gap-2">
+                <i class="bi bi-megaphone-fill fs-5"></i>
+                <span>@announcement.Message</span>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="top: 50%; transform: translateY(-50%); right: 1.5rem;"></button>
+        </div>
     }
 
     <header>
@@ -194,10 +219,10 @@
 
     <script>
         setTimeout(function () {
-        document.querySelectorAll('.alert').forEach(function (alertEl) {
-        var bsAlert = bootstrap.Alert.getOrCreateInstance(alertEl);
-        bsAlert.close();
-        });
+            document.querySelectorAll('.alert:not(#announcementBanner)').forEach(function (alertEl) {
+                var bsAlert = bootstrap.Alert.getOrCreateInstance(alertEl);
+                bsAlert.close();
+            });
         }, 3000);
     </script>
 </body>
