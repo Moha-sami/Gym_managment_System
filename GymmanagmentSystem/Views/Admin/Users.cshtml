@@ -1,4 +1,4 @@
-﻿@using GymMangment.BLL.ViewModels.AccountViewModels
+@using GymMangment.BLL.ViewModels.AccountViewModels
 @model IEnumerable<UserViewModel>
 @{
     ViewData["Title"] = "User Management";
@@ -10,6 +10,9 @@
             <h2 class="text-primary-color mb-0">User Management</h2>
             <p class="text-muted">Manage user accounts and assign roles</p>
         </div>
+        <a asp-controller="Admin" asp-action="ManageAnnouncement" class="btn btn-outline fw-medium rounded-pill px-4 py-3">
+            <i class="bi bi-megaphone me-2"></i>Announcement Board
+        </a>
     </header>
 
     @if (Model != null && Model.Any())

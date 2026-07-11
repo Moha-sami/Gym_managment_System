@@ -1,4 +1,4 @@
-﻿@using GymMangment.BLL.ViewModels.MemberViewModels
+@using GymMangment.BLL.ViewModels.MemberViewModels
 @model MemberToUpdateViewModel
 @{
     ViewData["Title"] = "My Profile";
@@ -10,9 +10,10 @@
         <p class="text-muted">Update your personal information</p>
     </header>
 
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm border-0">
+    <div class="row g-4">
+        <!-- Left Column: Profile form -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 h-100">
                 <div class="card-body p-4">
                     <div class="mb-4 pb-3 border-bottom d-flex align-items-center gap-3">
                         @if (!string.IsNullOrEmpty(Model.CurrentPhoto))
@@ -123,12 +124,64 @@
                 </div>
             </div>
         </div>
+
+        <!-- Right Column: Interactive BMI Dashboard -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 h-100 bg-light">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <h4 class="text-primary-color fw-bold mb-3">Health Dashboard</h4>
+                        <p class="text-muted small">Your Body Mass Index (BMI) is calculated in real-time based on your weight and height.</p>
+
+                        <!-- BMI Display Box -->
+                        <div class="text-center py-4 bg-white rounded-3 shadow-sm border mb-4">
+                            <h6 class="text-muted mb-1 text-uppercase small fw-bold">Body Mass Index (BMI)</h6>
+                            <div class="display-4 fw-bold text-primary-color my-2" id="bmiScore">
+                                @(Model.BMI?.ToString("F1") ?? "--")
+                            </div>
+                            <span class="badge fs-6 px-3 py-2 rounded-pill" id="bmiCategoryBadge">
+                                @(Model.BMICategory ?? "No Data")
+                            </span>
+                        </div>
+
+                        <!-- Progress Slider -->
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between small text-muted mb-1" style="font-size: 0.8rem;">
+                                <span>Underweight</span>
+                                <span>Normal</span>
+                                <span>Overweight</span>
+                                <span>Obese</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div id="bmiProgressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted mt-1" style="font-size: 0.75rem;">
+                                <span>&lt; 18.5</span>
+                                <span>18.5 - 24.9</span>
+                                <span>25.0 - 29.9</span>
+                                <span>&gt;= 30.0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Health Recommendation Section -->
+                    <div class="bg-white p-3 rounded-3 border">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-heart-pulse-fill text-danger fs-5"></i>
+                            <h6 class="mb-0 fw-bold">Training Advice</h6>
+                        </div>
+                        <p class="text-muted small mb-0" id="bmiRecommendation">
+                            Provide your height and weight to receive a fitness recommendation.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    // ضيف ده في الـ Scripts section
     <script>
         document.querySelector('input[type="file"]').addEventListener('change', function(e) {
             if (e.target.files && e.target.files[0]) {
@@ -142,15 +195,86 @@
     </script>
     <script>
         function showLoading(btn) {
-            // بنخفي النص ونظهر الـ Spinner
             document.getElementById('btnText').innerText = 'Saving...';
             document.getElementById('spinner').classList.remove('d-none');
-
-            // بنعمل Disable للزرار عشان ميتداسش مرتين
             btn.disabled = true;
-
-            // بنبعت الفورم
             btn.form.submit();
         }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const heightInput = document.getElementById("Height");
+            const weightInput = document.getElementById("Weight");
+            const bmiScore = document.getElementById("bmiScore");
+            const bmiCategoryBadge = document.getElementById("bmiCategoryBadge");
+            const bmiProgressBar = document.getElementById("bmiProgressBar");
+            const bmiRecommendation = document.getElementById("bmiRecommendation");
+
+            function calculateBMI() {
+                const height = parseFloat(heightInput.value);
+                const weight = parseFloat(weightInput.value);
+
+                if (isNaN(height) || isNaN(weight) || height <= 0 || weight <= 0) {
+                    bmiScore.innerText = "--";
+                    bmiCategoryBadge.innerText = "No Data";
+                    bmiCategoryBadge.className = "badge bg-secondary fs-6 px-3 py-2 rounded-pill";
+                    bmiProgressBar.style.width = "0%";
+                    bmiProgressBar.className = "progress-bar bg-secondary";
+                    bmiRecommendation.innerText = "Please enter valid height and weight values to get your BMI calculation.";
+                    return;
+                }
+
+                // Convert height from cm to meters
+                const heightInMeters = height / 100;
+                const bmi = weight / (heightInMeters * heightInMeters);
+                const bmiRounded = bmi.toFixed(1);
+
+                bmiScore.innerText = bmiRounded;
+
+                let category = "";
+                let badgeClass = "";
+                let progressWidth = 0;
+                let progressClass = "";
+                let recommendation = "";
+
+                if (bmi < 18.5) {
+                    category = "Underweight";
+                    badgeClass = "bg-info text-dark";
+                    progressWidth = Math.max(5, Math.min(25, ((bmi - 10) / 8.5) * 25));
+                    progressClass = "bg-info";
+                    recommendation = "Focus on building lean muscle mass through strength training and a nutrient-dense, calorie-surplus diet. Consuming more healthy fats and proteins will help support healthy weight gain.";
+                } else if (bmi < 25.0) {
+                    category = "Normal Weight";
+                    badgeClass = "bg-success text-white";
+                    progressWidth = 25 + (((bmi - 18.5) / 6.5) * 25);
+                    progressClass = "bg-success";
+                    recommendation = "Excellent! You are in a healthy BMI range. Maintain your current fitness level with a balanced mix of cardiovascular exercise, strength training, and a well-rounded diet.";
+                } else if (bmi < 30.0) {
+                    category = "Overweight";
+                    badgeClass = "bg-warning text-dark";
+                    progressWidth = 50 + (((bmi - 25) / 5) * 25);
+                    progressClass = "bg-warning";
+                    recommendation = "You are in the overweight range. Incorporating a combination of calorie-burning cardio (like HIIT) and resistance training, along with a slight caloric deficit, can help you manage your weight.";
+                } else {
+                    category = "Obese";
+                    badgeClass = "bg-danger text-white";
+                    progressWidth = 75 + Math.min(25, (((bmi - 30) / 15) * 25));
+                    progressClass = "bg-danger";
+                    recommendation = "You are in the obese category. We recommend consulting a healthcare provider or a personal trainer to design a structured, low-impact exercise regimen (like swimming, cycling) and a tailored nutrition plan.";
+                }
+
+                bmiCategoryBadge.innerText = category;
+                bmiCategoryBadge.className = `badge ${badgeClass} fs-6 px-3 py-2 rounded-pill`;
+                bmiProgressBar.style.width = `${progressWidth}%`;
+                bmiProgressBar.className = `progress-bar ${progressClass}`;
+                bmiRecommendation.innerText = recommendation;
+            }
+
+            heightInput.addEventListener("input", calculateBMI);
+            weightInput.addEventListener("input", calculateBMI);
+
+            // Run initial calculation
+            calculateBMI();
+        });
     </script>
 }
