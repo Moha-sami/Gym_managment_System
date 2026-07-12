@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using GymmanagmentSystem.PL.Services;
 
 namespace GymmanagmentSystem.PL.Controllers
 {
@@ -17,13 +18,15 @@ namespace GymmanagmentSystem.PL.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IFileService _fileService;
+        private readonly IEmailService _emailService;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,IUnitOfWork unitOfWork,IFileService fileService)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,IUnitOfWork unitOfWork,IFileService fileService, IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _unitOfWork = unitOfWork;
             _fileService = fileService;
+            _emailService = emailService;
         }
 
         // GET: Account/Login
@@ -348,6 +351,23 @@ namespace GymmanagmentSystem.PL.Controllers
                 Console.WriteLine($"====================================");
                 Console.WriteLine($"PASSWORD RESET OTP FOR {model.Email}: {otp}");
                 Console.WriteLine($"====================================");
+
+                var emailSubject = "Power Fitness - Password Reset OTP";
+                var emailBody = $@"
+                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;'>
+                        <h2 style='color: #0a1172; text-align: center;'>Power Fitness</h2>
+                        <hr style='border: 0; border-top: 1px solid #eee;' />
+                        <p>Hello,</p>
+                        <p>We received a request to reset your password. Use the following 6-digit One-Time Password (OTP) to proceed:</p>
+                        <div style='text-align: center; margin: 30px 0;'>
+                            <span style='font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #0a1172; border: 2px dashed #0a1172; padding: 10px 20px; border-radius: 5px; background-color: #f8f9fa;'>{otp}</span>
+                        </div>
+                        <p style='color: #666; font-size: 14px;'>This OTP is valid for 5 minutes. If you did not request this, please ignore this email.</p>
+                        <hr style='border: 0; border-top: 1px solid #eee;' />
+                        <p style='font-size: 12px; color: #999; text-align: center;'>Power Fitness Gym Management System</p>
+                    </div>";
+
+                await _emailService.SendEmailAsync(model.Email, emailSubject, emailBody);
             }
 
             TempData["SuccessMessage"] = "If the email is registered, a 6-digit OTP has been sent.";
