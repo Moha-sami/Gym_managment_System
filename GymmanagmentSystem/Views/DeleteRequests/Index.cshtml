@@ -16,7 +16,7 @@
     @if (Model.Any())
     {
         <div class="table-responsive" style="overflow: visible;">
-            <table class="table table-borderless align-middle">
+            <table class="table table-borderless align-middle responsive-card-table">
                 <thead>
                     <tr>
                         <th><span>Target</span></th>
@@ -39,17 +39,17 @@
                         };
 
                         <tr>
-                            <td>
+                            <td data-label="Target">
                                 <strong>@request.TargetType</strong>
                                 <span class="d-block text-muted">@request.TargetName</span>
                             </td>
-                            <td>
+                            <td data-label="Requested By">
                                 <span>@request.RequestedByName</span>
                             </td>
-                            <td>
+                            <td data-label="Requested At">
                                 <span>@request.CreatedAt.ToString("MMM dd, yyyy hh:mm tt")</span>
                             </td>
-                            <td>
+                            <td data-label="Status">
                                 <span class="badge @statusClass">@request.Status</span>
                                 @if (request.ReviewedAt.HasValue)
                                 {
@@ -58,36 +58,39 @@
                                     </small>
                                 }
                             </td>
-                            <td>
+                            <td data-label="Reason">
                                 <span>@(string.IsNullOrWhiteSpace(request.Reason) ? "No reason provided" : request.Reason)</span>
                                 @if (!string.IsNullOrWhiteSpace(request.AdminNote))
                                 {
                                     <small class="d-block text-muted mt-1">Admin note: @request.AdminNote</small>
                                 }
                             </td>
-                            <td>
-                                @if (request.Status == DeleteRequestStatus.Pending)
-                                {
-                                    <div class="d-flex flex-column gap-2">
-                                        <form asp-controller="DeleteRequests" asp-action="Approve" asp-route-id="@request.Id" method="post" class="d-flex gap-2">
-                                            <input name="adminNote" class="form-control form-control-sm" placeholder="Optional note" />
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                <i class="bi bi-trash me-1"></i>Approve
-                                            </button>
-                                        </form>
-                                        <form asp-controller="DeleteRequests" asp-action="Reject" asp-route-id="@request.Id" method="post" class="d-flex gap-2">
-                                            <input name="adminNote" class="form-control form-control-sm" placeholder="Optional note" />
-                                            <button type="submit" class="btn btn-outline-secondary btn-sm">
-                                                <i class="bi bi-x-lg me-1"></i>Reject
-                                            </button>
-                                        </form>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">Reviewed</span>
-                                }
-                            </td>
+                             <td data-label="Action">
+                                 @if (request.Status == DeleteRequestStatus.Pending)
+                                 {
+                                     <div class="d-flex flex-column gap-2 w-100 mx-auto" style="max-width: 280px;">
+                                         <input id="note-@request.Id" class="form-control form-control-sm border-muted shadow-sm" placeholder="Optional review note..." />
+                                         <div class="d-flex gap-2">
+                                             <form asp-controller="DeleteRequests" asp-action="Approve" asp-route-id="@request.Id" method="post" class="flex-fill" onsubmit="syncNote(@request.Id, this)">
+                                                 <input type="hidden" name="adminNote" id="approve-note-@request.Id" />
+                                                 <button type="submit" class="btn btn-danger btn-sm w-100 rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-1 py-1">
+                                                     <i class="bi bi-check-circle-fill"></i> Approve
+                                                 </button>
+                                             </form>
+                                             <form asp-controller="DeleteRequests" asp-action="Reject" asp-route-id="@request.Id" method="post" class="flex-fill" onsubmit="syncNote(@request.Id, this)">
+                                                 <input type="hidden" name="adminNote" id="reject-note-@request.Id" />
+                                                 <button type="submit" class="btn btn-outline-secondary btn-sm w-100 rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-1 py-1">
+                                                     <i class="bi bi-x-circle-fill"></i> Reject
+                                                 </button>
+                                             </form>
+                                         </div>
+                                     </div>
+                                 }
+                                 else
+                                 {
+                                     <span class="badge bg-light text-muted border py-2 px-3 rounded-pill"><i class="bi bi-check-all me-1"></i>Reviewed</span>
+                                 }
+                             </td>
                         </tr>
                     }
                 </tbody>
@@ -103,3 +106,12 @@
         </div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        function syncNote(requestId, form) {
+            var noteVal = document.getElementById('note-' + requestId).value;
+            $(form).find('input[name="adminNote"]').val(noteVal);
+        }
+    </script>
+}

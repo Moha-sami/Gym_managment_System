@@ -30,6 +30,9 @@ namespace GymmanagmentSystem
 
             //builder.Services.AddScoped<IPlanRepository, PlanRepository>();
             builder.Services.AddScoped<ImemberService, MemberService>();
+            builder.Services.AddScoped<IWorkoutService, WorkoutService>();
+            builder.Services.AddScoped<IWorkoutPlanService, WorkoutPlanService>();
+            builder.Services.AddScoped<IBadgeService, BadgeService>();
             builder.Services.AddScoped<IPlanServices, PlanService>();
             builder.Services.AddScoped<ITrainerService, TrainerService>();
             builder.Services.AddScoped<ISessionRepository, SessionRepository>();
@@ -53,7 +56,8 @@ namespace GymmanagmentSystem
                 options.SignIn.RequireConfirmedEmail = false;
             })
                 .AddEntityFrameworkStores<GymDbcontext>()
-                   .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddTokenProvider<GymmanagmentSystem.PL.Services.EmailOtpTokenProvider<AppUser>>("EmailOtpProvider");
             
 
            builder.Services.AddAuthentication()

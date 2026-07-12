@@ -82,13 +82,22 @@ GymmanagmentSystem/
 - ✅ **My Profile** — view and edit own contact/address details (Name, DOB, Gender locked)
 - ✅ **My Membership** — current plan, price, start/end date, days remaining, quick link to switch plans
 - ✅ **My Bookings** — view and cancel only their own session bookings
+- ✅ **My Workout Journal** — log custom workouts, adding exercises, sets, weights, and reps with interactive history details
+- ✅ **My Workout Plan** — generate rule-based weekly routines (Goals: Build Muscle, Lose Weight, Cardio) and copy days directly into the workout journal
+- ✅ **My Achievements** — gamified badges hub (e.g. Early Bird, Iron Lifter) and a global community leaderboard
 
 ### Authentication & Authorization
 - ✅ ASP.NET Core Identity (custom `AppUser`, linked to a `Member` or `Trainer` record via `MemberId`/`TrainerId`)
 - ✅ Roles: **Admin**, **Manager**, **Member**, **Trainer**
 - ✅ Public registration → automatically linked Member profile + **Member** role + Basic Plan membership
+- ✅ **Forgot Password with OTP** — self-service password recovery using 6-digit numeric OTP tokens sent to email
 - ✅ Admin can assign/change roles and delete accounts via User Management page
 - ✅ Manager can create Members/Trainers/Sessions but cannot delete directly — submits a **Delete Request** for Admin approval/rejection
+
+### Responsive Design
+- ✅ **Table-to-Cards Layouts** — dynamically folds wide tables into readable, vertical stacked card formats on viewport widths under `992px` (mobile/tablet)
+- ✅ **Smart Column Header Injector** — automatically shows column names on cards via custom CSS `data-label` injection
+- ✅ **Stackable Headers** — stacks action buttons below section titles on screens under `576px` to prevent layout overlaps
 
 ### Data Seeding
 - ✅ Plans, Categories, 4 Trainers, 10 Members (with avatar photos), and 7 days of upcoming Sessions seeded automatically on first run

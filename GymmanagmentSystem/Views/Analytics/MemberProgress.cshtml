@@ -1,0 +1,376 @@
+@model GymMangment.BLL.ViewModels.AnalyticsViewModels.MemberAnalyticsViewModel
+@{
+    ViewData["Title"] = $"{Model.MemberName}'s Progress";
+}
+
+<div class="container py-5">
+    <!-- Header Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg text-white" style="background: linear-gradient(135deg, #1f4068 0%, #162447 100%); border-radius: 20px;">
+                <div class="card-body p-5 d-flex align-items-center justify-content-between flex-wrap">
+                    <div>
+                        <span class="badge bg-info text-dark mb-2 px-3 py-2 fs-6 fw-bold rounded-pill">💪 Trainer Portal</span>
+                        <h1 class="display-5 fw-bold mb-1">Progress Tracker: @Model.MemberName</h1>
+                        <p class="fs-5 opacity-75 mb-0">Track and review workout performance records for this member.</p>
+                    </div>
+                    <div class="mt-4 mt-md-0 d-flex gap-3 align-items-center flex-wrap">
+                        <div>
+                            <select id="timeframeSelect" class="form-select form-select-lg rounded-pill border-0 shadow" style="min-width: 180px; cursor: pointer;">
+                                <option value="30">Last 30 Days</option>
+                                <option value="90">Last 90 Days</option>
+                                <option value="180" selected>Last 6 Months</option>
+                                <option value="365">Last Year</option>
+                                <option value="3650">All Time</option>
+                            </select>
+                        </div>
+                        <a href="/Members/MemberDetails/@Model.MemberId" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                            <i class="bi bi-arrow-left-short me-1"></i> Back to Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Charts Grid -->
+    <div class="row g-4">
+        <!-- 1. Weight Progress Chart -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+                <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
+                    <h3 class="h5 mb-0 fw-bold text-dark"><i class="bi bi-activity text-primary me-2"></i>Weight Tracker</h3>
+                    <span id="currentWeightBadge" class="badge bg-primary rounded-pill px-3 py-2 font-monospace">-- kg</span>
+                </div>
+                <div class="card-body p-4 d-flex align-items-center justify-content-center" style="position: relative; height: 320px;">
+                    <canvas id="weightChart"></canvas>
+                    <div id="weightNoData" class="text-center text-muted d-none">
+                        <i class="bi bi-calendar-x display-4 mb-2 d-block"></i>
+                        <span>No weight logs recorded in this period.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Workout Consistency / Frequency -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+                <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
+                    <h3 class="h5 mb-0 fw-bold text-dark"><i class="bi bi-calendar-check text-success me-2"></i>Workout Consistency</h3>
+                    <span id="totalWorkoutsBadge" class="badge bg-success rounded-pill px-3 py-2">-- Workouts</span>
+                </div>
+                <div class="card-body p-4 d-flex align-items-center justify-content-center" style="position: relative; height: 320px;">
+                    <canvas id="frequencyChart"></canvas>
+                    <div id="frequencyNoData" class="text-center text-muted d-none">
+                        <i class="bi bi-calendar-x display-4 mb-2 d-block"></i>
+                        <span>No workouts logged in this period.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Training Volume -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+                <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
+                    <h3 class="h5 mb-0 fw-bold text-dark"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Training Volume</h3>
+                    <span id="avgVolumeBadge" class="badge bg-warning text-dark rounded-pill px-3 py-2 font-monospace">-- kg avg</span>
+                </div>
+                <div class="card-body p-4 d-flex align-items-center justify-content-center" style="position: relative; height: 320px;">
+                    <canvas id="volumeChart"></canvas>
+                    <div id="volumeNoData" class="text-center text-muted d-none">
+                        <i class="bi bi-calendar-x display-4 mb-2 d-block"></i>
+                        <span>No volume data available.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Max Weight / 1RM Trend -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
+                <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <h3 class="h5 mb-0 fw-bold text-dark"><i class="bi bi-graph-up-arrow text-danger me-2"></i>Strength / 1RM Trend</h3>
+                    <div style="min-width: 150px;">
+                        <select id="exerciseSelect" class="form-select form-select-sm rounded-pill shadow-sm" style="cursor: pointer;">
+                            @if (Model.LoggedExercises.Any())
+                            {
+                                @foreach (var exercise in Model.LoggedExercises)
+                                {
+                                    <option value="@exercise">@exercise</option>
+                                }
+                            }
+                            else
+                            {
+                                <option value="">-- No Exercises Logged --</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body p-4 d-flex align-items-center justify-content-center" style="position: relative; height: 320px;">
+                    <canvas id="exerciseChart"></canvas>
+                    <div id="exerciseNoData" class="text-center text-muted d-none">
+                        <i class="bi bi-calendar-x display-4 mb-2 d-block"></i>
+                        <span>Log sets for this exercise to generate progress trends.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Include Chart.js via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const memberId = @Model.MemberId;
+        let weightChart, frequencyChart, volumeChart, exerciseChart;
+
+        const colors = {
+            primary: 'rgba(58, 123, 213, 1)',
+            primaryBg: 'rgba(58, 123, 213, 0.15)',
+            success: 'rgba(40, 167, 69, 1)',
+            successBg: 'rgba(40, 167, 69, 0.15)',
+            warning: 'rgba(255, 193, 7, 1)',
+            warningBg: 'rgba(255, 193, 7, 0.15)',
+            danger: 'rgba(220, 53, 69, 1)',
+            dangerBg: 'rgba(220, 53, 69, 0.15)'
+        };
+
+        async function loadDashboardData() {
+            const days = document.getElementById('timeframeSelect').value;
+            
+            try {
+                const response = await fetch(`/Analytics/GetChartData?memberId=${memberId}&days=${days}`);
+                if (!response.ok) throw new Error("Failed to fetch analytics");
+                const data = await response.json();
+
+                renderWeightChart(data.weightRecords);
+                renderFrequencyChart(data.workoutFrequency);
+                renderVolumeChart(data.workoutVolume);
+                
+                loadExerciseData();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadExerciseData() {
+            const days = document.getElementById('timeframeSelect').value;
+            const exerciseSelect = document.getElementById('exerciseSelect');
+            const exerciseName = exerciseSelect.value;
+
+            if (!exerciseName) {
+                toggleNoDataPlaceholder('exerciseChart', 'exerciseNoData', true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Analytics/GetExerciseData?memberId=${memberId}&exerciseName=${encodeURIComponent(exerciseName)}&days=${days}`);
+                if (!response.ok) throw new Error("Failed to fetch exercise trends");
+                const data = await response.json();
+                
+                renderExerciseChart(data);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function toggleNoDataPlaceholder(canvasId, placeholderId, show) {
+            const canvas = document.getElementById(canvasId);
+            const placeholder = document.getElementById(placeholderId);
+            if (show) {
+                canvas.classList.add('d-none');
+                placeholder.classList.remove('d-none');
+            } else {
+                canvas.classList.remove('d-none');
+                placeholder.classList.add('d-none');
+            }
+        }
+
+        function renderWeightChart(records) {
+            if (weightChart) weightChart.destroy();
+            
+            const hasData = records && records.length > 0;
+            toggleNoDataPlaceholder('weightChart', 'weightNoData', !hasData);
+
+            if (!hasData) {
+                document.getElementById('currentWeightBadge').innerText = '-- kg';
+                return;
+            }
+
+            const latestWeight = records[records.length - 1].weight;
+            document.getElementById('currentWeightBadge').innerText = `${latestWeight} kg`;
+
+            const ctx = document.getElementById('weightChart').getContext('2d');
+            weightChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: records.map(r => r.dateLabel),
+                    datasets: [{
+                        label: 'Weight (kg)',
+                        data: records.map(r => r.weight),
+                        borderColor: colors.primary,
+                        backgroundColor: colors.primaryBg,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: false },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function renderFrequencyChart(periods) {
+            if (frequencyChart) frequencyChart.destroy();
+
+            const hasData = periods && periods.length > 0 && periods.some(p => p.workoutCount > 0);
+            toggleNoDataPlaceholder('frequencyChart', 'frequencyNoData', !hasData);
+
+            if (!hasData) {
+                document.getElementById('totalWorkoutsBadge').innerText = '0 Workouts';
+                return;
+            }
+
+            const totalWorkouts = periods.reduce((sum, p) => sum + p.workoutCount, 0);
+            document.getElementById('totalWorkoutsBadge').innerText = `${totalWorkouts} Workouts`;
+
+            const ctx = document.getElementById('frequencyChart').getContext('2d');
+            frequencyChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: periods.map(p => p.periodLabel),
+                    datasets: [{
+                        label: 'Workouts Logged',
+                        data: periods.map(p => p.workoutCount),
+                        backgroundColor: colors.success,
+                        borderRadius: 8,
+                        maxBarThickness: 45
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function renderVolumeChart(volumes) {
+            if (volumeChart) volumeChart.destroy();
+
+            const hasData = volumes && volumes.length > 0 && volumes.some(v => v.volume > 0);
+            toggleNoDataPlaceholder('volumeChart', 'volumeNoData', !hasData);
+
+            if (!hasData) {
+                document.getElementById('avgVolumeBadge').innerText = '-- kg avg';
+                return;
+            }
+
+            const avgVolume = Math.round(volumes.reduce((sum, v) => sum + v.volume, 0) / volumes.length);
+            document.getElementById('avgVolumeBadge').innerText = `${avgVolume.toLocaleString()} kg avg`;
+
+            const ctx = document.getElementById('volumeChart').getContext('2d');
+            volumeChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: volumes.map(v => v.dateLabel),
+                    datasets: [{
+                        label: 'Total Volume (kg)',
+                        data: volumes.map(v => v.volume),
+                        borderColor: colors.warning,
+                        backgroundColor: colors.warningBg,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function renderExerciseChart(points) {
+            if (exerciseChart) exerciseChart.destroy();
+
+            const hasData = points && points.length > 0;
+            toggleNoDataPlaceholder('exerciseChart', 'exerciseNoData', !hasData);
+
+            if (!hasData) return;
+
+            const ctx = document.getElementById('exerciseChart').getContext('2d');
+            exerciseChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: points.map(p => p.dateLabel),
+                    datasets: [
+                        {
+                            label: 'Max Weight Lifted (kg)',
+                            data: points.map(p => p.maxWeight),
+                            borderColor: colors.danger,
+                            backgroundColor: 'transparent',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 4,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Estimated 1RM (kg)',
+                            data: points.map(p => p.estimated1RM),
+                            borderColor: 'rgba(235, 77, 75, 1)',
+                            backgroundColor: 'rgba(235, 77, 75, 0.15)',
+                            borderWidth: 3,
+                            fill: true,
+                            pointRadius: 5,
+                            tension: 0.2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'bottom' }
+                    },
+                    scales: {
+                        y: { beginAtZero: false },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        document.getElementById('timeframeSelect').addEventListener('change', loadDashboardData);
+        document.getElementById('exerciseSelect').addEventListener('change', loadExerciseData);
+
+        document.addEventListener('DOMContentLoaded', loadDashboardData);
+    </script>
+}

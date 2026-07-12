@@ -1,4 +1,4 @@
-﻿/* ^ global style */
+/* ^ global style */
 
 :root {
     --primary-color: #070093;
@@ -642,3 +642,92 @@ footer .footer-content .location p {
     }
 
 }
+
+/* ===== Responsive Table to Cards Utility ===== */
+@media (max-width: 991.98px) {
+    .responsive-card-table thead {
+        display: none !important;
+    }
+
+    .responsive-card-table tbody tr {
+        display: block !important;
+        background: white !important;
+        border: 1px solid #e9ecef !important;
+        border-radius: 12px !important;
+        padding: 0.75rem !important;
+        margin-bottom: 1rem !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+    }
+
+    .responsive-card-table tbody td {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0.25rem 0 !important;
+        border-bottom: 1px solid #f1f3f5 !important;
+        border-right: none !important;
+        text-align: center !important;
+        font-size: 0.85rem !important;
+        word-break: break-word !important;
+    }
+
+    .responsive-card-table tbody td:last-child {
+        border-bottom: none !important;
+    }
+
+    /* Column labels as small uppercase headers */
+    .responsive-card-table tbody td::before {
+        content: attr(data-label) !important;
+        font-weight: 600 !important;
+        color: #6c757d !important;
+        font-size: 0.65rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        margin-bottom: 0.15rem !important;
+        display: block !important;
+        text-align: center !important;
+        width: 100% !important;
+    }
+
+    /* Values styling */
+    .responsive-card-table tbody td > span,
+    .responsive-card-table tbody td > div,
+    .responsive-card-table tbody td > form {
+        display: inline-block !important;
+        width: 100% !important;
+        text-align: center !important;
+    }
+
+    .responsive-card-table tbody td > form.d-flex {
+        display: flex !important;
+    }
+
+    .responsive-card-table tbody td > .badge {
+        width: auto !important;
+        display: inline-block !important;
+        margin: 0 auto;
+    }
+
+    .responsive-card-table tbody td select.form-select-sm {
+        max-width: 140px !important;
+        margin: 0 auto !important;
+    }
+
+    /* Padding overrides */
+    .page table th:not(:first-of-type),
+    .page table td:not(:first-of-type) {
+        padding-left: 0 !important;
+    }
+
+    .page table th:not(:last-of-type),
+    .page table td:not(:last-of-type) {
+        border-right: none !important;
+    }
+
+    .page table {
+        border: none !important;
+        padding: 0 !important;
+    }
+}
+

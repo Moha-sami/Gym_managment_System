@@ -1,0 +1,54 @@
+@model GymMangment.BLL.ViewModels.BadgeViewModels.AwardBadgeViewModel
+@{
+    ViewData["Title"] = "Award Badge";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-lg rounded-4 bg-white overflow-hidden">
+                <div class="card-header border-0 text-white p-4 text-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <h2 class="h3 fw-bold mb-1">Award Badge</h2>
+                    <p class="mb-0 opacity-95">Award a special achievement to <strong>@Model.MemberName</strong></p>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="AwardBadge" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="MemberId" />
+
+                        <div class="mb-4">
+                            <label asp-for="BadgeDefinitionId" class="form-label fw-bold text-dark">Select Special Badge</label>
+                            @if (!Model.AvailableBadges.Any())
+                            {
+                                <div class="alert alert-warning border-0 rounded-3 mb-0" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    No special badges left to award. This member has already earned all available special recognition badges!
+                                </div>
+                            }
+                            else
+                            {
+                                <select asp-for="BadgeDefinitionId" class="form-select form-select-lg rounded-3 border-muted shadow-sm" required>
+                                    <option value="" disabled selected>-- Choose Badge --</option>
+                                    @foreach (var badge in Model.AvailableBadges)
+                                    {
+                                        <option value="@badge.Id">@badge.Name - @badge.Description</option>
+                                    }
+                                </select>
+                            }
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            @if (Model.AvailableBadges.Any())
+                            {
+                                <button type="submit" class="btn btn-primary btn-lg rounded-pill shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                                    <i class="bi bi-award me-2"></i>Award Badge
+                                </button>
+                            }
+                            <a asp-action="MemberDetails" asp-route-id="@Model.MemberId" class="btn btn-light btn-lg rounded-pill border shadow-sm">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

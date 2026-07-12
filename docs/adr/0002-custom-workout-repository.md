@@ -1,0 +1,3 @@
+# Custom Workout Repository for Grandchild Eager Loading
+
+We decided to introduce a custom `IWorkoutLogRepository` and `WorkoutLogRepository` rather than relying purely on the `IGenericRepository<WorkoutLog>` interface. This was necessary because EF Core throws compilation/runtime mapping translation errors when passing nested grandchild eager-loading lambda expressions (such as `w => w.Exercises.Select(e => e.Sets)`) into generic repository methods that take `Expression<Func<TEntity, object>>` parameters. The custom repository encapsulates this logic cleanly using EF Core `.Include().ThenInclude()`, maintaining type safety and resolving database queries successfully.

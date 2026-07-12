@@ -1,12 +1,12 @@
-﻿@model IEnumerable<MemberViewModel>
+@model IEnumerable<MemberViewModel>
 @using GymManagment.DAL.Models.Enum
 @{
     ViewData["Title"] = "Members Index";
 }
 
 <style>
-    /* ===== MOBILE: Table to Cards (up to 767px) ===== */
-    @@media (max-width: 767.98px) {
+    /* ===== MOBILE: Table to Cards (up to 991px) ===== */
+    @@media (max-width: 991.98px) {
         .members-table thead {
             display: none !important;
         }
@@ -403,7 +403,7 @@
                                                 else if (User.IsInRole("Manager"))
                                                 {
                                                     <li>
-                                                        <form asp-controller="DeleteRequests" asp-action="SubmitRequest" method="post">
+                                                        <form asp-controller="DeleteRequests" asp-action="SubmitRequest" method="post" class="delete-request-form">
                                                             <input type="hidden" name="targetType" value="@DeleteTargetType.Member" />
                                                             <input type="hidden" name="targetId" value="@member.Id" />
                                                             <button type="submit" class="dropdown-item d-flex align-items-center gap-3 text-danger">
