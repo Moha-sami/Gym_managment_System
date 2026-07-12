@@ -1,4 +1,4 @@
-﻿namespace GymManagment.DAL.Models
+namespace GymManagment.DAL.Models
 {
     public class Member:GymUser
     {
@@ -11,6 +11,8 @@
 
         public ICollection<Booking> MemberSessions { get; set; } = [];
         public ICollection<WeightProgressRecord> WeightProgressRecords { get; set; } = [];
+        public ICollection<WorkoutLog> WorkoutLogs { get; set; } = [];
+        public ICollection<MemberBadge> MemberBadges { get; set; } = [];
         #endregion
     }
 }

@@ -1,4 +1,4 @@
-﻿using GymManagment.DAL.Models;
+using GymManagment.DAL.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -39,5 +39,11 @@ namespace GymManagment.DAL.DbContext
         public DbSet<Trainer> Trainer { get; set; }
         public DbSet<DeleteRequest> DeleteRequests { get; set; }
         public DbSet<WeightProgressRecord> WeightProgressRecords { get; set; }
+        public DbSet<WorkoutLog> WorkoutLogs { get; set; }
+        public DbSet<WorkoutExerciseLog> WorkoutExerciseLogs { get; set; }
+        public DbSet<WorkoutSetLog> WorkoutSetLogs { get; set; }
+        public DbSet<BadgeDefinition> BadgeDefinitions { get; set; }
+        public DbSet<MemberBadge> MemberBadges { get; set; }
+        public DbSet<MemberWorkoutPlan> MemberWorkoutPlans { get; set; }
     }
 }

@@ -1,0 +1,6 @@
+models:
+  - name: DeepSeek R1
+    provider: openai
+    model: deepseek-r1-qwen-8b
+    apiBase: http://localhost:1234/v1
+    apiKey: not-needed

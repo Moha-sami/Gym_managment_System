@@ -1,4 +1,4 @@
-﻿using GymManagment.DAL.Models;
+using GymManagment.DAL.Models;
 using GymMangment.BLL.Services.Interfaces;
 using GymMangment.BLL.ViewModels.BookingViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -11,11 +11,13 @@ namespace GymmanagmentSystem.PL.Controllers
     public class SessionsScheduleController : Controller
     {
         private readonly IScheduleService _scheduleService;
+        private readonly IBadgeService _badgeService;
         private readonly UserManager<AppUser> _userManager;
 
-        public SessionsScheduleController(IScheduleService scheduleService, UserManager<AppUser> userManager)
+        public SessionsScheduleController(IScheduleService scheduleService, IBadgeService badgeService, UserManager<AppUser> userManager)
         {
             _scheduleService = scheduleService;
+            _badgeService = badgeService;
             _userManager = userManager;
         }
 
@@ -53,8 +55,25 @@ namespace GymmanagmentSystem.PL.Controllers
         {
             var result = await _scheduleService.BookSessionAsync(model.SessionId, model.MemberId, ct);
 
-            TempData[result.Succeeded ? "SuccessMessage" : "ErrorMessage"]
-                = result.Succeeded ? "Session booked successfully!" : result.Error;
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Session booked successfully!";
+                
+                // Evaluate achievements & badges for Bookings Category
+                try
+                {
+                    var newBadges = await _badgeService.EvaluateAndAwardBadgesAsync(model.MemberId, ct);
+                    if (newBadges != null && newBadges.Any())
+                    {
+                        TempData["NewBadges"] = System.Text.Json.JsonSerializer.Serialize(newBadges);
+                    }
+                }
+                catch { }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result.Error;
+            }
 
             return RedirectToAction(nameof(Index));
         }

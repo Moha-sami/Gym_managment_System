@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using GymManagment.DAL.Models;
 using GymMangment.BLL.ViewModels.BookingViewModels;
 using GymMangment.BLL.ViewModels.HealthRecordsViewModels;
@@ -7,6 +7,8 @@ using GymMangment.BLL.ViewModels.MemberViewModels;
 using GymMangment.BLL.ViewModels.PlansViewModels;
 using GymMangment.BLL.ViewModels.SessionsViewModels;
 using GymMangment.BLL.ViewModels.TrainerViewModels;
+using GymMangment.BLL.ViewModels.WorkoutViewModels;
+using GymMangment.BLL.ViewModels.BadgeViewModels;
 
 namespace GymMangment.BLL.Mapping
 {
@@ -180,6 +182,35 @@ namespace GymMangment.BLL.Mapping
     .ForMember(dest => dest.SessionDate, opt => opt.MapFrom(src => src.Session.StartDate.ToString("MMM dd, yyyy")))
     .ForMember(dest => dest.SessionTime, opt => opt.MapFrom(src => $"{src.Session.StartDate:hh:mm tt} - {src.Session.EndDate:hh:mm tt}"))
     .ForMember(dest => dest.BookingDate, opt => opt.MapFrom(src => src.CreatedAt));
+
+            // Workout Mapping
+            CreateMap<WorkoutLog, WorkoutLogViewModel>();
+            CreateMap<WorkoutExerciseLog, WorkoutExerciseViewModel>();
+            CreateMap<WorkoutSetLog, WorkoutSetViewModel>();
+
+            CreateMap<CreateWorkoutLogViewModel, WorkoutLog>()
+                .ForMember(dest => dest.Exercises, opt => opt.MapFrom(src => src.Exercises))
+                .ForMember(dest => dest.Member, opt => opt.Ignore());
+
+            CreateMap<CreateWorkoutExerciseViewModel, WorkoutExerciseLog>()
+                .ForMember(dest => dest.Sets, opt => opt.MapFrom(src => src.Sets))
+                .ForMember(dest => dest.WorkoutLog, opt => opt.Ignore());
+
+            CreateMap<CreateWorkoutSetViewModel, WorkoutSetLog>()
+                .ForMember(dest => dest.WorkoutExerciseLog, opt => opt.Ignore());
+
+            // Badge Mapping
+            CreateMap<BadgeDefinition, BadgeDefinitionViewModel>()
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.ToString()))
+                .ForMember(dest => dest.Tier, opt => opt.MapFrom(src => src.Tier.ToString()));
+
+            CreateMap<MemberBadge, MemberBadgeViewModel>()
+                .ForMember(dest => dest.BadgeName, opt => opt.MapFrom(src => src.BadgeDefinition.Name))
+                .ForMember(dest => dest.BadgeDescription, opt => opt.MapFrom(src => src.BadgeDefinition.Description))
+                .ForMember(dest => dest.BadgeIconPath, opt => opt.MapFrom(src => src.BadgeDefinition.IconPath))
+                .ForMember(dest => dest.BadgeTier, opt => opt.MapFrom(src => src.BadgeDefinition.Tier.ToString()))
+                .ForMember(dest => dest.BadgeCategory, opt => opt.MapFrom(src => src.BadgeDefinition.Category.ToString()))
+                .ForMember(dest => dest.AwardedByUserName, opt => opt.MapFrom(src => src.AwardedByUser != null ? src.AwardedByUser.FullName : null));
         }
     }
 }

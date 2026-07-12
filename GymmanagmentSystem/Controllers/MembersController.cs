@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using GymManagment.DAL.Models;
 using GymManagment.DAL.Repositories.Interfaces;
 using GymMangment.BLL.Common;
@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using GymMangment.BLL.ViewModels.BadgeViewModels;
 namespace GymmanagmentSystem.PL.Controllers
 {
     
@@ -19,13 +20,15 @@ namespace GymmanagmentSystem.PL.Controllers
         private readonly IFileService _fileService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IBadgeService _badgeService;
 
-        public MembersController(ImemberService _memberservice , IFileService fileService,IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
+        public MembersController(ImemberService _memberservice , IFileService fileService,IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IBadgeService badgeService)
         {
             memberservice = _memberservice;
             _fileService = fileService;
             _unitOfWork = unitOfWork;
             _userManager = userManager;
+            _badgeService = badgeService;
         }
         #region GetAllMembers
         //index list all members localhost:port/Members/Index(Get)
@@ -93,6 +96,17 @@ namespace GymmanagmentSystem.PL.Controllers
             {
                 return NotFound(result.Error);
             }
+
+            // Retrieve member badges for display in details
+            try
+            {
+                var achievementsResult = await _badgeService.GetMemberAchievementsAsync(id, ct);
+                if (achievementsResult.Succeeded)
+                {
+                    ViewBag.EarnedBadges = achievementsResult.Data!.EarnedBadges;
+                }
+            }
+            catch { }
 
             return View(result.Data);
         }
@@ -213,6 +227,17 @@ namespace GymmanagmentSystem.PL.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            // Retrieve member badges for display in profile
+            try
+            {
+                var achievementsResult = await _badgeService.GetMemberAchievementsAsync(targetId, ct);
+                if (achievementsResult.Succeeded)
+                {
+                    ViewBag.EarnedBadges = achievementsResult.Data!.EarnedBadges;
+                }
+            }
+            catch { }
+
             return View(result.Data);
         }
 
@@ -264,6 +289,39 @@ namespace GymmanagmentSystem.PL.Controllers
                 return null;
 
             return await _fileService.SaveImageAsync(model.Photo, "uploads");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AwardBadge(int id, CancellationToken ct)
+        {
+            var result = await _badgeService.GetAwardBadgeFormAsync(id, ct);
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = result.Error;
+                return RedirectToAction("MemberDetails", new { id = id });
+            }
+            return View(result.Data);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AwardBadge(AwardBadgeViewModel model, CancellationToken ct)
+        {
+            var adminId = _userManager.GetUserId(User);
+            var result = await _badgeService.AwardManualBadgeAsync(model.MemberId, model.BadgeDefinitionId, adminId!, ct);
+
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = "Badge awarded successfully!";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = result.Error;
+            }
+
+            return RedirectToAction("MemberDetails", new { id = model.MemberId });
         }
 
     }

@@ -1,0 +1,167 @@
+@using GymMangment.BLL.ViewModels.WorkoutPlanViewModels
+@model WorkoutPlanViewModel
+@{
+    ViewData["Title"] = "My Workout Plan";
+}
+
+<div class="container py-5">
+    <!-- Header Block -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+        <div>
+            <h1 class="fw-bold mb-1 text-dark">
+                <i class="bi bi-calendar3-event text-primary me-2"></i>My Active Workout Plan
+            </h1>
+            <p class="text-muted mb-0">
+                Customized program for <span class="badge bg-primary fs-6 fw-bold">@Model.Goal</span> 
+                with <span class="badge bg-info fs-6 fw-bold">@Model.Frequency Days/Week</span> 
+                at <span class="badge bg-secondary fs-6 fw-bold">@Model.ExperienceLevel Level</span>
+            </p>
+        </div>
+        <div>
+            <a asp-action="Generate" class="btn btn-outline-primary px-4 py-2 fw-semibold rounded-3 shadow-sm">
+                <i class="bi bi-arrow-repeat me-2"></i>Generate New Plan
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mb-4 shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Tabbed Daily Routine Grid -->
+    <div class="row">
+        <!-- Daily Tabs Selector -->
+        <div class="col-lg-3 mb-4">
+            <div class="nav flex-column nav-pills bg-white p-3 rounded-4 shadow-sm border border-light" id="workoutDaysTab" role="tablist" aria-orientation="vertical">
+                <h5 class="fw-bold text-muted px-3 mb-3 border-bottom pb-2">Training Days</h5>
+                @for (int i = 0; i < Model.Days.Count; i++)
+                {
+                    var day = Model.Days[i];
+                    <button class="nav-link text-start py-3 px-3 mb-2 rounded-3 fw-bold @(i == 0 ? "active" : "")" 
+                            id="day-tab-@day.DayNumber" 
+                            data-bs-toggle="pill" 
+                            data-bs-target="#day-pane-@day.DayNumber" 
+                            type="button" 
+                            role="tab" 
+                            aria-controls="day-pane-@day.DayNumber" 
+                            aria-selected="@(i == 0 ? "true" : "false")">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-heptagon me-2"></i>Day @day.DayNumber</span>
+                            <span class="small opacity-75">Exercises: @day.Exercises.Count</span>
+                        </div>
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- Exercise Details Pane -->
+        <div class="col-lg-9">
+            <div class="tab-content" id="workoutDaysTabContent">
+                @for (int i = 0; i < Model.Days.Count; i++)
+                {
+                    var day = Model.Days[i];
+                    <div class="tab-pane fade show @(i == 0 ? "active" : "")" 
+                         id="day-pane-@day.DayNumber" 
+                         role="tabpanel" 
+                         aria-labelledby="day-tab-@day.DayNumber" 
+                         tabindex="0">
+                        
+                        <div class="card border-0 rounded-4 shadow-sm overflow-hidden mb-4">
+                            <!-- Pane Header -->
+                            <div class="card-header bg-light border-0 py-4 px-4 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                                <div>
+                                    <span class="text-uppercase text-primary fw-bold tracking-wider small">Day @day.DayNumber Target</span>
+                                    <h3 class="fw-bold mb-0 text-dark">@day.DayName</h3>
+                                </div>
+                                <div>
+                                    <form asp-action="LogDay" method="post" onsubmit="return confirm('Do you want to log Day @day.DayNumber workout into your Workout Journal?');">
+                                        <input type="hidden" name="dayNumber" value="@day.DayNumber" />
+                                        <button type="submit" class="btn btn-success fw-bold px-4 py-2.5 rounded-3 d-flex align-items-center gap-2 shadow-sm">
+                                            <i class="bi bi-journal-plus"></i>Log Day to Journal
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Pane Exercises List -->
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0 responsive-card-table">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th class="py-3 px-4 border-0" style="width: 60%">Exercise Name</th>
+                                                <th class="py-3 px-4 border-0 text-sm-center">Target Sets</th>
+                                                <th class="py-3 px-4 border-0 text-sm-center">Target Reps</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var exercise in day.Exercises)
+                                            {
+                                                <tr>
+                                                    <td class="py-3.5 px-4 border-0 fw-semibold text-dark" data-label="Exercise Name">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="exercise-indicator bg-primary-subtle text-primary rounded-circle me-3">
+                                                                <i class="bi bi-play-circle-fill"></i>
+                                                            </div>
+                                                            <span>@exercise.ExerciseName</span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="py-3.5 px-4 border-0 text-sm-center font-monospace fw-bold" data-label="Target Sets">
+                                                        @exercise.Sets <span class="text-muted d-sm-none">Sets</span>
+                                                    </td>
+                                                    <td class="py-3.5 px-4 border-0 text-sm-center font-monospace fw-bold" data-label="Target Reps">
+                                                        @exercise.Reps <span class="text-muted d-sm-none">Reps</span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .nav-pills .nav-link {
+        color: #475569;
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s ease;
+    }
+    .nav-pills .nav-link:hover {
+        background-color: #f8fafc;
+        color: #0f172a;
+    }
+    .nav-pills .nav-link.active {
+        background-color: #0a1172 !important;
+        color: white !important;
+        border-color: #0a1172;
+    }
+    .exercise-indicator {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .tracking-wider {
+        letter-spacing: 0.05em;
+    }
+</style>

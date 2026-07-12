@@ -1,0 +1,383 @@
+@using GymMangment.BLL.ViewModels.WorkoutViewModels
+@model CreateWorkoutLogViewModel
+@{
+    ViewData["Title"] = "Log Workout";
+}
+
+<div class="container py-5">
+    <div class="mb-4">
+        <a asp-action="MyJournal" class="btn btn-outline-secondary rounded-pill px-3 py-2">
+            <i class="bi bi-arrow-left me-2"></i>Back to Journal
+        </a>
+    </div>
+
+    <div class="max-w-4xl mx-auto">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+            <div class="card-header bg-primary-color py-4 px-4 px-md-5 border-0">
+                <h2 class="text-white fw-bold mb-0"><i class="bi bi-journal-plus me-2"></i>Log Your Workout</h2>
+                <p class="text-white-50 mb-0">Record your sets, reps, and weights to keep track of your progress.</p>
+            </div>
+            
+            <div class="card-body p-4 p-md-5 bg-white">
+                <form asp-action="Create" method="post" id="workoutForm" class="needs-validation" novalidate>
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="MemberId" />
+                    
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger border-0 shadow-sm mb-4"></div>
+
+                    <!-- Workout Meta Info -->
+                    <div class="row g-4 mb-5">
+                        <div class="col-md-7">
+                            <label asp-for="Name" class="form-label fw-bold text-dark">Workout Name / Title</label>
+                            <input asp-for="Name" class="form-control rounded-3 py-2.5 border" placeholder="e.g. Push Day, Upper Body, Cardio Core" required />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-5">
+                            <label asp-for="Date" class="form-label fw-bold text-dark">Date</label>
+                            <input asp-for="Date" type="date" class="form-control rounded-3 py-2.5 border" required />
+                            <span asp-validation-for="Date" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="Notes" class="form-label fw-bold text-dark">General Notes (Optional)</label>
+                            <textarea asp-for="Notes" class="form-control rounded-3 border" rows="3" placeholder="How did you feel? Any specific goals achieved or limitations?"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Exercises Section -->
+                    <div class="d-flex justify-content-between align-items-center mb-4 border-top pt-5">
+                        <h3 class="fw-bold text-dark mb-0"><i class="bi bi-activity text-primary-color me-2"></i>Exercises</h3>
+                        <button type="button" class="btn btn-outline-primary rounded-pill px-4" id="btnAddExercise">
+                            <i class="bi bi-plus-lg me-1"></i> Add Exercise
+                        </button>
+                    </div>
+
+                    <!-- Exercises Container -->
+                    <div id="exercisesContainer" class="d-flex flex-column gap-4">
+                        @if (Model?.Exercises != null && Model.Exercises.Any())
+                        {
+                            @for (int i = 0; i < Model.Exercises.Count; i++)
+                            {
+                                var exercise = Model.Exercises[i];
+                                <div class="card border rounded-4 shadow-sm exercise-block mb-3" data-index="@i">
+                                    <div class="card-header bg-light border-0 py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                        <div class="flex-grow-1" style="min-width: 250px;">
+                                            <input type="text" name="Exercises[@i].ExerciseName" class="form-control border-0 bg-transparent fw-bold text-dark fs-5 p-0 exercise-name-input" 
+                                                   placeholder="Enter Exercise Name (e.g. Bench Press)" value="@exercise.ExerciseName" required />
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3 btn-add-set">
+                                                <i class="bi bi-plus-lg me-1"></i>Add Set
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill btn-remove-exercise" title="Remove Exercise">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-4">
+                                        <div class="table-responsive">
+                                            <table class="table align-middle sets-table mb-0">
+                                                <thead>
+                                                    <tr class="table-light">
+                                                        <th class="text-center font-monospace" style="width: 10%;">Set</th>
+                                                        <th class="text-end" style="width: 35%;">Weight (kg)</th>
+                                                        <th class="text-end" style="width: 35%;">Reps</th>
+                                                        <th class="text-center" style="width: 20%;">Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="sets-body">
+                                                    @for (int j = 0; j < exercise.Sets.Count; j++)
+                                                    {
+                                                        var set = exercise.Sets[j];
+                                                        <tr class="set-row">
+                                                            <td class="text-center font-monospace fw-bold text-muted set-number-label">@(j + 1)</td>
+                                                            <td>
+                                                                <div class="input-group input-group-sm justify-content-end">
+                                                                    <input type="number" step="any" name="Exercises[@i].Sets[@j].Weight" class="form-control rounded-3 text-end fw-bold set-weight-input" 
+                                                                           placeholder="0.0" min="0.1" max="1000" value="@set.Weight.ToString("G29")" required style="max-width: 120px;" />
+                                                                    <span class="input-group-text bg-transparent border-0 text-muted fs-7">kg</span>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <input type="number" name="Exercises[@i].Sets[@j].Reps" class="form-control form-control-sm rounded-3 text-end fw-bold set-reps-input" 
+                                                                       placeholder="0" min="1" max="1000" value="@set.Reps" required style="max-width: 100px; margin-left: auto;" />
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <button type="button" class="btn btn-outline-danger btn-sm border-0 rounded-circle btn-remove-set" title="Remove Set">
+                                                                    <i class="bi bi-x-lg"></i>
+                                                                </button>
+                                                                <input type="hidden" class="set-number-hidden" name="Exercises[@i].Sets[@j].SetNumber" value="@(j + 1)" />
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="no-sets-alert text-center py-3 text-muted" style="display: none; font-size: 0.9rem;">
+                                            <i class="bi bi-info-circle me-1"></i> No sets added yet. Click "Add Set" to record logs.
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        
+                        <div id="emptyState" class="text-center py-5 border border-dashed rounded-4 bg-light" style="@(Model?.Exercises != null && Model.Exercises.Any() ? "display: none;" : "")">
+                            <i class="bi bi-list-task display-4 text-muted opacity-50"></i>
+                            <h5 class="fw-bold text-muted mt-3">No Exercises Added</h5>
+                            <p class="text-muted mb-0">Click "Add Exercise" above to start adding movements to this session.</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-end gap-3 mt-5 pt-4 border-top">
+                        <a asp-action="MyJournal" class="btn btn-outline-secondary rounded-pill px-4 py-2.5">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-fill rounded-pill px-5 py-2.5 fw-medium shadow-sm transition-all hover-scale" id="btnSaveWorkout">
+                            <i class="bi bi-check-lg me-2"></i>Save Workout Log
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- templates for dynamic DOM insertion -->
+<template id="exerciseTemplate">
+    <div class="card border rounded-4 shadow-sm exercise-block mb-3" data-index="0">
+        <div class="card-header bg-light border-0 py-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="flex-grow-1" style="min-width: 250px;">
+                <input type="text" class="form-control border-0 bg-transparent fw-bold text-dark fs-5 p-0 exercise-name-input" 
+                       placeholder="Enter Exercise Name (e.g. Bench Press)" required />
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3 btn-add-set">
+                    <i class="bi bi-plus-lg me-1"></i>Add Set
+                </button>
+                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill btn-remove-exercise" title="Remove Exercise">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table align-middle sets-table mb-0">
+                    <thead>
+                        <tr class="table-light">
+                            <th class="text-center font-monospace" style="width: 10%;">Set</th>
+                            <th class="text-end" style="width: 35%;">Weight (kg)</th>
+                            <th class="text-end" style="width: 35%;">Reps</th>
+                            <th class="text-center" style="width: 20%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="sets-body">
+                        <!-- Dynamic sets will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="no-sets-alert text-center py-3 text-muted" style="font-size: 0.9rem;">
+                <i class="bi bi-info-circle me-1"></i> No sets added yet. Click "Add Set" to record logs.
+            </div>
+        </div>
+    </div>
+</template>
+
+<template id="setTemplate">
+    <tr class="set-row">
+        <td class="text-center font-monospace fw-bold text-muted set-number-label">1</td>
+        <td>
+            <div class="input-group input-group-sm justify-content-end">
+                <input type="number" step="any" class="form-control rounded-3 text-end fw-bold set-weight-input" 
+                       placeholder="0.0" min="0.1" max="1000" required style="max-width: 120px;" />
+                <span class="input-group-text bg-transparent border-0 text-muted fs-7">kg</span>
+            </div>
+        </td>
+        <td>
+            <input type="number" class="form-control form-control-sm rounded-3 text-end fw-bold set-reps-input" 
+                   placeholder="0" min="1" max="1000" required style="max-width: 100px; margin-left: auto;" />
+        </td>
+        <td class="text-center">
+            <button type="button" class="btn btn-outline-danger btn-sm border-0 rounded-circle btn-remove-set" title="Remove Set">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </td>
+    </tr>
+</template>
+
+<style>
+    .max-w-4xl {
+        max-width: 850px;
+    }
+    .border-dashed {
+        border-style: dashed !important;
+        border-width: 2px !important;
+    }
+    .fs-7 {
+        font-size: 0.75rem;
+    }
+    .exercise-block:focus-within {
+        border-color: var(--primary-color) !important;
+        box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,.05) !important;
+    }
+    .transition-all {
+        transition: all 0.25s ease-in-out;
+    }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const container = document.getElementById("exercisesContainer");
+            const emptyState = document.getElementById("emptyState");
+            const btnAddExercise = document.getElementById("btnAddExercise");
+            const exerciseTemplate = document.getElementById("exerciseTemplate").innerHTML;
+            const setTemplate = document.getElementById("setTemplate").innerHTML;
+
+            function checkEmptyState() {
+                const exerciseBlocks = container.querySelectorAll(".exercise-block");
+                if (exerciseBlocks.length === 0) {
+                    emptyState.style.display = "block";
+                } else {
+                    emptyState.style.display = "none";
+                }
+            }
+
+            // Function to re-index all exercises and their sets sequentially
+            function reindexAll() {
+                const exerciseBlocks = container.querySelectorAll(".exercise-block");
+                exerciseBlocks.forEach((block, exIdx) => {
+                    block.setAttribute("data-index", exIdx);
+                    
+                    // Update Exercise Name input
+                    const nameInput = block.querySelector(".exercise-name-input");
+                    nameInput.setAttribute("name", `Exercises[${exIdx}].ExerciseName`);
+                    
+                    // Re-index sets within this exercise
+                    const setRows = block.querySelectorAll(".set-row");
+                    const noSetsAlert = block.querySelector(".no-sets-alert");
+                    const setsTable = block.querySelector(".sets-table");
+
+                    if (setRows.length === 0) {
+                        noSetsAlert.style.display = "block";
+                        setsTable.style.display = "none";
+                    } else {
+                        noSetsAlert.style.display = "none";
+                        setsTable.style.display = "table";
+                    }
+
+                    setRows.forEach((row, setIdx) => {
+                        row.querySelector(".set-number-label").textContent = setIdx + 1;
+                        
+                        // Update inputs
+                        const weightInput = row.querySelector(".set-weight-input");
+                        weightInput.setAttribute("name", `Exercises[${exIdx}].Sets[${setIdx}].Weight`);
+                        
+                        const repsInput = row.querySelector(".set-reps-input");
+                        repsInput.setAttribute("name", `Exercises[${exIdx}].Sets[${setIdx}].Reps`);
+                        
+                        let hiddenSetNum = row.querySelector(".set-number-hidden");
+                        if (!hiddenSetNum) {
+                            hiddenSetNum = document.createElement("input");
+                            hiddenSetNum.type = "hidden";
+                            hiddenSetNum.className = "set-number-hidden";
+                            row.appendChild(hiddenSetNum);
+                        }
+                        hiddenSetNum.name = `Exercises[${exIdx}].Sets[${setIdx}].SetNumber`;
+                        hiddenSetNum.value = setIdx + 1;
+                    });
+                });
+                checkEmptyState();
+            }
+
+            // Add Exercise Action
+            btnAddExercise.addEventListener("click", function () {
+                const tempDiv = document.createElement("div");
+                tempDiv.innerHTML = exerciseTemplate.trim();
+                const newExercise = tempDiv.firstChild;
+                
+                container.appendChild(newExercise);
+                addSetToExercise(newExercise);
+                reindexAll();
+                
+                newExercise.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+
+            // Add Set helper
+            function addSetToExercise(exerciseBlock) {
+                const tbody = exerciseBlock.querySelector(".sets-body");
+                const tempTable = document.createElement("table");
+                tempTable.innerHTML = setTemplate.trim();
+                const newRow = tempTable.querySelector("tr");
+                
+                tbody.appendChild(newRow);
+                reindexAll();
+            }
+
+            // Delegated click handler on exercises container
+            container.addEventListener("click", function (e) {
+                const btnAddSet = e.target.closest(".btn-add-set");
+                if (btnAddSet) {
+                    const block = btnAddSet.closest(".exercise-block");
+                    addSetToExercise(block);
+                    return;
+                }
+
+                const btnRemoveEx = e.target.closest(".btn-remove-exercise");
+                if (btnRemoveEx) {
+                    const block = btnRemoveEx.closest(".exercise-block");
+                    block.classList.add("fade-out");
+                    setTimeout(() => {
+                        block.remove();
+                        reindexAll();
+                    }, 200);
+                    return;
+                }
+
+                const btnRemoveSet = e.target.closest(".btn-remove-set");
+                if (btnRemoveSet) {
+                    const row = btnRemoveSet.closest(".set-row");
+                    row.remove();
+                    reindexAll();
+                    return;
+                }
+            });
+
+            // Form validation styling
+            const form = document.getElementById("workoutForm");
+            form.addEventListener("submit", function (event) {
+                const exerciseBlocks = container.querySelectorAll(".exercise-block");
+                if (exerciseBlocks.length === 0) {
+                    alert("Please add at least one exercise before saving your workout.");
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return;
+                }
+
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    form.classList.add("was-validated");
+
+                    // Smoothly scroll to the first invalid element and focus it
+                    const firstInvalid = form.querySelector(":invalid");
+                    if (firstInvalid) {
+                        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        firstInvalid.focus();
+                    }
+                }
+            }, false);
+
+            // Re-index anything that came pre-loaded from server validation failure
+            reindexAll();
+
+            // Add initial exercise if empty and new form
+            const hasPreloaded = container.querySelectorAll(".exercise-block").length > 0;
+            if (!hasPreloaded) {
+                btnAddExercise.click();
+            }
+        });
+    </script>
+}

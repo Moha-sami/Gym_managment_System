@@ -1,4 +1,4 @@
-﻿using GymManagment.DAL.Models;
+using GymManagment.DAL.Models;
 
 namespace GymManagment.DAL.Repositories.Interfaces
 {
@@ -16,6 +16,9 @@ namespace GymManagment.DAL.Repositories.Interfaces
         IGenericRepository<DeleteRequest> DeleteRequests { get; }
         IGenericRepository<WeightProgressRecord> WeightProgressRecords { get; }
         public ISessionRepository SessionRepository { get; }
+        IWorkoutLogRepository WorkoutLogs { get; }
+        IBadgeRepository Badges { get; }
+        IGenericRepository<MemberWorkoutPlan> MemberWorkoutPlans { get; }
 
         Task<int> CompleteAsync(CancellationToken ct = default);
     }

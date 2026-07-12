@@ -1,4 +1,4 @@
-﻿@model MemberViewModel
+@model MemberViewModel
 
 <style>
     /* ===== MOBILE (up to 767px) ===== */
@@ -338,10 +338,43 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Badges Section -->
+                            <div class="mt-4 border-top pt-4">
+                                <h5 class="fw-bold text-dark mb-3"><i class="bi bi-trophy-fill text-warning me-2"></i>Earned Badges</h5>
+                                @if (ViewBag.EarnedBadges == null || !((List<GymMangment.BLL.ViewModels.BadgeViewModels.MemberBadgeViewModel>)ViewBag.EarnedBadges).Any())
+                                {
+                                    <p class="text-muted small mb-0">No badges earned yet.</p>
+                                }
+                                else
+                                {
+                                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                                        @foreach (var badge in ((List<GymMangment.BLL.ViewModels.BadgeViewModels.MemberBadgeViewModel>)ViewBag.EarnedBadges).Take(6))
+                                        {
+                                            <div class="text-center" style="width: 70px;">
+                                                <img src="@badge.BadgeIconPath" class="rounded-circle border border-2 border-warning shadow-sm" style="width: 45px; height: 45px; object-fit: cover;" title="@badge.BadgeName - @badge.BadgeDescription" />
+                                                <span class="d-block small text-truncate fw-semibold text-dark mt-1" style="font-size: 9px;">@badge.BadgeName</span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
                         </div>
 
-                        <div class="d-flex justify-content-between gap-2 px-3 pb-3">
-                            <a asp-controller="Members" asp-action="Index" class="btn btn-fill flex-fill">Back to List</a>
+                        <div class="d-flex justify-content-between gap-2 px-3 pb-3 flex-wrap">
+                            <a asp-controller="Members" asp-action="Index" class="btn btn-fill flex-fill text-center">Back to List</a>
+                            @if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Trainer"))
+                            {
+                                <a asp-controller="Analytics" asp-action="MemberProgress" asp-route-id="@Model.Id" class="btn btn-info rounded-pill px-4 fw-bold shadow-sm flex-fill d-flex align-items-center justify-content-center text-decoration-none text-white">
+                                    <i class="bi bi-bar-chart-line me-1"></i> Progress Analytics
+                                </a>
+                            }
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-controller="Members" asp-action="AwardBadge" asp-route-id="@Model.Id" class="btn btn-warning rounded-pill px-4 fw-bold shadow-sm flex-fill d-flex align-items-center justify-content-center text-decoration-none">
+                                    <i class="bi bi-award me-1"></i> Award Badge
+                                </a>
+                            }
                         </div>
                     </div>
                 </div>
