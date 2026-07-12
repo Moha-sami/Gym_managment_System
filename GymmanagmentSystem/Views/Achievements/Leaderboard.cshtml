@@ -1,0 +1,160 @@
+@model IEnumerable<GymMangment.BLL.ViewModels.BadgeViewModels.LeaderboardEntryViewModel>
+@{
+    ViewData["Title"] = "Leaderboard";
+    var top3 = Model.Take(3).ToList();
+    var rest = Model.Skip(3).ToList();
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <span class="badge bg-warning text-dark mb-2 px-3 py-2 fs-6 fw-bold rounded-pill">🏆 Hall of Fame</span>
+        <h1 class="display-4 fw-bold text-dark">Gym Leaders</h1>
+        <p class="fs-5 text-muted mb-0">Behold our top members pushing their limits and unlocking achievements!</p>
+    </div>
+
+    <!-- Top 3 Podium Cards -->
+    <div class="row justify-content-center align-items-end g-4 mb-5">
+        <!-- 2nd Place -->
+        @if (top3.Count > 1)
+        {
+            var second = top3[1];
+            <div class="col-md-3 order-2 order-md-1">
+                <div class="card border-0 shadow-lg text-center rounded-4 mb-3 position-relative bg-white" style="transition: transform 0.3s ease;">
+                    <div class="position-absolute top-0 start-50 translate-middle bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px; font-weight: bold; border: 3px solid white;">2</div>
+                    <div class="card-body pt-5 pb-4 px-3">
+                        <img src="@(second.MemberPhoto ?? "/images/avatars/male-avatar-1.png")" class="rounded-circle border border-4 border-secondary shadow mb-3" style="width: 90px; height: 90px; object-fit: cover;" />
+                        <h3 class="h5 fw-bold text-dark text-truncate">@second.MemberName</h3>
+                        <p class="text-muted small mb-3">Total Badges: <span class="badge bg-secondary px-2">@second.BadgeCount</span></p>
+                        @if (second.LatestBadgeName != null)
+                        {
+                            <div class="bg-light p-2 rounded-3 d-inline-flex align-items-center">
+                                <img src="@second.LatestBadgeIconPath" class="rounded-circle me-2" style="width: 24px; height: 24px;" />
+                                <span class="small fw-semibold text-dark text-truncate" style="max-width: 120px;">@second.LatestBadgeName</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- 1st Place -->
+        @if (top3.Count > 0)
+        {
+            var first = top3[0];
+            <div class="col-md-4 order-1 order-md-2">
+                <div class="card border-0 shadow-lg text-center rounded-4 position-relative bg-white scale-highlight border-warning border border-2 mb-4" style="transition: transform 0.3s ease;">
+                    <div class="position-absolute top-0 start-50 translate-middle bg-warning text-dark rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 50px; height: 50px; font-weight: bold; border: 3px solid white; font-size: 1.2rem;">👑</div>
+                    <div class="card-body pt-5 pb-5 px-4">
+                        <img src="@(first.MemberPhoto ?? "/images/avatars/male-avatar-1.png")" class="rounded-circle border border-5 border-warning shadow-lg mb-3" style="width: 120px; height: 120px; object-fit: cover;" />
+                        <h2 class="h4 fw-bold text-dark text-truncate">@first.MemberName</h2>
+                        <p class="fs-5 text-muted mb-4">Total Badges: <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm">@first.BadgeCount</span></p>
+                        @if (first.LatestBadgeName != null)
+                        {
+                            <div class="bg-warning bg-opacity-10 p-2 rounded-pill d-inline-flex align-items-center px-3 border border-warning border-opacity-25">
+                                <img src="@first.LatestBadgeIconPath" class="rounded-circle me-2 border border-warning" style="width: 28px; height: 28px;" />
+                                <span class="small fw-bold text-dark text-truncate" style="max-width: 150px;">@first.LatestBadgeName</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- 3rd Place -->
+        @if (top3.Count > 2)
+        {
+            var third = top3[2];
+            <div class="col-md-3 order-3 order-md-3">
+                <div class="card border-0 shadow-lg text-center rounded-4 mb-3 position-relative bg-white" style="transition: transform 0.3s ease;">
+                    <div class="position-absolute top-0 start-50 translate-middle bg-danger bg-opacity-75 text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px; font-weight: bold; border: 3px solid white;">3</div>
+                    <div class="card-body pt-5 pb-4 px-3">
+                        <img src="@(third.MemberPhoto ?? "/images/avatars/male-avatar-1.png")" class="rounded-circle border border-4 border-danger border-opacity-75 shadow mb-3" style="width: 90px; height: 90px; object-fit: cover;" />
+                        <h3 class="h5 fw-bold text-dark text-truncate">@third.MemberName</h3>
+                        <p class="text-muted small mb-3">Total Badges: <span class="badge bg-danger bg-opacity-75 px-2">@third.BadgeCount</span></p>
+                        @if (third.LatestBadgeName != null)
+                        {
+                            <div class="bg-light p-2 rounded-3 d-inline-flex align-items-center">
+                                <img src="@third.LatestBadgeIconPath" class="rounded-circle me-2" style="width: 24px; height: 24px;" />
+                                <span class="small fw-semibold text-dark text-truncate" style="max-width: 120px;">@third.LatestBadgeName</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Rest of Leaderboard Table -->
+    @if (rest.Any())
+    {
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 responsive-card-table">
+                                <thead class="bg-light text-dark fw-bold">
+                                    <tr>
+                                        <th scope="col" class="py-3 px-4" style="width: 80px;">Rank</th>
+                                        <th scope="col" class="py-3">Member</th>
+                                        <th scope="col" class="py-3 text-center" style="width: 150px;">Badges Count</th>
+                                        <th scope="col" class="py-3">Latest Unlock</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var entry in rest)
+                                    {
+                                        <tr>
+                                            <td class="py-3 px-4 fw-bold" data-label="Rank">
+                                                <span class="ps-2 text-muted">#@entry.Rank</span>
+                                            </td>
+                                            <td class="py-3" data-label="Member">
+                                                <div class="d-flex align-items-center justify-content-center justify-content-md-start">
+                                                    <img src="@(entry.MemberPhoto ?? "/images/avatars/male-avatar-1.png")" class="rounded-circle me-3 border border-light" style="width: 44px; height: 44px; object-fit: cover;" />
+                                                    <span class="fw-bold text-dark">@entry.MemberName</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-3 text-center" data-label="Badges Count">
+                                                <span class="fs-5 fw-bold text-primary">@entry.BadgeCount</span>
+                                            </td>
+                                            <td class="py-3" data-label="Latest Unlock">
+                                                @if (entry.LatestBadgeName != null)
+                                                {
+                                                    <div class="d-flex align-items-center justify-content-center justify-content-md-start">
+                                                        <img src="@entry.LatestBadgeIconPath" class="rounded-circle me-2" style="width: 28px; height: 28px; object-fit: cover;" />
+                                                        <span class="small fw-semibold text-dark">@entry.LatestBadgeName</span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted small">—</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (!Model.Any())
+    {
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white p-5 text-center text-muted">
+                    <i class="bi bi-people display-4 mb-3 d-block"></i>
+                    No members have earned badges yet. Be the first!
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .scale-highlight:hover {
+        transform: translateY(-5px) scale(1.02);
+    }
+</style>

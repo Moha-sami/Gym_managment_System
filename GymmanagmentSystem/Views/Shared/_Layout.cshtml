@@ -145,6 +145,9 @@
                         <li class="nav-item">
                             <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @IsActive("SessionsSchedule")" asp-controller="SessionsSchedule" asp-action="Index">Sessions Schedule</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @(currentController == "Achievements" && ViewContext.RouteData.Values["action"]?.ToString() == "Leaderboard" ? "active" : "")" asp-controller="Achievements" asp-action="Leaderboard">Leaderboard</a>
+                        </li>
 
                         @if (User.IsInRole("Admin"))
                         {
@@ -169,6 +172,22 @@
                             <li class="nav-item">
                                 <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @(currentController == "Bookings" && ViewContext.RouteData.Values["action"]?.ToString() == "MyBookings" ? "active" : "")"
                                    asp-controller="Bookings" asp-action="MyBookings">My Bookings</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @IsActive("Workouts")"
+                                   asp-controller="Workouts" asp-action="MyJournal">My Workout Journal</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @(currentController == "Achievements" && ViewContext.RouteData.Values["action"]?.ToString() == "MyAchievements" ? "active" : "")"
+                                   asp-controller="Achievements" asp-action="MyAchievements">My Achievements</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @(currentController == "Analytics" && ViewContext.RouteData.Values["action"]?.ToString() == "MyProgress" ? "active" : "")"
+                                   asp-controller="Analytics" asp-action="MyProgress">My Analytics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @IsActive("WorkoutPlan")"
+                                   asp-controller="WorkoutPlan" asp-action="MyPlan">My Workout Plan</a>
                             </li>
                         }
 
@@ -212,9 +231,41 @@
         </main>
     </div>
 
+    <!-- Achievements Toast Notification Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+        @if (TempData["NewBadges"] != null)
+        {
+            var newBadgesJson = TempData["NewBadges"]?.ToString();
+            if (!string.IsNullOrEmpty(newBadgesJson))
+            {
+                var newBadges = System.Text.Json.JsonSerializer.Deserialize<List<string>>(newBadgesJson);
+                if (newBadges != null)
+                {
+                    foreach (var badgeName in newBadges)
+                    {
+                        <div class="toast align-items-center text-white bg-success border-0 shadow-lg mb-2" role="alert" aria-live="assertive" aria-atomic="true" style="border-radius: 12px;">
+                            <div class="d-flex">
+                                <div class="toast-body d-flex align-items-center gap-3 py-3 px-4">
+                                    <div class="fs-1">🏆</div>
+                                    <div>
+                                        <strong class="d-block text-uppercase small opacity-75">Achievement Unlocked!</strong>
+                                        <span class="fs-5 fw-bold">@badgeName</span>
+                                        <span class="d-block small opacity-90 mt-1">Check your Achievements profile!</span>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-close btn-close-white m-auto me-3" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    }
+                }
+            }
+        }
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
     <script>
@@ -224,6 +275,55 @@
                 bsAlert.close();
             });
         }, 3000);
+
+        // Initialize achievement toasts
+        document.querySelectorAll('.toast').forEach(function (toastEl) {
+            var toast = new bootstrap.Toast(toastEl, { delay: 6000 });
+            toast.show();
+        });
+
+        // Global Delete Request prompt for Managers
+        $(document).on('submit', '.delete-request-form', function (e) {
+            var form = this;
+            if ($(form).data('confirmed')) {
+                return true;
+            }
+            e.preventDefault();
+
+            Swal.fire({
+                title: 'Delete Request Reason',
+                text: 'Please specify the reason for deleting this item:',
+                input: 'textarea',
+                inputPlaceholder: 'Type your reason here (e.g. member relocated, session cancelled)...',
+                inputAttributes: {
+                    'aria-label': 'Type your reason here'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit Request',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                inputValidator: (value) => {
+                    if (!value || !value.trim()) {
+                        return 'You must provide a reason for the deletion request!';
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var reasonInput = $(form).find('input[name="reason"]');
+                    if (reasonInput.length === 0) {
+                        reasonInput = $('<input>').attr({
+                            type: 'hidden',
+                            name: 'reason'
+                        });
+                        $(form).append(reasonInput);
+                    }
+                    reasonInput.val(result.value);
+                    $(form).data('confirmed', true);
+                    form.submit();
+                }
+            });
+        });
     </script>
 </body>
 </html>

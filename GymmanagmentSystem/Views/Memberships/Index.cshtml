@@ -1,14 +1,14 @@
-﻿@using GymMangment.BLL.ViewModels.MembershipViewModels
+@using GymMangment.BLL.ViewModels.MembershipViewModels
 @model IEnumerable<MembershipViewModel>
 @{
     ViewData["Title"] = "Memberships";
 }
 
 <div class="container">
-    <header class="d-flex justify-content-between mt-5 mb-4 align-items-center">
+    <header class="d-flex flex-column flex-sm-row justify-content-between mt-5 mb-4 align-items-sm-center gap-3 text-center text-sm-start">
         <div>
             <h2 class="text-primary-color mb-0">Memberships</h2>
-            <p class="text-muted">Manage member subscriptions and plans</p>
+            <p class="text-muted mb-0">Manage member subscriptions and plans</p>
         </div>
         <a asp-controller="Memberships" asp-action="Create" class="btn btn-fill fw-medium rounded-pill px-4 py-3">
             <i class="bi bi-plus-lg me-2"></i>Add Membership
@@ -18,7 +18,7 @@
     @if (Model != null && Model.Any())
     {
         <div class="table-responsive">
-            <table class="table table-borderless">
+            <table class="table table-borderless responsive-card-table">
                 <thead>
                     <tr>
                         <th><span>Member</span></th>
@@ -33,16 +33,16 @@
                     @foreach (var membership in Model)
                     {
                         <tr>
-                            <td><span class="fw-bold">@membership.MemberName</span></td>
-                            <td><span>@membership.PlanName</span></td>
-                            <td><span>@membership.StartDate.ToString("MMM dd, yyyy")</span></td>
-                            <td><span>@membership.EndDate.ToString("MMM dd, yyyy")</span></td>
-                            <td>
+                            <td data-label="Member"><span class="fw-bold">@membership.MemberName</span></td>
+                            <td data-label="Plan"><span>@membership.PlanName</span></td>
+                            <td data-label="Start Date"><span>@membership.StartDate.ToString("MMM dd, yyyy")</span></td>
+                            <td data-label="End Date"><span>@membership.EndDate.ToString("MMM dd, yyyy")</span></td>
+                            <td data-label="Status">
                                 <span class="badge @(membership.IsActive ? "bg-primary-color" : "bg-secondary")">
                                     @membership.Status
                                 </span>
                             </td>
-                            <td class="action position-relative">
+                            <td class="action position-relative" data-label="Action">
                                 <div class="dropdown">
                                     <button class="btn btn-link p-0 border-0" type="button"
                                             id="dropdownMenuButton-@membership.Id"

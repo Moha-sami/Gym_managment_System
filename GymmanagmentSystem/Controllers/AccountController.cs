@@ -1,4 +1,4 @@
-﻿using GymManagment.DAL.Models;
+using GymManagment.DAL.Models;
 using GymManagment.DAL.Models.Enum;
 using GymManagment.DAL.Repositories.Interfaces;
 using GymMangment.BLL.Services.Interfaces;
@@ -325,6 +325,113 @@ namespace GymmanagmentSystem.PL.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
+        }
+
+        // GET: Account/ForgotPassword
+        [HttpGet]
+        public IActionResult ForgotPassword() => View();
+
+        // POST: Account/ForgotPassword
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user != null)
+            {
+                var otp = await _userManager.GenerateUserTokenAsync(user, "EmailOtpProvider", "ResetPassword");
+                
+                System.Diagnostics.Debug.WriteLine($"====================================");
+                System.Diagnostics.Debug.WriteLine($"PASSWORD RESET OTP FOR {model.Email}: {otp}");
+                System.Diagnostics.Debug.WriteLine($"====================================");
+                Console.WriteLine($"====================================");
+                Console.WriteLine($"PASSWORD RESET OTP FOR {model.Email}: {otp}");
+                Console.WriteLine($"====================================");
+            }
+
+            TempData["SuccessMessage"] = "If the email is registered, a 6-digit OTP has been sent.";
+            return RedirectToAction(nameof(VerifyOtp), new { email = model.Email });
+        }
+
+        // GET: Account/VerifyOtp
+        [HttpGet]
+        public IActionResult VerifyOtp(string email)
+        {
+            if (string.IsNullOrEmpty(email)) return RedirectToAction(nameof(ForgotPassword));
+            return View(new VerifyOtpViewModel { Email = email });
+        }
+
+        // POST: Account/VerifyOtp
+        [HttpPost]
+        public async Task<IActionResult> VerifyOtp(VerifyOtpViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Invalid request.");
+                return View(model);
+            }
+
+            var isValid = await _userManager.VerifyUserTokenAsync(user, "EmailOtpProvider", "ResetPassword", model.Otp);
+            if (!isValid)
+            {
+                ModelState.AddModelError("Otp", "Invalid or expired OTP code.");
+                return View(model);
+            }
+
+            TempData["SuccessMessage"] = "OTP verified successfully. Please set your new password.";
+            return RedirectToAction(nameof(ResetPassword), new { email = model.Email, otp = model.Otp });
+        }
+
+        // GET: Account/ResetPassword
+        [HttpGet]
+        public IActionResult ResetPassword(string email, string otp)
+        {
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(otp))
+                return RedirectToAction(nameof(ForgotPassword));
+
+            return View(new ResetPasswordViewModel { Email = email, Otp = otp });
+        }
+
+        // POST: Account/ResetPassword
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Invalid request.");
+                return View(model);
+            }
+
+            var isValid = await _userManager.VerifyUserTokenAsync(user, "EmailOtpProvider", "ResetPassword", model.Otp);
+            if (!isValid)
+            {
+                ModelState.AddModelError("", "Your session has expired. Please request a new OTP.");
+                return View(model);
+            }
+
+            var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, resetToken, model.Password);
+
+            if (result.Succeeded)
+            {
+                await _userManager.UpdateSecurityStampAsync(user);
+                TempData["SuccessMessage"] = "Password reset successful! You can now log in.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+
+            return View(model);
         }
     }
 }

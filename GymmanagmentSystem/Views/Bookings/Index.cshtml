@@ -1,4 +1,4 @@
-﻿@using GymMangment.BLL.ViewModels.BookingViewModels
+@using GymMangment.BLL.ViewModels.BookingViewModels
 @model IEnumerable<BookingViewModel>
 @{
     ViewData["Title"] = "All Bookings";
@@ -18,7 +18,7 @@
     @if (Model != null && Model.Any())
     {
         <div class="table-responsive">
-            <table class="table table-borderless">
+            <table class="table table-borderless responsive-card-table">
                 <thead>
                     <tr>
                         <th><span>Member</span></th>
@@ -34,12 +34,12 @@
                     @foreach (var booking in Model)
                     {
                         <tr>
-                            <td><span class="fw-bold">@booking.MemberName</span></td>
-                            <td><span>@booking.SessionCategory</span></td>
-                            <td><span>@booking.SessionDate</span></td>
-                            <td><span>@booking.SessionTime</span></td>
-                            <td><span>@booking.BookingDate.ToString("MMM dd, yyyy")</span></td>
-                            <td>
+                            <td data-label="Member"><span class="fw-bold">@booking.MemberName</span></td>
+                            <td data-label="Session"><span>@booking.SessionCategory</span></td>
+                            <td data-label="Date"><span>@booking.SessionDate</span></td>
+                            <td data-label="Time"><span>@booking.SessionTime</span></td>
+                            <td data-label="Booking Date"><span>@booking.BookingDate.ToString("MMM dd, yyyy")</span></td>
+                            <td data-label="Attended">
                                 @if (booking.IsAttended)
                                 {
                                     <span class="badge bg-success">Yes</span>
@@ -49,7 +49,7 @@
                                     <span class="badge bg-secondary">No</span>
                                 }
                             </td>
-                            <td>
+                            <td data-label="Action">
                                 <a asp-controller="Bookings" asp-action="Delete" asp-route-id="@booking.Id"
                                    class="btn btn-outline text-danger btn-sm">
                                     <i class="bi bi-trash me-1"></i>Cancel

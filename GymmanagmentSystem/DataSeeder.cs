@@ -1,4 +1,4 @@
-﻿using GymManagment.DAL.DbContext;
+using GymManagment.DAL.DbContext;
 using GymManagment.DAL.Models;
 using GymManagment.DAL.Models.Enum;
 using Microsoft.AspNetCore.Identity;
@@ -27,6 +27,7 @@ namespace GymmanagmentSystem
                 await SeedRolesAsync(roleManager, logger);
                 await SeedAdminUserAsync(userManager, logger);
                 await SeedManagerUsersAsync(userManager, logger);
+                await SeedBadgeDefinitionsAsync(context, logger);
                 await SeedUpcomingSessionsAsync(context, logger); // must be LAST — needs Trainers + Categories
             }
             catch (Exception ex)
@@ -531,6 +532,62 @@ namespace GymmanagmentSystem
             await context.Membership.AddRangeAsync(memberships);
             await context.SaveChangesAsync();
             logger.LogInformation("Seeded {Count} memberships for existing members.", memberships.Count);
+        }
+
+        private static async Task SeedBadgeDefinitionsAsync(GymDbcontext context, ILogger logger)
+        {
+            if (context.BadgeDefinitions.Any())
+            {
+                logger.LogInformation("Badge definitions already seeded — skipping.");
+                return;
+            }
+
+            var badges = new List<BadgeDefinition>
+            {
+                // WorkoutCount
+                new() { Name = "Iron Starter", Description = "Log your first workout.", IconPath = "/images/badges/bronze_badge.jpg", Category = BadgeCategory.WorkoutCount, Tier = BadgeTier.Bronze, Threshold = 1, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Dedicated Lifter", Description = "Log 25 workouts.", IconPath = "/images/badges/silver_badge.jpg", Category = BadgeCategory.WorkoutCount, Tier = BadgeTier.Silver, Threshold = 25, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Century Club", Description = "Log 100 workouts.", IconPath = "/images/badges/gold_badge.jpg", Category = BadgeCategory.WorkoutCount, Tier = BadgeTier.Gold, Threshold = 100, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+
+                // TotalVolume
+                new() { Name = "Ton Lifter", Description = "Lift 1,000 kg total volume.", IconPath = "/images/badges/bronze_badge.jpg", Category = BadgeCategory.TotalVolume, Tier = BadgeTier.Bronze, Threshold = 1000, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Heavy Hitter", Description = "Lift 10,000 kg total volume.", IconPath = "/images/badges/silver_badge.jpg", Category = BadgeCategory.TotalVolume, Tier = BadgeTier.Silver, Threshold = 10000, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Titan", Description = "Lift 100,000 kg total volume.", IconPath = "/images/badges/gold_badge.jpg", Category = BadgeCategory.TotalVolume, Tier = BadgeTier.Gold, Threshold = 100000, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+
+                // SessionAttendance
+                new() { Name = "Regular", Description = "Attend 5 training sessions.", IconPath = "/images/badges/bronze_badge.jpg", Category = BadgeCategory.SessionAttendance, Tier = BadgeTier.Bronze, Threshold = 5, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Committed", Description = "Attend 25 training sessions.", IconPath = "/images/badges/silver_badge.jpg", Category = BadgeCategory.SessionAttendance, Tier = BadgeTier.Silver, Threshold = 25, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Ironclad", Description = "Attend 100 training sessions.", IconPath = "/images/badges/gold_badge.jpg", Category = BadgeCategory.SessionAttendance, Tier = BadgeTier.Gold, Threshold = 100, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+
+                // BookingCount
+                new() { Name = "First Booking", Description = "Make your first session booking.", IconPath = "/images/badges/bronze_badge.jpg", Category = BadgeCategory.BookingCount, Tier = BadgeTier.Bronze, Threshold = 1, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Session Fan", Description = "Make 25 session bookings.", IconPath = "/images/badges/silver_badge.jpg", Category = BadgeCategory.BookingCount, Tier = BadgeTier.Silver, Threshold = 25, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Booking Machine", Description = "Make 100 session bookings.", IconPath = "/images/badges/gold_badge.jpg", Category = BadgeCategory.BookingCount, Tier = BadgeTier.Gold, Threshold = 100, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+
+                // PersonalRecord
+                new() { Name = "PR Breaker", Description = "Lift a max weight of 50 kg on any set.", IconPath = "/images/badges/bronze_badge.jpg", Category = BadgeCategory.PersonalRecord, Tier = BadgeTier.Bronze, Threshold = 50, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Strength Surge", Description = "Lift a max weight of 100 kg on any set.", IconPath = "/images/badges/silver_badge.jpg", Category = BadgeCategory.PersonalRecord, Tier = BadgeTier.Silver, Threshold = 100, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Beast Mode", Description = "Lift a max weight of 200 kg on any set.", IconPath = "/images/badges/gold_badge.jpg", Category = BadgeCategory.PersonalRecord, Tier = BadgeTier.Gold, Threshold = 200, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+
+                // ConsistencyStreak
+                new() { Name = "3-Day Streak", Description = "Log workouts 3 days in a row.", IconPath = "/images/badges/bronze_badge.jpg", Category = BadgeCategory.ConsistencyStreak, Tier = BadgeTier.Bronze, Threshold = 3, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Weekly Warrior", Description = "Log workouts 7 days in a row.", IconPath = "/images/badges/silver_badge.jpg", Category = BadgeCategory.ConsistencyStreak, Tier = BadgeTier.Silver, Threshold = 7, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Monthly Machine", Description = "Log workouts 30 days in a row.", IconPath = "/images/badges/gold_badge.jpg", Category = BadgeCategory.ConsistencyStreak, Tier = BadgeTier.Gold, Threshold = 30, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+
+                // WeightProgress
+                new() { Name = "First Step", Description = "Change your body weight by 1 kg.", IconPath = "/images/badges/bronze_badge.jpg", Category = BadgeCategory.WeightProgress, Tier = BadgeTier.Bronze, Threshold = 1, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Transformation", Description = "Change your body weight by 5 kg.", IconPath = "/images/badges/silver_badge.jpg", Category = BadgeCategory.WeightProgress, Tier = BadgeTier.Silver, Threshold = 5, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Total Makeover", Description = "Change your body weight by 15 kg.", IconPath = "/images/badges/gold_badge.jpg", Category = BadgeCategory.WeightProgress, Tier = BadgeTier.Gold, Threshold = 15, IsAutomatic = true, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+
+                // Manual Badges
+                new() { Name = "Competition Winner", Description = "Awarded for winning a gym competition.", IconPath = "/images/badges/special_badge.jpg", Category = BadgeCategory.WorkoutCount, Tier = BadgeTier.Gold, Threshold = null, IsAutomatic = false, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Member of the Month", Description = "Awarded for outstanding dedication and attitude.", IconPath = "/images/badges/special_badge.jpg", Category = BadgeCategory.WorkoutCount, Tier = BadgeTier.Gold, Threshold = null, IsAutomatic = false, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Special Recognition", Description = "Awarded for special achievements or contributions.", IconPath = "/images/badges/special_badge.jpg", Category = BadgeCategory.WorkoutCount, Tier = BadgeTier.Gold, Threshold = null, IsAutomatic = false, CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now }
+            };
+
+            await context.BadgeDefinitions.AddRangeAsync(badges);
+            await context.SaveChangesAsync();
+            logger.LogInformation("Seeded {Count} badge definitions.", badges.Count);
         }
     }
 }

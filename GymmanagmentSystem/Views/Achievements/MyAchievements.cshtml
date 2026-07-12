@@ -1,0 +1,195 @@
+@model GymMangment.BLL.ViewModels.BadgeViewModels.AchievementsPageViewModel
+@{
+    ViewData["Title"] = "My Achievements";
+}
+
+<div class="container py-5">
+    <!-- Header Summary Card -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg position-relative overflow-hidden text-white" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 20px;">
+                <div class="card-body p-5 d-flex align-items-center justify-content-between flex-wrap position-relative" style="z-index: 2;">
+                    <div>
+                        <span class="badge bg-warning text-dark mb-2 px-3 py-2 fs-6 fw-bold rounded-pill">🏋️ Fitness Journey</span>
+                        <h1 class="display-4 fw-bold">Congratulations, @Model.MemberName!</h1>
+                        <p class="fs-5 opacity-75 mb-0">You've unlocked some serious milestones. Keep training and show off your badges!</p>
+                    </div>
+                    <div class="text-center mt-4 mt-md-0 bg-white bg-opacity-10 p-4 rounded-4 shadow" style="backdrop-filter: blur(10px); min-width: 180px;">
+                        <span class="d-block display-3 fw-bold text-warning">@Model.TotalBadgeCount</span>
+                        <span class="text-uppercase tracking-wider fw-semibold small opacity-75">Badges Earned</span>
+                    </div>
+                </div>
+                <!-- Decorative subtle circles -->
+                <div class="position-absolute rounded-circle" style="width: 300px; height: 300px; top: -100px; right: -50px; z-index: 1; background-color: rgba(255, 255, 255, 0.12);"></div>
+                <div class="position-absolute rounded-circle" style="width: 150px; height: 150px; bottom: -50px; left: -30px; z-index: 1; background-color: rgba(255, 255, 255, 0.12);"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Achievements Grid -->
+    <div class="row">
+        <!-- Left Side: Badges by Category -->
+        <div class="col-lg-8">
+            <h2 class="h3 mb-4 fw-bold text-dark"><i class="bi bi-trophy-fill text-warning me-2"></i>Badges Collection</h2>
+
+            @{
+                var categories = new Dictionary<string, (string Title, string Icon, string Unit, string Desc)>
+                {
+                    { "WorkoutCount", ("Workouts Logged", "bi-journal-richtext text-primary", "workouts", "Reward for logging your workout sessions.") },
+                    { "TotalVolume", ("Total Weight Lifted", "bi-lightning-charge-fill text-warning", "kg", "Accumulated volume across all workouts.") },
+                    { "SessionAttendance", ("Sessions Attended", "bi-people-fill text-success", "sessions", "Classes attended with a trainer.") },
+                    { "BookingCount", ("Bookings Made", "bi-calendar-check text-info", "bookings", "Total fitness session reservations.") },
+                    { "PersonalRecord", ("Personal Records", "bi-fire text-danger", "kg", "Max weight lifted on a single set.") },
+                    { "ConsistencyStreak", ("Consistency Streak", "bi-arrow-repeat text-secondary", "days", "Consecutive days logging workouts.") },
+                    { "WeightProgress", ("Weight Transformation", "bi-activity text-dark", "kg", "Total absolute body weight change tracked.") }
+                };
+            }
+
+            @foreach (var cat in categories)
+            {
+                var catKey = cat.Key;
+                var details = cat.Value;
+                var progress = Model.CategoryProgress.ContainsKey(catKey) ? Model.CategoryProgress[catKey] : 0;
+                var catBadges = Model.AllDefinitions.Where(d => d.Category == catKey).OrderBy(d => d.Threshold).ToList();
+
+                <div class="card border-0 shadow-sm mb-4 rounded-4 overflow-hidden">
+                    <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-light p-2 rounded-3 me-3">
+                                <i class="bi @details.Icon fs-4"></i>
+                            </div>
+                            <div>
+                                <h3 class="h5 mb-0 fw-bold text-dark">@details.Title</h3>
+                                <small class="text-muted">@details.Desc</small>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-light text-dark fs-6 border fw-bold">
+                                Current: @progress.ToString("N0") @details.Unit
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body bg-light bg-opacity-50 py-4 px-4">
+                        <div class="row row-cols-3 g-4">
+                            @foreach (var badge in catBadges)
+                            {
+                                var earned = Model.EarnedBadges.FirstOrDefault(mb => mb.BadgeDefinitionId == badge.Id);
+                                var isLocked = earned == null;
+
+                                <div class="col text-center">
+                                    <div class="position-relative d-inline-block mb-2">
+                                        <img src="@badge.IconPath" 
+                                             class="rounded-circle shadow-sm transition-transform hover-scale @(isLocked ? "grayscale opacity-40 border border-secondary border-dashed" : "border border-4 border-warning shadow-lg")" 
+                                             alt="@badge.Name" 
+                                             style="width: 85px; height: 85px; object-fit: cover; transition: all 0.3s ease;"
+                                             title="@badge.Name - @badge.Description" />
+                                        @if (isLocked)
+                                        {
+                                            <span class="position-absolute top-50 start-50 translate-middle bg-dark bg-opacity-75 rounded-circle p-2 shadow text-white border border-light" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="bi bi-lock-fill small"></i>
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="position-absolute bottom-0 end-0 bg-success text-white rounded-circle p-1 shadow border border-light" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 10px;">
+                                                <i class="bi bi-check-lg fw-bold"></i>
+                                            </span>
+                                        }
+                                    </div>
+                                    <h4 class="h6 mb-0 fw-bold text-dark">@badge.Name</h4>
+                                    <span class="text-muted d-block small mb-1">Target: @badge.Threshold?.ToString("N0") @details.Unit</span>
+                                    
+                                    <!-- Tiny Progress towards this specific badge if locked and threshold exists -->
+                                    @if (isLocked && badge.Threshold.HasValue && badge.Threshold > 0)
+                                    {
+                                        var pct = Math.Min(100, (int)((double)progress / badge.Threshold.Value * 100));
+                                        <div class="progress mt-2 mx-auto" style="height: 6px; max-width: 80px; border-radius: 3px;">
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: @pct%;" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <span class="text-muted" style="font-size: 10px;">@pct%</span>
+                                    }
+                                    else if (!isLocked)
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 mt-1 fw-bold" style="font-size: 9px;">
+                                            Earned @earned.EarnedAtUtc.ToLocalTime().ToString("MMM dd, yyyy")
+                                        </span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Right Side: Recent Unlocks & Leaderboard Preview -->
+        <div class="col-lg-4 mt-5 mt-lg-0">
+            <!-- Recent Badge Unlocks -->
+            <div class="card border-0 shadow-sm mb-4 rounded-4">
+                <div class="card-body p-4">
+                    <h3 class="h5 mb-4 fw-bold text-dark"><i class="bi bi-clock-history text-primary me-2"></i>Recent Unlocks</h3>
+                    @if (!Model.EarnedBadges.Any())
+                    {
+                        <div class="text-center py-4">
+                            <i class="bi bi-trophy text-muted display-4 mb-2 d-block"></i>
+                            <p class="text-muted mb-0">No badges earned yet. Go get active!</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="timeline">
+                            @foreach (var earned in Model.EarnedBadges.Take(5))
+                            {
+                                <div class="d-flex align-items-center mb-3">
+                                    <img src="@earned.BadgeIconPath" class="rounded-circle border border-2 border-warning me-3" style="width: 50px; height: 50px; object-fit: cover;" />
+                                    <div>
+                                        <h4 class="h6 mb-0 fw-bold text-dark">@earned.BadgeName</h4>
+                                        <p class="text-muted mb-0 small">@earned.BadgeDescription</p>
+                                        <small class="text-success fw-semibold">Unlocked @earned.EarnedAtUtc.ToLocalTime().ToString("MMM dd, yyyy")</small>
+                                        @if (earned.AwardedByUserName != null)
+                                        {
+                                            <span class="d-block small text-info"><i class="bi bi-award-fill me-1"></i>Awarded by Admin</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Quick Link to Leaderboard Card -->
+            <div class="card border-0 shadow-lg text-white rounded-4 overflow-hidden" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                <div class="card-body p-4 position-relative z-index-2">
+                    <h3 class="h5 mb-3 fw-bold text-white"><i class="bi bi-people-fill me-2"></i>Public Leaderboard</h3>
+                    <p class="small opacity-90 mb-4">See how your badge count stacks up against other gym members. Keep lifting to climb the ranks!</p>
+                    <a href="/Achievements/Leaderboard" class="btn btn-white text-success fw-bold px-4 py-2 rounded-pill shadow-sm bg-white hover-scale">
+                        View Leaderboard <i class="bi bi-arrow-right-short ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-scale:hover {
+        transform: scale(1.1);
+    }
+    .grayscale {
+        filter: grayscale(100%);
+    }
+    .opacity-40 {
+        opacity: 0.4;
+    }
+    .border-dashed {
+        border-style: dashed !important;
+    }
+    .tracking-wider {
+        letter-spacing: 0.05em;
+    }
+    .btn-white:hover {
+        background-color: #f8f9fa !important;
+        transform: translateY(-2px);
+    }
+</style>
