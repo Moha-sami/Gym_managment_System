@@ -46,9 +46,11 @@ namespace GymmanagmentSystem.PL.Services
                 EnableSsl = enableSsl
             };
 
+            var senderEmail = _config["SmtpSettings:SenderEmail"] ?? username;
+
             var mailMessage = new MailMessage
             {
-                From = new MailAddress(username, senderName),
+                From = new MailAddress(senderEmail, senderName),
                 Subject = subject,
                 Body = body,
                 IsBodyHtml = true
