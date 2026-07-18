@@ -30,6 +30,7 @@ namespace GymmanagmentSystem
                 await SeedAdminUserAsync(userManager, logger);
                 await SeedManagerUsersAsync(userManager, logger);
                 await SeedBadgeDefinitionsAsync(context, logger);
+                await SeedExercisesAsync(context, logger);
                 await SeedUpcomingSessionsAsync(context, logger); // must be LAST — needs Trainers + Categories
             }
             catch (Exception ex)
@@ -590,6 +591,56 @@ namespace GymmanagmentSystem
             await context.BadgeDefinitions.AddRangeAsync(badges);
             await context.SaveChangesAsync();
             logger.LogInformation("Seeded {Count} badge definitions.", badges.Count);
+        }
+
+        private static async Task SeedExercisesAsync(GymDbcontext context, ILogger logger)
+        {
+            var exercises = new List<Exercise>
+            {
+                new() { Name = "Bench Press", Description = "Lies flat on a bench and press a barbell upwards to build chest, front shoulders, and triceps.", MuscleGroup = "Chest", Difficulty = "Beginner", VideoUrl = "https://www.youtube.com/embed/rT7DgcrgW1U", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Barbell Back Squat", Description = "Squat down with a barbell resting on your upper back to build quads, glutes, and hamstrings.", MuscleGroup = "Legs", Difficulty = "Intermediate", VideoUrl = "https://www.youtube.com/embed/U3HlEF_E9fo", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Deadlift (Conventional)", Description = "Lift a barbell from the floor to hip height using a flat back to develop full posterior chain strength.", MuscleGroup = "Back", Difficulty = "Advanced", VideoUrl = "https://www.youtube.com/embed/ytGaGIn3SjY", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Lat Pulldown (Wide Grip)", Description = "Pull the bar down towards the upper chest while seated to isolate the lats and build back width.", MuscleGroup = "Back", Difficulty = "Beginner", VideoUrl = "https://www.youtube.com/embed/CAwf7n6Luuc", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Overhead Dumbbell Press", Description = "Press dumbbells straight up from shoulder height to target the front and side deltoids.", MuscleGroup = "Shoulders", Difficulty = "Intermediate", VideoUrl = "https://www.youtube.com/embed/2yjwHeEwCy8", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Dumbbell Bicep Curl", Description = "Rotate and lift dumbbells towards the shoulders to isolate the bicep muscles.", MuscleGroup = "Arms", Difficulty = "Beginner", VideoUrl = "https://www.youtube.com/embed/yTwoK3Kxs2E", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Decline Bench Sit-Ups", Description = "Lie on a decline bench and pull your torso up towards your knees to isolate and build strong abdominal muscles.", MuscleGroup = "Abs", Difficulty = "Intermediate", VideoUrl = "https://www.youtube.com/embed/CKQKsT4hlV4", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Decline Shoulder Taps", Description = "Hold a high plank with feet elevated on a bench and alternate tapping opposite shoulders to build core and shoulder stability.", MuscleGroup = "Shoulders", Difficulty = "Advanced", VideoUrl = "https://www.youtube.com/embed/iPRLXqNytOM", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Alternating Lunge with Rotation", Description = "Step forward into a lunge and rotate your torso toward your front leg to target quads, glutes, and core rotators.", MuscleGroup = "Legs", Difficulty = "Intermediate", VideoUrl = "https://www.youtube.com/embed/XO26sIQgam0", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Couch Dips with Leg Raise", Description = "Perform tricep dips off a bench/couch while raising one leg to engage triceps and hip flexors simultaneously.", MuscleGroup = "Arms", Difficulty = "Intermediate", VideoUrl = "https://www.youtube.com/embed/Y6Fag9ucMLU", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Cardio Side to Side Step", Description = "Step rapidly side-to-side to increase your heart rate, improve agility, and build functional lower body stamina.", MuscleGroup = "Cardio", Difficulty = "Beginner", VideoUrl = "https://www.youtube.com/embed/V6C2Gv-3QvE", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Basic Stretching", Description = "Perform a series of basic muscle stretches to improve flexibility, reduce stiffness, and boost workout recovery.", MuscleGroup = "Stretching", Difficulty = "Beginner", VideoUrl = "https://www.youtube.com/embed/UeGvAae_7E8", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Barbell Close Grip Press", Description = "Press a barbell from a flat bench using a narrow grip to shift the focus onto the triceps and inner chest.", MuscleGroup = "Chest", Difficulty = "Intermediate", VideoUrl = "https://www.youtube.com/embed/cnYuxIt7SCw", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Barbell Lying Triceps Extension", Description = "Lie on a flat bench and lower a barbell to your forehead before pushing it back up to isolate the triceps.", MuscleGroup = "Arms", Difficulty = "Advanced", VideoUrl = "https://www.youtube.com/embed/0cvKseBn22g", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Brazilian Crunches", Description = "Lie flat and perform twisting crunches to target the upper and lower abdominals as well as the obliques.", MuscleGroup = "Abs", Difficulty = "Intermediate", VideoUrl = "https://www.youtube.com/embed/EpqfxiLTumo", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Alternating Toe Tap", Description = "Lying flat, lift legs and alternate reaching up to tap your toes to build lower ab strength.", MuscleGroup = "Abs", Difficulty = "Beginner", VideoUrl = "https://www.youtube.com/embed/kmIH3Yws_0o", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Alternating Plank Lunge", Description = "From a plank position, jump or step feet forward into alternating lunge positions for high-intensity core and leg engagement.", MuscleGroup = "Abs", Difficulty = "Advanced", VideoUrl = "https://www.youtube.com/embed/pAziCbaFt2I", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Alternating Oblique Sit-Ups", Description = "Alternate twisting elbows to opposite knees during sit-ups to target the side abdominal muscles.", MuscleGroup = "Abs", Difficulty = "Beginner", VideoUrl = "https://www.youtube.com/embed/zNCkxWX_fZE", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Alternating Leg Lifts", Description = "Lie flat on your back and alternate lifting each leg to a 90-degree angle to target the lower core.", MuscleGroup = "Abs", Difficulty = "Beginner", VideoUrl = "https://www.youtube.com/embed/xzdlNsXF-UU", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Alternating Arm Leg Plank", Description = "From a high plank position, lift the opposite arm and leg simultaneously to test and build extreme core stability.", MuscleGroup = "Abs", Difficulty = "Advanced", VideoUrl = "https://www.youtube.com/embed/SHTqSjdsmf4", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Decline Diamond Pike Push-Up", Description = "Elevate your feet and perform close-grip push-ups to heavily isolate the upper chest and triceps.", MuscleGroup = "Chest", Difficulty = "Advanced", VideoUrl = "https://www.youtube.com/embed/lhcdkc6X_uA", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new() { Name = "Upward Rotation Extend Arms", Description = "Extend and rotate arms upwards to build mobility and strength in the rotator cuff and rear shoulders.", MuscleGroup = "Shoulders", Difficulty = "Beginner", VideoUrl = "https://www.youtube.com/embed/OnYrI-4hCBk", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now }
+            };
+
+            foreach (var ex in exercises)
+            {
+                var existing = await context.Exercises.FirstOrDefaultAsync(x => x.Name == ex.Name);
+                if (existing != null)
+                {
+                    existing.VideoUrl = ex.VideoUrl;
+                    existing.Description = ex.Description;
+                    existing.MuscleGroup = ex.MuscleGroup;
+                    existing.Difficulty = ex.Difficulty;
+                    existing.UpdatedAt = DateTime.Now;
+                    context.Exercises.Update(existing);
+                }
+                else
+                {
+                    await context.Exercises.AddAsync(ex);
+                }
+            }
+
+            await context.SaveChangesAsync();
+            logger.LogInformation("Seeded and updated exercises with 3D animation videos.");
         }
     }
 }

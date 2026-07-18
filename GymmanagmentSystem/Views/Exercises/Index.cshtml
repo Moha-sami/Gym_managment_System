@@ -1,0 +1,196 @@
+@model IEnumerable<GymManagment.DAL.Models.Exercise>
+@{
+    ViewData["Title"] = "Exercise Form & Video Library";
+    var currentMuscleGroup = ViewData["CurrentMuscleGroup"] as string ?? "All Muscles";
+    var currentSearch = ViewData["CurrentSearch"] as string ?? "";
+    var muscleGroups = new[] { "All Muscles", "Chest", "Back", "Legs", "Shoulders", "Arms", "Abs", "Cardio", "Stretching" };
+}
+
+<div class="container py-5">
+    <header class="mb-5 text-center text-md-start">
+        <h1 class="display-5 fw-extrabold text-dark tracking-tight">
+            <i class="bi bi-play-btn-fill text-primary-color me-2"></i>Exercise Video Library
+        </h1>
+        <p class="text-muted fs-5">Perfect your form and learn new workout routines with guided animations and instructions.</p>
+    </header>
+
+    <!-- Search and Filters -->
+    <form method="get" asp-action="Index" id="filterForm">
+        <div class="row g-3 mb-5 align-items-center">
+            <!-- Muscle Group Filter Dropdown -->
+            <div class="col-md-4">
+                <label class="form-label fw-bold text-dark small mb-1"><i class="bi bi-funnel-fill me-1 text-primary-color"></i>Target Muscle</label>
+                <select name="muscleGroup" class="form-select rounded-pill px-3 py-2 border shadow-sm" onchange="this.form.submit()">
+                    @foreach (var cat in muscleGroups)
+                    {
+                        if (currentMuscleGroup.Equals(cat, StringComparison.OrdinalIgnoreCase))
+                        {
+                            <option value="@cat" selected="selected">@cat</option>
+                        }
+                        else
+                        {
+                            <option value="@cat">@cat</option>
+                        }
+                    }
+                </select>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="col-md-8">
+                <label class="form-label fw-bold text-dark small mb-1"><i class="bi bi-search me-1 text-primary-color"></i>Search</label>
+                <div class="input-group shadow-sm rounded-pill overflow-hidden">
+                    <input type="text" name="search" value="@currentSearch" class="form-control border-end-0 border-0 px-4 py-2" placeholder="Search by name or description..." aria-label="Search exercises" />
+                    <button class="btn btn-white bg-white border-start-0 border-0 px-4" type="submit">
+                        <i class="bi bi-search text-muted"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <!-- Exercises Grid -->
+    @if (!Model.Any())
+    {
+        <div class="text-center py-5 border border-dashed rounded-4 bg-light">
+            <i class="bi bi-info-circle display-4 text-muted opacity-50"></i>
+            <h4 class="fw-bold text-muted mt-3">No Exercises Found</h4>
+            <p class="text-muted mb-0">Try adjusting your search query or selecting a different category.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var ex in Model)
+            {
+                var cardBorderColor = ex.Difficulty switch
+                {
+                    "Beginner" => "border-success",
+                    "Intermediate" => "border-warning",
+                    "Advanced" => "border-danger",
+                    _ => "border-secondary"
+                };
+
+                var badgeBg = ex.Difficulty switch
+                {
+                    "Beginner" => "bg-success-subtle text-success",
+                    "Intermediate" => "bg-warning-subtle text-warning-emphasis",
+                    "Advanced" => "bg-danger-subtle text-danger",
+                    _ => "bg-secondary-subtle text-secondary"
+                };
+
+                <div class="col">
+                    <div class="card h-100 border rounded-4 shadow-sm hover-shadow transition-all overflow-hidden bg-white">
+                        <div class="card-body p-4 d-flex flex-col justify-content-between">
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span class="badge rounded-pill px-3 py-1.5 fw-bold @badgeBg">
+                                        @ex.Difficulty
+                                    </span>
+                                    <span class="text-xs text-muted fw-semibold">
+                                        <i class="bi bi-tag-fill me-1"></i>@ex.MuscleGroup
+                                    </span>
+                                </div>
+                                <h3 class="h4 fw-extrabold text-dark mb-2">@ex.Name</h3>
+                                <p class="text-muted small mb-4 line-clamp-3">@ex.Description</p>
+                            </div>
+
+                            <div class="mt-auto pt-3 border-top d-flex align-items-center gap-3">
+                                <button type="button" 
+                                        class="btn btn-primary bg-primary-color border-0 rounded-circle d-flex align-items-center justify-content-center btn-play-video shadow-sm transition-all hover-scale" 
+                                        style="width: 44px; height: 44px;"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#videoModal" 
+                                        data-title="@ex.Name" 
+                                        data-desc="@ex.Description"
+                                        data-url="@ex.VideoUrl">
+                                    <i class="bi bi-play-fill text-white fs-5 ms-0.5"></i>
+                                </button>
+                                <span class="text-xs text-muted fw-medium">Click to watch tutorial</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Video Tutorial Modal -->
+<div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="videoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg bg-white">
+            <div class="modal-header border-0 bg-light py-3 px-4">
+                <h5 class="modal-title fw-bold text-dark" id="videoModalLabel">Exercise Tutorial</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="ratio ratio-16x9 bg-black">
+                    <iframe id="videoPlayer" src="" title="Exercise Video Player" allowfullscreen class="border-0" style="display: none;"></iframe>
+                    <video id="htmlVideoPlayer" controls autoplay loop muted class="w-100 h-100" style="display: none; object-fit: cover;"></video>
+                </div>
+                <div id="youtubeWarning" class="p-3 bg-light text-center border-bottom" style="display: none;">
+                    <span class="text-muted small d-block mb-2"><i class="bi bi-youtube me-1 text-danger"></i>If playback is restricted by the creator in embedded players:</span>
+                    <a id="youtubeDirectLink" href="#" target="_blank" class="btn btn-primary bg-primary-color border-0 btn-sm rounded-pill px-4">
+                        <i class="bi bi-youtube me-2"></i>Watch directly on YouTube
+                    </a>
+                </div>
+                <div class="p-4">
+                    <h4 class="fw-bold text-dark mb-2" id="modalExerciseTitle">Exercise Name</h4>
+                    <p class="text-muted mb-0" id="modalExerciseDescription">Detailed exercise guide description.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const videoModal = document.getElementById('videoModal');
+            const videoPlayer = document.getElementById('videoPlayer');
+            const htmlVideoPlayer = document.getElementById('htmlVideoPlayer');
+            const modalTitle = document.getElementById('modalExerciseTitle');
+            const modalDesc = document.getElementById('modalExerciseDescription');
+            const youtubeWarning = document.getElementById('youtubeWarning');
+            const youtubeDirectLink = document.getElementById('youtubeDirectLink');
+
+            videoModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const title = button.getAttribute('data-title');
+                const desc = button.getAttribute('data-desc');
+                const url = button.getAttribute('data-url');
+
+                modalTitle.textContent = title;
+                modalDesc.textContent = desc;
+
+                if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                    videoPlayer.setAttribute('src', url + "?autoplay=1&mute=1&rel=0");
+                    videoPlayer.style.display = 'block';
+                    htmlVideoPlayer.style.display = 'none';
+                    htmlVideoPlayer.src = '';
+                    
+                    let watchUrl = url.replace('embed/', 'watch?v=');
+                    youtubeDirectLink.setAttribute('href', watchUrl);
+                    youtubeWarning.style.display = 'block';
+                } else {
+                    videoPlayer.style.display = 'none';
+                    videoPlayer.setAttribute('src', '');
+                    htmlVideoPlayer.src = url;
+                    htmlVideoPlayer.style.display = 'block';
+                    htmlVideoPlayer.load();
+                    htmlVideoPlayer.play().catch(e => console.log("Autoplay blocked: ", e));
+                    youtubeWarning.style.display = 'none';
+                }
+            });
+
+            videoModal.addEventListener('hide.bs.modal', function () {
+                videoPlayer.setAttribute('src', '');
+                videoPlayer.style.display = 'none';
+                htmlVideoPlayer.pause();
+                htmlVideoPlayer.src = '';
+                htmlVideoPlayer.style.display = 'none';
+                youtubeWarning.style.display = 'none';
+            });
+        });
+    </script>
+}

@@ -65,14 +65,17 @@
                                             <input type="text" name="Exercises[@i].ExerciseName" class="form-control border-0 bg-transparent fw-bold text-dark fs-5 p-0 exercise-name-input" 
                                                    placeholder="Enter Exercise Name (e.g. Bench Press)" value="@exercise.ExerciseName" required />
                                         </div>
-                                        <div class="d-flex gap-2">
-                                            <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3 btn-add-set">
-                                                <i class="bi bi-plus-lg me-1"></i>Add Set
-                                            </button>
-                                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill btn-remove-exercise" title="Remove Exercise">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </div>
+                                         <div class="d-flex gap-2">
+                                             <button type="button" class="btn btn-outline-info btn-sm rounded-pill px-3 btn-exercise-guide" title="Watch Form Guide">
+                                                 <i class="bi bi-play-circle me-1"></i>Guide
+                                             </button>
+                                             <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3 btn-add-set">
+                                                 <i class="bi bi-plus-lg me-1"></i>Add Set
+                                             </button>
+                                             <button type="button" class="btn btn-outline-danger btn-sm rounded-pill btn-remove-exercise" title="Remove Exercise">
+                                                 <i class="bi bi-trash"></i>
+                                             </button>
+                                         </div>
                                     </div>
                                     <div class="card-body p-4">
                                         <div class="table-responsive">
@@ -143,6 +146,38 @@
     </div>
 </div>
 
+<!-- Exercise Guide Modal -->
+<div class="modal fade" id="guideModal" tabindex="-1" aria-labelledby="guideModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg bg-white">
+            <div class="modal-header border-0 bg-light py-3 px-4">
+                <h5 class="modal-title fw-bold text-dark" id="guideModalLabel">Form Guide & Video</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div id="guideVideoContainer" class="ratio ratio-16x9 bg-black" style="display: none;">
+                    <iframe id="guideVideoPlayer" src="" title="Exercise Video Player" allowfullscreen class="border-0" style="display: none;"></iframe>
+                    <video id="guideHtmlVideoPlayer" controls autoplay loop muted class="w-100 h-100" style="display: none; object-fit: cover;"></video>
+                </div>
+                <div id="guideYoutubeWarning" class="p-3 bg-light text-center border-bottom" style="display: none;">
+                    <span class="text-muted small d-block mb-2"><i class="bi bi-youtube me-1 text-danger"></i>If playback is restricted by the creator in embedded players:</span>
+                    <a id="guideYoutubeDirectLink" href="#" target="_blank" class="btn btn-primary bg-primary-color border-0 btn-sm rounded-pill px-4">
+                        <i class="bi bi-youtube me-2"></i>Watch directly on YouTube
+                    </a>
+                </div>
+                <div class="p-4">
+                    <h4 class="fw-bold text-dark mb-2" id="guideExerciseTitle">Exercise Name</h4>
+                    <div class="mb-3">
+                        <span class="badge bg-primary bg-primary-color rounded-pill px-3 py-1.5 fw-bold" id="guideExerciseDifficulty">Beginner</span>
+                        <span class="badge bg-secondary rounded-pill px-3 py-1.5 fw-bold ms-1" id="guideExerciseMuscle">Muscle Group</span>
+                    </div>
+                    <p class="text-muted mb-0" id="guideExerciseDescription">Description goes here...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- templates for dynamic DOM insertion -->
 <template id="exerciseTemplate">
     <div class="card border rounded-4 shadow-sm exercise-block mb-3" data-index="0">
@@ -152,6 +187,9 @@
                        placeholder="Enter Exercise Name (e.g. Bench Press)" required />
             </div>
             <div class="d-flex gap-2">
+                <button type="button" class="btn btn-outline-info btn-sm rounded-pill px-3 btn-exercise-guide" title="Watch Form Guide">
+                    <i class="bi bi-play-circle me-1"></i>Guide
+                </button>
                 <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3 btn-add-set">
                     <i class="bi bi-plus-lg me-1"></i>Add Set
                 </button>
@@ -318,6 +356,71 @@
 
             // Delegated click handler on exercises container
             container.addEventListener("click", function (e) {
+                const btnGuide = e.target.closest(".btn-exercise-guide");
+                if (btnGuide) {
+                    const block = btnGuide.closest(".exercise-block");
+                    const nameInput = block.querySelector(".exercise-name-input");
+                    const name = nameInput.value.trim();
+                    if (!name) {
+                        alert("Please enter the exercise name first to view its guide.");
+                        return;
+                    }
+                    
+                    fetch(`/Exercises/GetDetailsByName?name=${encodeURIComponent(name)}`)
+                        .then(response => {
+                            if (!response.ok) throw new Error("Exercise not found");
+                            return response.json();
+                        })
+                        .then(data => {
+                            document.getElementById("guideExerciseTitle").textContent = data.name;
+                            document.getElementById("guideExerciseDifficulty").textContent = data.difficulty;
+                            document.getElementById("guideExerciseMuscle").textContent = data.muscleGroup;
+                            document.getElementById("guideExerciseDescription").textContent = data.description;
+                            
+                            const videoContainer = document.getElementById("guideVideoContainer");
+                            const videoPlayer = document.getElementById("guideVideoPlayer");
+                            const htmlVideoPlayer = document.getElementById("guideHtmlVideoPlayer");
+                            const guideYoutubeWarning = document.getElementById("guideYoutubeWarning");
+                            const guideYoutubeDirectLink = document.getElementById("guideYoutubeDirectLink");
+                             
+                            if (data.videoUrl) {
+                                videoContainer.style.display = "block";
+                                if (data.videoUrl.includes('youtube.com') || data.videoUrl.includes('youtu.be')) {
+                                    videoPlayer.setAttribute("src", data.videoUrl + "?autoplay=1&mute=1&rel=0");
+                                    videoPlayer.style.display = "block";
+                                    htmlVideoPlayer.style.display = "none";
+                                    htmlVideoPlayer.src = "";
+                                    
+                                    let watchUrl = data.videoUrl.replace('embed/', 'watch?v=');
+                                    guideYoutubeDirectLink.setAttribute('href', watchUrl);
+                                    guideYoutubeWarning.style.display = 'block';
+                                } else {
+                                    videoPlayer.style.display = "none";
+                                    videoPlayer.setAttribute("src", "");
+                                    htmlVideoPlayer.src = data.videoUrl;
+                                    htmlVideoPlayer.style.display = "block";
+                                    htmlVideoPlayer.load();
+                                    htmlVideoPlayer.play().catch(e => console.log(e));
+                                    guideYoutubeWarning.style.display = 'none';
+                                }
+                            } else {
+                                videoPlayer.setAttribute("src", "");
+                                videoPlayer.style.display = "none";
+                                htmlVideoPlayer.src = "";
+                                htmlVideoPlayer.style.display = "none";
+                                videoContainer.style.display = "none";
+                                guideYoutubeWarning.style.display = 'none';
+                            }
+                             
+                            const guideModal = new bootstrap.Modal(document.getElementById('guideModal'));
+                            guideModal.show();
+                        })
+                        .catch(err => {
+                            alert(`No form guide found for "${name}". Please check the spelling or view the Exercise Library.`);
+                        });
+                    return;
+                }
+
                 const btnAddSet = e.target.closest(".btn-add-set");
                 if (btnAddSet) {
                     const block = btnAddSet.closest(".exercise-block");
@@ -344,6 +447,19 @@
                     return;
                 }
             });
+
+            const guideModalElement = document.getElementById('guideModal');
+            if (guideModalElement) {
+                guideModalElement.addEventListener('hide.bs.modal', function () {
+                    document.getElementById("guideVideoPlayer").setAttribute('src', '');
+                    document.getElementById("guideVideoPlayer").style.display = 'none';
+                    const htmlVideo = document.getElementById("guideHtmlVideoPlayer");
+                    htmlVideo.pause();
+                    htmlVideo.src = '';
+                    htmlVideo.style.display = 'none';
+                    document.getElementById("guideYoutubeWarning").style.display = 'none';
+                });
+            }
 
             // Form validation styling
             const form = document.getElementById("workoutForm");

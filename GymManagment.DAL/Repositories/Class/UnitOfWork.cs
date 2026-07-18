@@ -21,6 +21,7 @@ namespace GymManagment.DAL.Repositories.Class
         private IWorkoutLogRepository? _workoutLogs;
         private IBadgeRepository? _badges;
         private IGenericRepository<MemberWorkoutPlan>? _memberWorkoutPlans;
+        private IGenericRepository<Exercise>? _exercises;
 
         public UnitOfWork(GymDbcontext context, ISessionRepository sessionRepository)
         {
@@ -67,6 +68,9 @@ namespace GymManagment.DAL.Repositories.Class
 
         public IGenericRepository<MemberWorkoutPlan> MemberWorkoutPlans =>
             _memberWorkoutPlans ??= new GenericRepository<MemberWorkoutPlan>(_context);
+
+        public IGenericRepository<Exercise> Exercises =>
+            _exercises ??= new GenericRepository<Exercise>(_context);
 
         public ISessionRepository SessionRepository {  get;  }
 
