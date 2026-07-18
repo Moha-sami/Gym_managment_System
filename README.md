@@ -36,25 +36,47 @@ The entire UI has been rebuilt from the ground up with a dark glassmorphic desig
 
 ## 📸 Screenshots
 
-| Dashboard | Members |
-| :---: | :---: |
-| ![Dashboard](screenshots/dashboard.png) | ![Members](screenshots/members.png) |
+### 🔑 Authentication & System Announcements
 
-| Trainers | Sessions Schedule |
+| Login Page | Gym Announcement Board |
 | :---: | :---: |
-| ![Trainers](screenshots/trainers.png) | ![Sessions Schedule](screenshots/sessions.png) |
+| ![Login Page](screenshots/Login%20Page.png) | ![Gym Announcement Board](screenshots/Gym%20Announcement%20Board.png) |
 
-| Plans | Plans Details |
-| :---: | :---: |
-| ![Plans](screenshots/plans.png) | ![Plans Details](screenshots/plans_detail.png) |
+### ⚙️ Admin & Manager Space
 
-| My Profile | My Membership |
+| Admin Dashboard | Add New Member |
 | :---: | :---: |
-| ![My Profile](screenshots/my_profile.png) | ![My Membership](screenshots/my_membership.png) |
+| ![Admin Dashboard](screenshots/Admin%20Dashboard.png) | ![Add New Member](screenshots/Add%20New%20Member.png) |
 
-| My Analytics | Achievements |
+| Memberships Management | Plans |
 | :---: | :---: |
-| ![My Analytics](screenshots/my_analytics.png) | ![Achievements](screenshots/achievements.png) |
+| ![Memberships](screenshots/Memberships.png) | ![Plans](screenshots/Plans.png) |
+
+| Sessions | Session Schedule |
+| :---: | :---: |
+| ![Sessions](screenshots/Sessions.png) | ![Session Schedule](screenshots/Session%20Schedule.png) |
+
+| User Management | Delete Requests |
+| :---: | :---: |
+| ![User Management](screenshots/User%20Management.png) | ![Delete Requests](screenshots/Delete%20Requests.png) |
+
+### 🏋️ Member Self-Service Space
+
+| Member Dashboard | Member Profile |
+| :---: | :---: |
+| ![Member Dashboard](screenshots/Member%20Dashboard.png) | ![Member Profile](screenshots/Member%20Profile.png) |
+
+| My Membership | My Analytics |
+| :---: | :---: |
+| ![Member Membership](screenshots/Member%20Membership.png) | ![Member Analytics](screenshots/Member%20Analytics.png) |
+
+| My Achievements & Badges | Community Leaderboard |
+| :---: | :---: |
+| ![My Achievements](screenshots/My%20Achievements.png) | ![Leaderboard](screenshots/Leaderboard.png) |
+
+| Workout Journal | Exercise Video Library |
+| :---: | :---: |
+| ![Workout Journal](screenshots/Workout%20Journal.png) | ![Exercise Library](screenshots/Exercise%20Library.png) |
 
 ---
 
