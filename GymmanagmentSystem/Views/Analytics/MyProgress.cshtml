@@ -3,20 +3,87 @@
     ViewData["Title"] = "My Analytics";
 }
 
-<div class="container py-5">
+<style>
+    .analytics-banner {
+        background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(219,39,119,0.15), rgba(0,240,255,0.1));
+        border: 1px solid rgba(255,255,255,0.1);
+        backdrop-filter: blur(20px);
+        border-radius: 28px;
+        padding: 40px;
+    }
+    .chart-glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(16px);
+        border-radius: 24px;
+        height: 100%;
+        overflow: hidden;
+    }
+    .chart-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .chart-header h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0;
+    }
+    .glass-select-sm {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        color: #ffffff !important;
+        border-radius: 20px !important;
+        padding: 4px 12px !important;
+        font-size: 0.82rem !important;
+    }
+    .glass-select-sm option {
+        background: #0f0c1e !important;
+        color: #ffffff !important;
+    }
+    @@media (max-width: 768px) {
+        .analytics-banner {
+            padding: 24px 16px !important;
+            border-radius: 20px !important;
+        }
+        .chart-glass-card {
+            border-radius: 20px !important;
+        }
+        .chart-header {
+            padding: 16px 20px !important;
+        }
+        .chart-glass-card .p-4 {
+            padding: 16px 12px !important;
+        }
+    }
+</style>
+
+<div class="container py-4 text-white">
     <!-- Header Card -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card border-0 shadow-lg text-white" style="background: linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%); border-radius: 20px;">
-                <div class="card-body p-5 d-flex align-items-center justify-content-between flex-wrap">
+            <div class="analytics-banner">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-4">
                     <div>
-                        <span class="badge bg-warning text-dark mb-2 px-3 py-2 fs-6 fw-bold rounded-pill">📊 Data & Metrics</span>
-                        <h1 class="display-5 fw-bold mb-1">Fitness Analytics</h1>
-                        <p class="fs-5 opacity-75 mb-0">Track your weight progress, workout volume, training consistency, and 1RM trends.</p>
+                        <span class="badge bg-purple text-white mb-2 px-3 py-1.5 fs-6 fw-bold rounded-pill" style="background:linear-gradient(135deg,#7c3aed,#db2777);">📊 Data &amp; Metrics</span>
+                        <h1 class="display-5 fw-extrabold text-white mb-1">Fitness Analytics</h1>
+                        <p class="fs-6 text-white-50 mb-3" style="max-width:600px;">Track your weight progress, workout volume, training consistency, and 1RM trends in real time.</p>
+                        <div class="d-flex gap-2 header-buttons-wrap">
+                            <a asp-controller="Members" asp-action="MyProfile" class="btn-glow-pill">
+                                <i class="bi bi-person-fill me-1"></i>My Profile
+                            </a>
+                            <a asp-controller="Memberships" asp-action="MyMembership" class="btn-glow-pill">
+                                <i class="bi bi-card-checklist me-1"></i>My Membership
+                            </a>
+                        </div>
                     </div>
-                    <div class="mt-4 mt-md-0">
-                        <label class="form-label fw-bold text-white small text-uppercase">Time Frame</label>
-                        <select id="timeframeSelect" class="form-select form-select-lg rounded-pill border-0 shadow" style="min-width: 180px; cursor: pointer;">
+                    <div>
+                        <label class="form-label fw-bold text-white-50 small text-uppercase" style="letter-spacing:1px;font-size:0.7rem;">Time Frame</label>
+                        <select id="timeframeSelect" class="form-select glass-select-sm" style="min-width: 180px; padding: 10px 16px !important; cursor: pointer;">
                             <option value="30">Last 30 Days</option>
                             <option value="90">Last 90 Days</option>
                             <option value="180" selected>Last 6 Months</option>
@@ -33,32 +100,32 @@
     <div class="row g-4">
         <!-- 1. Weight Progress Chart -->
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-                <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
-                    <h3 class="h5 mb-0 fw-bold text-dark"><i class="bi bi-activity text-primary me-2"></i>Weight Tracker</h3>
-                    <span id="currentWeightBadge" class="badge bg-primary rounded-pill px-3 py-2 font-monospace">-- kg</span>
+            <div class="chart-glass-card">
+                <div class="chart-header">
+                    <h3><i class="bi bi-activity text-neon me-2"></i>Weight Tracker</h3>
+                    <span id="currentWeightBadge" class="badge rounded-pill px-3 py-1.5 font-monospace" style="background:rgba(0,240,255,0.15);color:#00f0ff;border:1px solid rgba(0,240,255,0.3);">-- kg</span>
                 </div>
-                <div class="card-body p-4 d-flex align-items-center justify-content-center" style="position: relative; height: 320px;">
+                <div class="p-4 d-flex align-items-center justify-content-center" style="position: relative; height: 320px;">
                     <canvas id="weightChart"></canvas>
-                    <div id="weightNoData" class="text-center text-muted d-none">
-                        <i class="bi bi-calendar-x display-4 mb-2 d-block"></i>
+                    <div id="weightNoData" class="text-center text-white-50 d-none">
+                        <i class="bi bi-calendar-x display-4 mb-2 d-block opacity-50"></i>
                         <span>No weight logs recorded in this period.</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 2. Workout Consistency / Frequency -->
+        <!-- 2. Workout Consistency -->
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-                <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
-                    <h3 class="h5 mb-0 fw-bold text-dark"><i class="bi bi-calendar-check text-success me-2"></i>Workout Consistency</h3>
-                    <span id="totalWorkoutsBadge" class="badge bg-success rounded-pill px-3 py-2">-- Workouts</span>
+            <div class="chart-glass-card">
+                <div class="chart-header">
+                    <h3><i class="bi bi-calendar-check text-success me-2"></i>Workout Consistency</h3>
+                    <span id="totalWorkoutsBadge" class="badge rounded-pill px-3 py-1.5" style="background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.3);">-- Workouts</span>
                 </div>
-                <div class="card-body p-4 d-flex align-items-center justify-content-center" style="position: relative; height: 320px;">
+                <div class="p-4 d-flex align-items-center justify-content-center" style="position: relative; height: 320px;">
                     <canvas id="frequencyChart"></canvas>
-                    <div id="frequencyNoData" class="text-center text-muted d-none">
-                        <i class="bi bi-calendar-x display-4 mb-2 d-block"></i>
+                    <div id="frequencyNoData" class="text-center text-white-50 d-none">
+                        <i class="bi bi-calendar-x display-4 mb-2 d-block opacity-50"></i>
                         <span>No workouts logged in this period.</span>
                     </div>
                 </div>
@@ -67,15 +134,15 @@
 
         <!-- 3. Training Volume -->
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-                <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
-                    <h3 class="h5 mb-0 fw-bold text-dark"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Training Volume</h3>
-                    <span id="avgVolumeBadge" class="badge bg-warning text-dark rounded-pill px-3 py-2 font-monospace">-- kg avg</span>
+            <div class="chart-glass-card">
+                <div class="chart-header">
+                    <h3><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Training Volume</h3>
+                    <span id="avgVolumeBadge" class="badge rounded-pill px-3 py-1.5 font-monospace" style="background:rgba(255,193,7,0.15);color:#ffc107;border:1px solid rgba(255,193,7,0.3);">-- kg avg</span>
                 </div>
-                <div class="card-body p-4 d-flex align-items-center justify-content-center" style="position: relative; height: 320px;">
+                <div class="p-4 d-flex align-items-center justify-content-center" style="position: relative; height: 320px;">
                     <canvas id="volumeChart"></canvas>
-                    <div id="volumeNoData" class="text-center text-muted d-none">
-                        <i class="bi bi-calendar-x display-4 mb-2 d-block"></i>
+                    <div id="volumeNoData" class="text-center text-white-50 d-none">
+                        <i class="bi bi-calendar-x display-4 mb-2 d-block opacity-50"></i>
                         <span>No volume data available.</span>
                     </div>
                 </div>
@@ -84,11 +151,11 @@
 
         <!-- 4. Max Weight / 1RM Trend -->
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm rounded-4 h-100 bg-white">
-                <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between flex-wrap gap-2">
-                    <h3 class="h5 mb-0 fw-bold text-dark"><i class="bi bi-graph-up-arrow text-danger me-2"></i>Strength / 1RM Trend</h3>
-                    <div style="min-width: 150px;">
-                        <select id="exerciseSelect" class="form-select form-select-sm rounded-pill shadow-sm" style="cursor: pointer;">
+            <div class="chart-glass-card">
+                <div class="chart-header flex-wrap gap-2">
+                    <h3><i class="bi bi-graph-up-arrow text-danger me-2"></i>Strength / 1RM Trend</h3>
+                    <div style="min-width: 160px;">
+                        <select id="exerciseSelect" class="form-select glass-select-sm">
                             @if (Model.LoggedExercises.Any())
                             {
                                 @foreach (var exercise in Model.LoggedExercises)
@@ -103,10 +170,10 @@
                         </select>
                     </div>
                 </div>
-                <div class="card-body p-4 d-flex align-items-center justify-content-center" style="position: relative; height: 320px;">
+                <div class="p-4 d-flex align-items-center justify-content-center" style="position: relative; height: 320px;">
                     <canvas id="exerciseChart"></canvas>
-                    <div id="exerciseNoData" class="text-center text-muted d-none">
-                        <i class="bi bi-calendar-x display-4 mb-2 d-block"></i>
+                    <div id="exerciseNoData" class="text-center text-white-50 d-none">
+                        <i class="bi bi-calendar-x display-4 mb-2 d-block opacity-50"></i>
                         <span>Log sets for this exercise to generate progress trends.</span>
                     </div>
                 </div>
@@ -123,18 +190,24 @@
         const memberId = @Model.MemberId;
         let weightChart, frequencyChart, volumeChart, exerciseChart;
 
-        // Colors configurations
+        // Set Chart.js Defaults for Dark Glass Theme
+        Chart.defaults.color = 'rgba(255, 255, 255, 0.6)';
+        Chart.defaults.font.family = "'Inter', sans-serif";
+
         const colors = {
-            primary: 'rgba(58, 123, 213, 1)',
-            primaryBg: 'rgba(58, 123, 213, 0.15)',
-            success: 'rgba(40, 167, 69, 1)',
-            successBg: 'rgba(40, 167, 69, 0.15)',
-            warning: 'rgba(255, 193, 7, 1)',
+            primary: '#00f0ff',
+            primaryBg: 'rgba(0, 240, 255, 0.15)',
+            success: '#4ade80',
+            successBg: 'rgba(74, 222, 128, 0.15)',
+            warning: '#ffc107',
             warningBg: 'rgba(255, 193, 7, 0.15)',
-            danger: 'rgba(220, 53, 69, 1)',
-            dangerBg: 'rgba(220, 53, 69, 0.15)',
-            secondary: 'rgba(108, 117, 125, 1)',
-            secondaryBg: 'rgba(108, 117, 125, 0.15)'
+            danger: '#f472b6',
+            dangerBg: 'rgba(244, 114, 182, 0.15)'
+        };
+
+        const gridOptions = {
+            color: 'rgba(255, 255, 255, 0.05)',
+            borderColor: 'rgba(255, 255, 255, 0.1)'
         };
 
         // Initialize and load all chart data
@@ -202,7 +275,6 @@
                 return;
             }
 
-            // Update badge with latest weight
             const latestWeight = records[records.length - 1].weight;
             document.getElementById('currentWeightBadge').innerText = `${latestWeight} kg`;
 
@@ -226,73 +298,57 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: false,
-                            grid: { color: '#f1f1f1' }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
+                        y: { beginAtZero: false, grid: gridOptions },
+                        x: { grid: { display: false } }
                     }
                 }
             });
         }
 
-        function renderFrequencyChart(periods) {
+        function renderFrequencyChart(records) {
             if (frequencyChart) frequencyChart.destroy();
 
-            const hasData = periods && periods.length > 0 && periods.some(p => p.workoutCount > 0);
+            const hasData = records && records.length > 0;
             toggleNoDataPlaceholder('frequencyChart', 'frequencyNoData', !hasData);
 
             if (!hasData) {
-                document.getElementById('totalWorkoutsBadge').innerText = '0 Workouts';
+                document.getElementById('totalWorkoutsBadge').innerText = '-- Workouts';
                 return;
             }
 
-            const totalWorkouts = periods.reduce((sum, p) => sum + p.workoutCount, 0);
-            document.getElementById('totalWorkoutsBadge').innerText = `${totalWorkouts} Workouts`;
+            const total = records.reduce((sum, r) => sum + r.workoutCount, 0);
+            document.getElementById('totalWorkoutsBadge').innerText = `${total} Workouts`;
 
             const ctx = document.getElementById('frequencyChart').getContext('2d');
             frequencyChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: periods.map(p => p.periodLabel),
+                    labels: records.map(r => r.dateLabel),
                     datasets: [{
-                        label: 'Workouts Logged',
-                        data: periods.map(p => p.workoutCount),
+                        label: 'Workouts',
+                        data: records.map(r => r.workoutCount),
                         backgroundColor: colors.success,
-                        borderRadius: 8,
-                        maxBarThickness: 45
+                        borderRadius: 6
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { stepSize: 1 },
-                            grid: { color: '#f1f1f1' }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
+                        y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: gridOptions },
+                        x: { grid: { display: false } }
                     }
                 }
             });
         }
 
-        function renderVolumeChart(volumes) {
+        function renderVolumeChart(records) {
             if (volumeChart) volumeChart.destroy();
 
-            const hasData = volumes && volumes.length > 0 && volumes.some(v => v.volume > 0);
+            const hasData = records && records.length > 0;
             toggleNoDataPlaceholder('volumeChart', 'volumeNoData', !hasData);
 
             if (!hasData) {
@@ -300,48 +356,38 @@
                 return;
             }
 
-            const avgVolume = Math.round(volumes.reduce((sum, v) => sum + v.volume, 0) / volumes.length);
-            document.getElementById('avgVolumeBadge').innerText = `${avgVolume.toLocaleString()} kg avg`;
+            const totalVol = records.reduce((sum, r) => sum + r.totalVolume, 0);
+            const avgVol = Math.round(totalVol / records.length);
+            document.getElementById('avgVolumeBadge').innerText = `${avgVol.toLocaleString()} kg avg`;
 
             const ctx = document.getElementById('volumeChart').getContext('2d');
             volumeChart = new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
-                    labels: volumes.map(v => v.dateLabel),
+                    labels: records.map(r => r.dateLabel),
                     datasets: [{
                         label: 'Total Volume (kg)',
-                        data: volumes.map(v => v.volume),
-                        borderColor: colors.warning,
-                        backgroundColor: colors.warningBg,
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.3,
-                        pointRadius: 4
+                        data: records.map(r => r.totalVolume),
+                        backgroundColor: colors.warning,
+                        borderRadius: 6
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#f1f1f1' }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
+                        y: { beginAtZero: true, grid: gridOptions },
+                        x: { grid: { display: false } }
                     }
                 }
             });
         }
 
-        function renderExerciseChart(points) {
+        function renderExerciseChart(records) {
             if (exerciseChart) exerciseChart.destroy();
 
-            const hasData = points && points.length > 0;
+            const hasData = records && records.length > 0;
             toggleNoDataPlaceholder('exerciseChart', 'exerciseNoData', !hasData);
 
             if (!hasData) return;
@@ -350,57 +396,36 @@
             exerciseChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: points.map(p => p.dateLabel),
-                    datasets: [
-                        {
-                            label: 'Max Weight Lifted (kg)',
-                            data: points.map(p => p.maxWeight),
-                            borderColor: colors.danger,
-                            backgroundColor: 'transparent',
-                            borderWidth: 2,
-                            borderDash: [5, 5],
-                            pointRadius: 4,
-                            tension: 0.1
-                        },
-                        {
-                            label: 'Estimated 1RM (kg)',
-                            data: points.map(p => p.estimated1RM),
-                            borderColor: 'rgba(235, 77, 75, 1)',
-                            backgroundColor: 'rgba(235, 77, 75, 0.15)',
-                            borderWidth: 3,
-                            fill: true,
-                            pointRadius: 5,
-                            tension: 0.2
-                        }
-                    ]
+                    labels: records.map(r => r.dateLabel),
+                    datasets: [{
+                        label: 'Est. 1RM (kg)',
+                        data: records.map(r => r.oneRepMax),
+                        borderColor: colors.danger,
+                        backgroundColor: colors.dangerBg,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom'
-                        }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: false,
-                            grid: { color: '#f1f1f1' }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
+                        y: { beginAtZero: false, grid: gridOptions },
+                        x: { grid: { display: false } }
                     }
                 }
             });
         }
 
-        // Add event listeners for dynamic filters
+        // Event Listeners
         document.getElementById('timeframeSelect').addEventListener('change', loadDashboardData);
         document.getElementById('exerciseSelect').addEventListener('change', loadExerciseData);
 
-        // First load
+        // Initial Load
         document.addEventListener('DOMContentLoaded', loadDashboardData);
     </script>
 }

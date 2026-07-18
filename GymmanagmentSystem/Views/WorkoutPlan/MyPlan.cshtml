@@ -4,52 +4,150 @@
     ViewData["Title"] = "My Workout Plan";
 }
 
-<div class="container py-5">
+<style>
+    .myplan-container {
+        padding: 24px 28px;
+    }
+    .text-neon {
+        background: linear-gradient(135deg, #00f0ff 0%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+    .badge-glass-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 4px 14px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #fff;
+    }
+    .tab-pills-glass {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 20px;
+        padding: 16px;
+    }
+    .nav-pills .nav-link-glass {
+        color: rgba(255, 255, 255, 0.6) !important;
+        border: 1px solid transparent;
+        background: transparent;
+        padding: 14px 16px;
+        border-radius: 12px;
+        font-weight: 700;
+        transition: all 0.3s;
+        text-align: left;
+        width: 100%;
+        margin-bottom: 8px;
+    }
+    .nav-pills .nav-link-glass:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff !important;
+    }
+    .nav-pills .nav-link-glass.active {
+        background: linear-gradient(135deg, var(--purple), var(--pink)) !important;
+        color: #fff !important;
+        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+    }
+    .glass-plan-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        overflow: hidden;
+    }
+    .glass-plan-header {
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        padding: 24px 28px;
+    }
+    .exercise-indicator {
+        width: 32px; height: 32px;
+        border-radius: 50%;
+        background: rgba(0, 240, 255, 0.1);
+        border: 1px solid rgba(0, 240, 255, 0.2);
+        display: flex; align-items: center; justify-content: center;
+        color: #00f0ff;
+        font-size: 0.9rem;
+    }
+    .plan-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .plan-table th {
+        padding: 14px 20px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: rgba(255, 255, 255, 0.4);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .plan-table td {
+        padding: 16px 20px;
+        color: rgba(255, 255, 255, 0.85);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        font-size: 0.9rem;
+    }
+    .plan-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    /* Mobile Card Layout for routine details */
+    .mobile-exercise-card {
+        display: none;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 12px;
+    }
+    .mobile-val-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255,255,255,0.05);
+    }
+</style>
+
+<div class="myplan-container">
     <!-- Header Block -->
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+    <div class="d-flex justify-content-between align-items-start mb-4 header-section">
         <div>
-            <h1 class="fw-bold mb-1 text-dark">
-                <i class="bi bi-calendar3-event text-primary me-2"></i>My Active Workout Plan
+            <h1 class="fw-bold mb-2 text-white h2">
+                <i class="bi bi-calendar3-event text-neon me-2" style="background: linear-gradient(135deg, #00f0ff 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>My Active Workout Plan
             </h1>
-            <p class="text-muted mb-0">
-                Customized program for <span class="badge bg-primary fs-6 fw-bold">@Model.Goal</span> 
-                with <span class="badge bg-info fs-6 fw-bold">@Model.Frequency Days/Week</span> 
-                at <span class="badge bg-secondary fs-6 fw-bold">@Model.ExperienceLevel Level</span>
-            </p>
+            <div class="d-flex flex-wrap gap-2 mt-2">
+                <span class="badge-glass-pill"><i class="bi bi-fire text-danger me-1"></i> Goal: @Model.Goal</span> 
+                <span class="badge-glass-pill"><i class="bi bi-calendar-check text-warning me-1"></i> Frequency: @Model.Frequency Days</span> 
+                <span class="badge-glass-pill"><i class="bi bi-activity text-info me-1"></i> Level: @Model.ExperienceLevel</span>
+            </div>
         </div>
-        <div>
-            <a asp-action="Generate" class="btn btn-outline-primary px-4 py-2 fw-semibold rounded-3 shadow-sm">
-                <i class="bi bi-arrow-repeat me-2"></i>Generate New Plan
+        <div class="d-flex gap-2 btn-group-resp">
+            <a asp-controller="Workouts" asp-action="MyJournal" class="btn-glow-pill px-3 py-2.5">
+                <i class="bi bi-journal-text me-1"></i> Workout Journal
+            </a>
+            <a asp-action="Generate" class="btn btn-neon rounded-pill px-4 py-2.5 d-flex align-items-center gap-1">
+                <i class="bi bi-arrow-repeat"></i> New Plan
             </a>
         </div>
     </div>
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show mb-4 shadow-sm" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show mb-4 shadow-sm" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
-
     <!-- Tabbed Daily Routine Grid -->
     <div class="row">
         <!-- Daily Tabs Selector -->
-        <div class="col-lg-3 mb-4">
-            <div class="nav flex-column nav-pills bg-white p-3 rounded-4 shadow-sm border border-light" id="workoutDaysTab" role="tablist" aria-orientation="vertical">
-                <h5 class="fw-bold text-muted px-3 mb-3 border-bottom pb-2">Training Days</h5>
+        <div class="col-12 col-lg-3 mb-3">
+            <div class="nav flex-column nav-pills tab-pills-glass" id="workoutDaysTab" role="tablist" aria-orientation="vertical">
+                <h5 class="fw-bold text-white-50 px-2 mb-3 small text-uppercase" style="letter-spacing: 1px;">Training Days</h5>
                 @for (int i = 0; i < Model.Days.Count; i++)
                 {
                     var day = Model.Days[i];
-                    <button class="nav-link text-start py-3 px-3 mb-2 rounded-3 fw-bold @(i == 0 ? "active" : "")" 
+                    <button class="nav-link nav-link-glass @(i == 0 ? "active" : "")" 
                             id="day-tab-@day.DayNumber" 
                             data-bs-toggle="pill" 
                             data-bs-target="#day-pane-@day.DayNumber" 
@@ -57,9 +155,9 @@
                             role="tab" 
                             aria-controls="day-pane-@day.DayNumber" 
                             aria-selected="@(i == 0 ? "true" : "false")">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span><i class="bi bi-heptagon me-2"></i>Day @day.DayNumber</span>
-                            <span class="small opacity-75">Exercises: @day.Exercises.Count</span>
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <span><i class="bi bi-heptagon-fill me-2" style="font-size:0.8rem; color:var(--accent);"></i>Day @day.DayNumber</span>
+                            <span class="badge rounded-pill bg-white-10 px-2 py-1" style="font-size: 0.65rem; background:rgba(255,255,255,0.06);">Ex: @day.Exercises.Count</span>
                         </div>
                     </button>
                 }
@@ -67,7 +165,7 @@
         </div>
 
         <!-- Exercise Details Pane -->
-        <div class="col-lg-9">
+        <div class="col-12 col-lg-9">
             <div class="tab-content" id="workoutDaysTabContent">
                 @for (int i = 0; i < Model.Days.Count; i++)
                 {
@@ -78,57 +176,80 @@
                          aria-labelledby="day-tab-@day.DayNumber" 
                          tabindex="0">
                         
-                        <div class="card border-0 rounded-4 shadow-sm overflow-hidden mb-4">
+                        <div class="glass-plan-card">
                             <!-- Pane Header -->
-                            <div class="card-header bg-light border-0 py-4 px-4 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                            <div class="glass-plan-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                                 <div>
-                                    <span class="text-uppercase text-primary fw-bold tracking-wider small">Day @day.DayNumber Target</span>
-                                    <h3 class="fw-bold mb-0 text-dark">@day.DayName</h3>
+                                    <span class="text-uppercase fw-bold small" style="color:var(--accent); letter-spacing:1px; font-size: 0.72rem;">Day @day.DayNumber Target Focus</span>
+                                    <h3 class="fw-bold mb-0 text-white h4 mt-1">@day.DayName</h3>
                                 </div>
                                 <div>
                                     <form asp-action="LogDay" method="post" onsubmit="return confirm('Do you want to log Day @day.DayNumber workout into your Workout Journal?');">
                                         <input type="hidden" name="dayNumber" value="@day.DayNumber" />
-                                        <button type="submit" class="btn btn-success fw-bold px-4 py-2.5 rounded-3 d-flex align-items-center gap-2 shadow-sm">
+                                        <button type="submit" class="btn btn-neon rounded-pill px-4 py-2.5 d-flex align-items-center gap-2">
                                             <i class="bi bi-journal-plus"></i>Log Day to Journal
                                         </button>
                                     </form>
                                 </div>
                             </div>
 
-                            <!-- Pane Exercises List -->
-                            <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover align-middle mb-0 responsive-card-table">
-                                        <thead class="table-light">
+                            <!-- Pane Exercises List (Desktop Table) -->
+                            <div class="desktop-table-wrap">
+                                <table class="plan-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 55%">Exercise Name</th>
+                                            <th class="text-center" style="width: 22%">Target Sets</th>
+                                            <th class="text-center" style="width: 23%">Target Reps</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var exercise in day.Exercises)
+                                        {
                                             <tr>
-                                                <th class="py-3 px-4 border-0" style="width: 60%">Exercise Name</th>
-                                                <th class="py-3 px-4 border-0 text-sm-center">Target Sets</th>
-                                                <th class="py-3 px-4 border-0 text-sm-center">Target Reps</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach (var exercise in day.Exercises)
-                                            {
-                                                <tr>
-                                                    <td class="py-3.5 px-4 border-0 fw-semibold text-dark" data-label="Exercise Name">
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="exercise-indicator bg-primary-subtle text-primary rounded-circle me-3">
-                                                                <i class="bi bi-play-circle-fill"></i>
-                                                            </div>
-                                                            <span>@exercise.ExerciseName</span>
+                                                <td class="fw-semibold text-white">
+                                                    <div class="d-flex align-items-center gap-3">
+                                                        <div class="exercise-indicator">
+                                                            <i class="bi bi-play-circle-fill"></i>
                                                         </div>
-                                                    </td>
-                                                    <td class="py-3.5 px-4 border-0 text-sm-center font-monospace fw-bold" data-label="Target Sets">
-                                                        @exercise.Sets <span class="text-muted d-sm-none">Sets</span>
-                                                    </td>
-                                                    <td class="py-3.5 px-4 border-0 text-sm-center font-monospace fw-bold" data-label="Target Reps">
-                                                        @exercise.Reps <span class="text-muted d-sm-none">Reps</span>
-                                                    </td>
-                                                </tr>
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
+                                                        <span>@exercise.ExerciseName</span>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center font-monospace fw-bold" style="color:var(--accent);">
+                                                    @exercise.Sets <span class="text-white-50 fw-normal small">Sets</span>
+                                                </td>
+                                                <td class="text-center font-monospace fw-bold" style="color:var(--accent);">
+                                                    @exercise.Reps <span class="text-white-50 fw-normal small">Reps</span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pane Exercises List (Mobile Cards) -->
+                            <div class="p-3 d-md-none">
+                                @foreach (var exercise in day.Exercises)
+                                {
+                                    <div class="mobile-exercise-card">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="exercise-indicator">
+                                                <i class="bi bi-play-circle-fill"></i>
+                                            </div>
+                                            <strong class="text-white">@exercise.ExerciseName</strong>
+                                        </div>
+                                        <div class="mobile-val-row">
+                                            <div>
+                                                <span class="text-white-50 small d-block">Target Sets</span>
+                                                <strong style="color: var(--accent);">@exercise.Sets Sets</strong>
+                                            </div>
+                                            <div>
+                                                <span class="text-white-50 small d-block">Target Reps</span>
+                                                <strong style="color: var(--accent);">@exercise.Reps Reps</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -137,31 +258,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    .nav-pills .nav-link {
-        color: #475569;
-        border: 1px solid #f1f5f9;
-        transition: all 0.3s ease;
-    }
-    .nav-pills .nav-link:hover {
-        background-color: #f8fafc;
-        color: #0f172a;
-    }
-    .nav-pills .nav-link.active {
-        background-color: #0a1172 !important;
-        color: white !important;
-        border-color: #0a1172;
-    }
-    .exercise-indicator {
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-    .tracking-wider {
-        letter-spacing: 0.05em;
-    }
-</style>

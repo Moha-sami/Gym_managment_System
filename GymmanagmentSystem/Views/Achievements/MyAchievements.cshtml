@@ -3,193 +3,322 @@
     ViewData["Title"] = "My Achievements";
 }
 
-<div class="container py-5">
-    <!-- Header Summary Card -->
-    <div class="row mb-5">
-        <div class="col-12">
-            <div class="card border-0 shadow-lg position-relative overflow-hidden text-white" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border-radius: 20px;">
-                <div class="card-body p-5 d-flex align-items-center justify-content-between flex-wrap position-relative" style="z-index: 2;">
-                    <div>
-                        <span class="badge bg-warning text-dark mb-2 px-3 py-2 fs-6 fw-bold rounded-pill">🏋️ Fitness Journey</span>
-                        <h1 class="display-4 fw-bold">Congratulations, @Model.MemberName!</h1>
-                        <p class="fs-5 opacity-75 mb-0">You've unlocked some serious milestones. Keep training and show off your badges!</p>
-                    </div>
-                    <div class="text-center mt-4 mt-md-0 bg-white bg-opacity-10 p-4 rounded-4 shadow" style="backdrop-filter: blur(10px); min-width: 180px;">
-                        <span class="d-block display-3 fw-bold text-warning">@Model.TotalBadgeCount</span>
-                        <span class="text-uppercase tracking-wider fw-semibold small opacity-75">Badges Earned</span>
-                    </div>
-                </div>
-                <!-- Decorative subtle circles -->
-                <div class="position-absolute rounded-circle" style="width: 300px; height: 300px; top: -100px; right: -50px; z-index: 1; background-color: rgba(255, 255, 255, 0.12);"></div>
-                <div class="position-absolute rounded-circle" style="width: 150px; height: 150px; bottom: -50px; left: -30px; z-index: 1; background-color: rgba(255, 255, 255, 0.12);"></div>
-            </div>
-        </div>
+<style>
+/* ── Page Header ── */
+.ach-page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px; }
+.page-heading { font-size:1.4rem; font-weight:800; color:#fff; letter-spacing:-0.5px; display:flex; align-items:center; gap:10px; margin:0; }
+.page-heading i { color:#ffd700; }
+
+/* ── Hero Banner ── */
+.ach-hero {
+    background: rgba(255,215,0,0.04);
+    border: 1px solid rgba(255,215,0,0.15);
+    border-top: 4px solid #ffd700;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 36px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+}
+.ach-hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,215,0,0.12) 0%, transparent 70%);
+    pointer-events: none;
+}
+.ach-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -60px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(167,139,250,0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+.ach-hero-title { font-size: 2rem; font-weight: 800; color: #fff; line-height: 1.2; }
+.ach-hero-title span { color: #ffd700; }
+.ach-hero-sub { color: rgba(255,255,255,0.5); font-size:0.9rem; margin-top:6px; }
+.ach-badge-count {
+    background: rgba(255,215,0,0.08);
+    border: 1px solid rgba(255,215,0,0.25);
+    border-radius: 20px;
+    padding: 20px 32px;
+    text-align: center;
+    min-width: 140px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+.ach-badge-count .count { font-size: 3rem; font-weight: 900; color: #ffd700; line-height: 1; display:block; }
+.ach-badge-count .label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.45); margin-top: 4px; display:block; }
+
+/* ── Buttons ── */
+.btn-gold {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: linear-gradient(135deg, #ffd700, #f59e0b);
+    color: #000; font-size: 0.85rem; font-weight: 700;
+    padding: 10px 22px; border-radius: 50px; text-decoration: none;
+    border: none; transition: all 0.3s; box-shadow: 0 4px 16px rgba(255,215,0,0.3);
+}
+.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,215,0,0.5); color: #000; }
+
+/* ── Category Section Cards ── */
+.cat-section {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    transition: border-color 0.3s;
+}
+.cat-section:hover { border-color: rgba(255,215,0,0.2); }
+.cat-section-header {
+    padding: 18px 24px;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.cat-section-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+}
+.cat-section-title { font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0; }
+.cat-section-desc  { font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-top: 2px; }
+.progress-pill {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; padding: 4px 14px; font-size: 0.73rem;
+    font-weight: 600; color: rgba(255,255,255,0.6); white-space: nowrap;
+}
+.cat-section-body { padding: 20px 24px; }
+
+/* ── Badge Items ── */
+.badges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 16px; }
+.badge-item { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.badge-img-wrap { position: relative; display: inline-block; }
+.badge-img-wrap img {
+    width: 82px; height: 82px; border-radius: 50%; object-fit: cover;
+    transition: all 0.3s ease;
+}
+.badge-img-wrap.earned img  { border: 3px solid #ffd700; box-shadow: 0 0 18px rgba(255,215,0,0.4); }
+.badge-img-wrap.locked img  { filter: grayscale(100%); opacity: 0.3; border: 2px dashed rgba(255,255,255,0.15); }
+.badge-lock-overlay {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.6); border-radius: 50%;
+    width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; color: rgba(255,255,255,0.7);
+}
+.badge-earned-check {
+    position: absolute; bottom: 2px; right: 2px;
+    background: #22c55e; border-radius: 50%;
+    width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; color: #fff; border: 2px solid rgba(7,6,15,0.9);
+}
+.badge-name  { font-size: 0.78rem; font-weight: 700; color: #fff; line-height: 1.2; }
+.badge-threshold { font-size: 0.7rem; color: rgba(255,255,255,0.35); }
+.badge-earned-date { font-size: 0.65rem; color: #22c55e; font-weight: 600; }
+.badge-progress-wrap { width: 80px; }
+.badge-progress-bar {
+    height: 5px; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; margin-bottom: 3px;
+}
+.badge-progress-fill { height: 100%; background: linear-gradient(90deg,#ffd700,#f59e0b); border-radius: 10px; }
+.badge-pct { font-size: 0.65rem; color: rgba(255,255,255,0.35); }
+
+/* ── Right Sidebar ── */
+.side-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-radius: 20px; padding: 24px; margin-bottom: 20px;
+}
+.side-card-title { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 18px; display:flex; align-items:center; gap:8px; }
+.side-card-title i { color: #ffd700; }
+
+/* ── Unlock Timeline ── */
+.unlock-item { display:flex; align-items:center; gap:14px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.unlock-item:last-child { border-bottom: none; padding-bottom: 0; }
+.unlock-img { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,215,0,0.3); flex-shrink:0; }
+.unlock-name { font-size: 0.82rem; font-weight: 700; color: #fff; line-height:1.2; }
+.unlock-desc { font-size: 0.72rem; color: rgba(255,255,255,0.4); margin-top: 2px; }
+.unlock-date { font-size: 0.68rem; color: #22c55e; font-weight: 600; margin-top: 2px; }
+.unlock-awarded { font-size: 0.68rem; color: #00f0ff; margin-top: 1px; }
+
+/* ── Leaderboard CTA ── */
+.lb-cta {
+    background: rgba(255,215,0,0.05);
+    border: 1px solid rgba(255,215,0,0.18);
+    border-top: 3px solid #ffd700;
+    border-radius: 20px; padding: 24px;
+}
+.lb-cta-title { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 8px; display:flex; align-items:center; gap:8px; }
+.lb-cta-title i { color: #ffd700; }
+.lb-cta p { font-size: 0.78rem; color: rgba(255,255,255,0.45); margin-bottom: 16px; }
+
+/* ── Empty State ── */
+.empty-unlock { text-align: center; padding: 24px 0; }
+.empty-unlock i { font-size: 2rem; color: rgba(255,255,255,0.15); display:block; margin-bottom: 8px; }
+.empty-unlock p { font-size: 0.82rem; color: rgba(255,255,255,0.3); }
+</style>
+
+<!-- Hero Banner -->
+<div class="ach-hero">
+    <div>
+        <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.25);border-radius:20px;padding:4px 14px;font-size:0.72rem;font-weight:600;color:#ffd700;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:12px;">
+            🏋️ Fitness Journey
+        </span>
+        <h1 class="ach-hero-title">Congrats, <span>@Model.MemberName</span>!</h1>
+        <p class="ach-hero-sub">Keep training and unlock your milestones. Every badge earned is a level up.</p>
+        <a asp-controller="Achievements" asp-action="Leaderboard" class="btn-gold mt-4 d-inline-flex">
+            <i class="bi bi-trophy-fill"></i> View Leaderboard
+        </a>
     </div>
-
-    <!-- Main Achievements Grid -->
-    <div class="row">
-        <!-- Left Side: Badges by Category -->
-        <div class="col-lg-8">
-            <h2 class="h3 mb-4 fw-bold text-dark"><i class="bi bi-trophy-fill text-warning me-2"></i>Badges Collection</h2>
-
-            @{
-                var categories = new Dictionary<string, (string Title, string Icon, string Unit, string Desc)>
-                {
-                    { "WorkoutCount", ("Workouts Logged", "bi-journal-richtext text-primary", "workouts", "Reward for logging your workout sessions.") },
-                    { "TotalVolume", ("Total Weight Lifted", "bi-lightning-charge-fill text-warning", "kg", "Accumulated volume across all workouts.") },
-                    { "SessionAttendance", ("Sessions Attended", "bi-people-fill text-success", "sessions", "Classes attended with a trainer.") },
-                    { "BookingCount", ("Bookings Made", "bi-calendar-check text-info", "bookings", "Total fitness session reservations.") },
-                    { "PersonalRecord", ("Personal Records", "bi-fire text-danger", "kg", "Max weight lifted on a single set.") },
-                    { "ConsistencyStreak", ("Consistency Streak", "bi-arrow-repeat text-secondary", "days", "Consecutive days logging workouts.") },
-                    { "WeightProgress", ("Weight Transformation", "bi-activity text-dark", "kg", "Total absolute body weight change tracked.") }
-                };
-            }
-
-            @foreach (var cat in categories)
-            {
-                var catKey = cat.Key;
-                var details = cat.Value;
-                var progress = Model.CategoryProgress.ContainsKey(catKey) ? Model.CategoryProgress[catKey] : 0;
-                var catBadges = Model.AllDefinitions.Where(d => d.Category == catKey).OrderBy(d => d.Threshold).ToList();
-
-                <div class="card border-0 shadow-sm mb-4 rounded-4 overflow-hidden">
-                    <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center">
-                            <div class="bg-light p-2 rounded-3 me-3">
-                                <i class="bi @details.Icon fs-4"></i>
-                            </div>
-                            <div>
-                                <h3 class="h5 mb-0 fw-bold text-dark">@details.Title</h3>
-                                <small class="text-muted">@details.Desc</small>
-                            </div>
-                        </div>
-                        <div class="text-end">
-                            <span class="badge bg-light text-dark fs-6 border fw-bold">
-                                Current: @progress.ToString("N0") @details.Unit
-                            </span>
-                        </div>
-                    </div>
-                    <div class="card-body bg-light bg-opacity-50 py-4 px-4">
-                        <div class="row row-cols-3 g-4">
-                            @foreach (var badge in catBadges)
-                            {
-                                var earned = Model.EarnedBadges.FirstOrDefault(mb => mb.BadgeDefinitionId == badge.Id);
-                                var isLocked = earned == null;
-
-                                <div class="col text-center">
-                                    <div class="position-relative d-inline-block mb-2">
-                                        <img src="@badge.IconPath" 
-                                             class="rounded-circle shadow-sm transition-transform hover-scale @(isLocked ? "grayscale opacity-40 border border-secondary border-dashed" : "border border-4 border-warning shadow-lg")" 
-                                             alt="@badge.Name" 
-                                             style="width: 85px; height: 85px; object-fit: cover; transition: all 0.3s ease;"
-                                             title="@badge.Name - @badge.Description" />
-                                        @if (isLocked)
-                                        {
-                                            <span class="position-absolute top-50 start-50 translate-middle bg-dark bg-opacity-75 rounded-circle p-2 shadow text-white border border-light" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                                <i class="bi bi-lock-fill small"></i>
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="position-absolute bottom-0 end-0 bg-success text-white rounded-circle p-1 shadow border border-light" style="width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 10px;">
-                                                <i class="bi bi-check-lg fw-bold"></i>
-                                            </span>
-                                        }
-                                    </div>
-                                    <h4 class="h6 mb-0 fw-bold text-dark">@badge.Name</h4>
-                                    <span class="text-muted d-block small mb-1">Target: @badge.Threshold?.ToString("N0") @details.Unit</span>
-                                    
-                                    <!-- Tiny Progress towards this specific badge if locked and threshold exists -->
-                                    @if (isLocked && badge.Threshold.HasValue && badge.Threshold > 0)
-                                    {
-                                        var pct = Math.Min(100, (int)((double)progress / badge.Threshold.Value * 100));
-                                        <div class="progress mt-2 mx-auto" style="height: 6px; max-width: 80px; border-radius: 3px;">
-                                            <div class="progress-bar bg-warning" role="progressbar" style="width: @pct%;" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                        <span class="text-muted" style="font-size: 10px;">@pct%</span>
-                                    }
-                                    else if (!isLocked)
-                                    {
-                                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 mt-1 fw-bold" style="font-size: 9px;">
-                                            Earned @earned.EarnedAtUtc.ToLocalTime().ToString("MMM dd, yyyy")
-                                        </span>
-                                    }
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-
-        <!-- Right Side: Recent Unlocks & Leaderboard Preview -->
-        <div class="col-lg-4 mt-5 mt-lg-0">
-            <!-- Recent Badge Unlocks -->
-            <div class="card border-0 shadow-sm mb-4 rounded-4">
-                <div class="card-body p-4">
-                    <h3 class="h5 mb-4 fw-bold text-dark"><i class="bi bi-clock-history text-primary me-2"></i>Recent Unlocks</h3>
-                    @if (!Model.EarnedBadges.Any())
-                    {
-                        <div class="text-center py-4">
-                            <i class="bi bi-trophy text-muted display-4 mb-2 d-block"></i>
-                            <p class="text-muted mb-0">No badges earned yet. Go get active!</p>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="timeline">
-                            @foreach (var earned in Model.EarnedBadges.Take(5))
-                            {
-                                <div class="d-flex align-items-center mb-3">
-                                    <img src="@earned.BadgeIconPath" class="rounded-circle border border-2 border-warning me-3" style="width: 50px; height: 50px; object-fit: cover;" />
-                                    <div>
-                                        <h4 class="h6 mb-0 fw-bold text-dark">@earned.BadgeName</h4>
-                                        <p class="text-muted mb-0 small">@earned.BadgeDescription</p>
-                                        <small class="text-success fw-semibold">Unlocked @earned.EarnedAtUtc.ToLocalTime().ToString("MMM dd, yyyy")</small>
-                                        @if (earned.AwardedByUserName != null)
-                                        {
-                                            <span class="d-block small text-info"><i class="bi bi-award-fill me-1"></i>Awarded by Admin</span>
-                                        }
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
-                </div>
-            </div>
-
-            <!-- Quick Link to Leaderboard Card -->
-            <div class="card border-0 shadow-lg text-white rounded-4 overflow-hidden" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-                <div class="card-body p-4 position-relative z-index-2">
-                    <h3 class="h5 mb-3 fw-bold text-white"><i class="bi bi-people-fill me-2"></i>Public Leaderboard</h3>
-                    <p class="small opacity-90 mb-4">See how your badge count stacks up against other gym members. Keep lifting to climb the ranks!</p>
-                    <a href="/Achievements/Leaderboard" class="btn btn-white text-success fw-bold px-4 py-2 rounded-pill shadow-sm bg-white hover-scale">
-                        View Leaderboard <i class="bi bi-arrow-right-short ms-1"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
+    <div class="ach-badge-count">
+        <span class="count">@Model.TotalBadgeCount</span>
+        <span class="label">Badges Earned</span>
     </div>
 </div>
 
-<style>
-    .hover-scale:hover {
-        transform: scale(1.1);
-    }
-    .grayscale {
-        filter: grayscale(100%);
-    }
-    .opacity-40 {
-        opacity: 0.4;
-    }
-    .border-dashed {
-        border-style: dashed !important;
-    }
-    .tracking-wider {
-        letter-spacing: 0.05em;
-    }
-    .btn-white:hover {
-        background-color: #f8f9fa !important;
-        transform: translateY(-2px);
-    }
-</style>
+<!-- Main Grid -->
+<div class="row g-4">
+    <!-- Left: Badge Categories -->
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center gap-2 mb-4">
+            <i class="bi bi-shield-fill-check" style="color:#ffd700;font-size:1.1rem;"></i>
+            <h2 style="font-size:1.1rem;font-weight:800;color:#fff;margin:0;">Badge Collection</h2>
+        </div>
+
+        @{
+            var categories = new Dictionary<string, (string Title, string Icon, string Color, string Unit, string Desc)>
+            {
+                { "WorkoutCount",      ("Workouts Logged",       "bi-journal-richtext",       "#00f0ff", "workouts", "Reward for logging your workout sessions.") },
+                { "TotalVolume",       ("Total Weight Lifted",   "bi-lightning-charge-fill",  "#ffd700", "kg",       "Accumulated volume across all workouts.") },
+                { "SessionAttendance", ("Sessions Attended",     "bi-people-fill",            "#22c55e", "sessions", "Classes attended with a trainer.") },
+                { "BookingCount",      ("Bookings Made",         "bi-calendar-check",         "#a78bfa", "bookings", "Total fitness session reservations.") },
+                { "PersonalRecord",    ("Personal Records",      "bi-fire",                   "#f87171", "kg",       "Max weight lifted on a single set.") },
+                { "ConsistencyStreak", ("Consistency Streak",    "bi-arrow-repeat",           "#f472b6", "days",     "Consecutive days logging workouts.") },
+                { "WeightProgress",    ("Weight Transformation", "bi-activity",               "#7c3aed", "kg",       "Total absolute body weight change tracked.") }
+            };
+        }
+
+        @foreach (var cat in categories)
+        {
+            var catKey  = cat.Key;
+            var details = cat.Value;
+            var progress = Model.CategoryProgress.ContainsKey(catKey) ? Model.CategoryProgress[catKey] : 0;
+            var catBadges = Model.AllDefinitions.Where(d => d.Category == catKey).OrderBy(d => d.Threshold).ToList();
+
+            <div class="cat-section">
+                <div class="cat-section-header">
+                    <div class="d-flex align-items-center gap-14" style="gap:14px;">
+                        <div class="cat-section-icon">
+                            <i class="bi @details.Icon" style="color:@details.Color;"></i>
+                        </div>
+                        <div>
+                            <div class="cat-section-title">@details.Title</div>
+                            <div class="cat-section-desc">@details.Desc</div>
+                        </div>
+                    </div>
+                    <span class="progress-pill">@progress.ToString("N0") @details.Unit</span>
+                </div>
+
+                <div class="cat-section-body">
+                    <div class="badges-grid">
+                        @foreach (var badge in catBadges)
+                        {
+                            var earned   = Model.EarnedBadges.FirstOrDefault(mb => mb.BadgeDefinitionId == badge.Id);
+                            var isLocked = earned == null;
+                            <div class="badge-item">
+                                <div class="badge-img-wrap @(isLocked ? "locked" : "earned")">
+                                    <img src="@badge.IconPath" alt="@badge.Name" title="@badge.Name — @badge.Description" />
+                                    @if (isLocked)
+                                    {
+                                        <div class="badge-lock-overlay"><i class="bi bi-lock-fill"></i></div>
+                                    }
+                                    else
+                                    {
+                                        <div class="badge-earned-check"><i class="bi bi-check-lg fw-bold"></i></div>
+                                    }
+                                </div>
+                                <div class="badge-name">@badge.Name</div>
+                                <div class="badge-threshold">@badge.Threshold?.ToString("N0") @details.Unit</div>
+
+                                @if (isLocked && badge.Threshold.HasValue && badge.Threshold > 0)
+                                {
+                                    var pct = Math.Min(100, (int)((double)progress / badge.Threshold.Value * 100));
+                                    <div class="badge-progress-wrap">
+                                        <div class="badge-progress-bar">
+                                            <div class="badge-progress-fill" style="width:@pct%;"></div>
+                                        </div>
+                                        <div class="badge-pct">@pct%</div>
+                                    </div>
+                                }
+                                else if (!isLocked)
+                                {
+                                    <div class="badge-earned-date">@earned.EarnedAtUtc.ToLocalTime().ToString("MMM dd, yyyy")</div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Right: Sidebar -->
+    <div class="col-lg-4 mt-2 mt-lg-0">
+        <!-- Recent Unlocks -->
+        <div class="side-card">
+            <div class="side-card-title">
+                <i class="bi bi-clock-history"></i> Recent Unlocks
+            </div>
+            @if (!Model.EarnedBadges.Any())
+            {
+                <div class="empty-unlock">
+                    <i class="bi bi-trophy"></i>
+                    <p>No badges yet. Get active!</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var earned in Model.EarnedBadges.Take(5))
+                {
+                    <div class="unlock-item">
+                        <img src="@earned.BadgeIconPath" class="unlock-img" alt="@earned.BadgeName" />
+                        <div>
+                            <div class="unlock-name">@earned.BadgeName</div>
+                            <div class="unlock-desc">@earned.BadgeDescription</div>
+                            <div class="unlock-date">Unlocked @earned.EarnedAtUtc.ToLocalTime().ToString("MMM dd, yyyy")</div>
+                            @if (earned.AwardedByUserName != null)
+                            {
+                                <div class="unlock-awarded"><i class="bi bi-award-fill me-1"></i>Awarded by Admin</div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Leaderboard CTA -->
+        <div class="lb-cta">
+            <div class="lb-cta-title">
+                <i class="bi bi-people-fill"></i> Public Leaderboard
+            </div>
+            <p>See how your badge count stacks up. Keep lifting to climb the ranks!</p>
+            <a href="/Achievements/Leaderboard" class="btn-gold w-100 justify-content-center">
+                View Leaderboard <i class="bi bi-arrow-right-short ms-1"></i>
+            </a>
+        </div>
+    </div>
+</div>
