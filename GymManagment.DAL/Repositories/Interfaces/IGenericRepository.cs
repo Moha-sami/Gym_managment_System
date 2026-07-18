@@ -1,4 +1,4 @@
-﻿using GymManagment.DAL.Models;
+using GymManagment.DAL.Models;
 using System.Linq.Expressions;
 
 namespace GymManagment.DAL.Repositories.Interfaces
@@ -15,5 +15,6 @@ namespace GymManagment.DAL.Repositories.Interfaces
         Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> Predicate,bool tracking=false, CancellationToken ct = default); 
         Task<TEntity?> GetByIdAsync(int id, CancellationToken ct = default, params Expression<Func<TEntity, object>>[] includes);
         Task<IEnumerable<TEntity>> GetAllAsync(bool tracking = false,CancellationToken ct = default,params Expression<Func<TEntity, object>>[] includes);
+        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> Predicate, bool tracking = false, CancellationToken ct = default, params Expression<Func<TEntity, object>>[] includes);
     }
 }
