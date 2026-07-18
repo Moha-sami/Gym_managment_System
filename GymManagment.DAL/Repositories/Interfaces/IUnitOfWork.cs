@@ -19,6 +19,7 @@ namespace GymManagment.DAL.Repositories.Interfaces
         IWorkoutLogRepository WorkoutLogs { get; }
         IBadgeRepository Badges { get; }
         IGenericRepository<MemberWorkoutPlan> MemberWorkoutPlans { get; }
+        IGenericRepository<Exercise> Exercises { get; }
 
         Task<int> CompleteAsync(CancellationToken ct = default);
     }

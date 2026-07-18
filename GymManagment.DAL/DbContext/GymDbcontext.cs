@@ -45,5 +45,6 @@ namespace GymManagment.DAL.DbContext
         public DbSet<BadgeDefinition> BadgeDefinitions { get; set; }
         public DbSet<MemberBadge> MemberBadges { get; set; }
         public DbSet<MemberWorkoutPlan> MemberWorkoutPlans { get; set; }
+        public DbSet<Exercise> Exercises { get; set; }
     }
 }

@@ -31,12 +31,22 @@ namespace GymMangment.BLL.Services.Class
             if (member == null)
                 return Result<AchievementsPageViewModel>.Failure("Member not found.");
 
-            // Evaluate and catch up on any auto-awardable badges that haven't been recorded yet
-            await EvaluateAndAwardBadgesAsync(memberId, ct);
-
+            // Fetch earned badges and definitions once
             var allDefinitions = await _unitOfWork.Badges.GetAllDefinitionsAsync(ct);
-            var earnedBadges = await _unitOfWork.Badges.GetMemberBadgesAsync(memberId, ct);
+            var earnedBadges = (await _unitOfWork.Badges.GetMemberBadgesAsync(memberId, ct)).ToList();
+            var earnedBadgeIds = earnedBadges.Select(mb => mb.BadgeDefinitionId).ToHashSet();
+
+            // Compute category progress once
             var progress = await ComputeCategoryProgressAsync(memberId, ct);
+
+            // Evaluate and award automatic badges using pre-fetched data
+            var newlyAwarded = await EvaluateAndAwardBadgesInternalAsync(memberId, allDefinitions, earnedBadgeIds, progress, ct);
+            
+            // If new badges were awarded, refresh the earned badges list
+            if (newlyAwarded.Any())
+            {
+                earnedBadges = (await _unitOfWork.Badges.GetMemberBadgesAsync(memberId, ct)).ToList();
+            }
 
             var vm = new AchievementsPageViewModel
             {
@@ -91,17 +101,28 @@ namespace GymMangment.BLL.Services.Class
 
         public async Task<IEnumerable<string>> EvaluateAndAwardBadgesAsync(int memberId, CancellationToken ct = default)
         {
-            var newlyAwarded = new List<string>();
-
             var allDefinitions = await _unitOfWork.Badges.GetAllDefinitionsAsync(ct);
-            var autoDefinitions = allDefinitions.Where(d => d.IsAutomatic && d.Threshold.HasValue);
-
+            var earnedBadges = await _unitOfWork.Badges.GetMemberBadgesAsync(memberId, ct);
+            var earnedBadgeIds = earnedBadges.Select(mb => mb.BadgeDefinitionId).ToHashSet();
             var progress = await ComputeCategoryProgressAsync(memberId, ct);
+
+            return await EvaluateAndAwardBadgesInternalAsync(memberId, allDefinitions, earnedBadgeIds, progress, ct);
+        }
+
+        private async Task<IEnumerable<string>> EvaluateAndAwardBadgesInternalAsync(
+            int memberId,
+            IEnumerable<BadgeDefinition> allDefinitions,
+            HashSet<int> earnedBadgeIds,
+            Dictionary<string, int> progress,
+            CancellationToken ct)
+        {
+            var newlyAwarded = new List<string>();
+            var autoDefinitions = allDefinitions.Where(d => d.IsAutomatic && d.Threshold.HasValue);
 
             foreach (var badge in autoDefinitions)
             {
-                // Skip if already earned
-                if (await _unitOfWork.Badges.HasBadgeAsync(memberId, badge.Id, ct))
+                // Use fast HashSet lookup instead of N+1 database queries
+                if (earnedBadgeIds.Contains(badge.Id))
                     continue;
 
                 var categoryKey = badge.Category.ToString();
@@ -124,6 +145,7 @@ namespace GymMangment.BLL.Services.Class
 
                     await _unitOfWork.Badges.AwardBadgeAsync(memberBadge, ct);
                     newlyAwarded.Add(badge.Name);
+                    earnedBadgeIds.Add(badge.Id); // Cache newly awarded badge ID
                 }
             }
 
@@ -214,8 +236,7 @@ namespace GymMangment.BLL.Services.Class
             progress[BadgeCategory.TotalVolume.ToString()] = totalVolume;
 
             // SessionAttendance — bookings where IsAttended == true
-            var allBookings = await _unitOfWork.Bookings.GetAllAsync(false, ct);
-            var memberBookings = allBookings.Where(b => b.MemberId == memberId).ToList();
+            var memberBookings = (await _unitOfWork.Bookings.FindAllAsync(b => b.MemberId == memberId, false, ct)).ToList();
             progress[BadgeCategory.SessionAttendance.ToString()] = memberBookings.Count(b => b.IsAttended);
 
             // BookingCount — total bookings
@@ -234,9 +255,7 @@ namespace GymMangment.BLL.Services.Class
             progress[BadgeCategory.ConsistencyStreak.ToString()] = streak;
 
             // WeightProgress — absolute weight change from first to latest record
-            var weightRecords = await _unitOfWork.WeightProgressRecords.GetAllAsync(false, ct);
-            var memberWeightRecords = weightRecords
-                .Where(r => r.MemberId == memberId)
+            var memberWeightRecords = (await _unitOfWork.WeightProgressRecords.FindAllAsync(r => r.MemberId == memberId, false, ct))
                 .OrderBy(r => r.RecordedAt)
                 .ToList();
             if (memberWeightRecords.Count >= 2)

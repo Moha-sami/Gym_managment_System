@@ -1,4 +1,4 @@
-﻿using GymManagment.DAL.DbContext;
+using GymManagment.DAL.DbContext;
 using GymManagment.DAL.Models;
 using GymManagment.DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -82,6 +82,19 @@ namespace GymManagment.DAL.Repositories.Class
         {
             _Set.Update(Entity);
             return await _context.SaveChangesAsync(ct);
+        }
+
+        public async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> Predicate, bool tracking = false, CancellationToken ct = default, params Expression<Func<TEntity, object>>[] includes)
+        {
+            IQueryable<TEntity> query = tracking ? _Set : _Set.AsNoTracking();
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+            return await query.Where(Predicate).ToListAsync(ct);
         }
     }
 }

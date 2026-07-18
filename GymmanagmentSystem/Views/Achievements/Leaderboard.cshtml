@@ -9,7 +9,13 @@
     <div class="text-center mb-5">
         <span class="badge bg-warning text-dark mb-2 px-3 py-2 fs-6 fw-bold rounded-pill">🏆 Hall of Fame</span>
         <h1 class="display-4 fw-bold text-dark">Gym Leaders</h1>
-        <p class="fs-5 text-muted mb-0">Behold our top members pushing their limits and unlocking achievements!</p>
+        <p class="fs-5 text-muted mb-3">Behold our top members pushing their limits and unlocking achievements!</p>
+        @if (User.IsInRole("Member"))
+        {
+            <a asp-controller="Achievements" asp-action="MyAchievements" class="btn btn-outline-primary rounded-pill px-4 fw-bold transition-all hover-scale shadow-sm">
+                <i class="bi bi-award-fill me-2"></i>My Achievements
+            </a>
+        }
     </div>
 
     <!-- Top 3 Podium Cards -->
