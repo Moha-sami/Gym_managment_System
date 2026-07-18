@@ -1,31 +1,62 @@
 # 🏋️ Gym Management System
 
 A full-featured gym management web application built with **ASP.NET Core MVC** using a clean **3-Tier Architecture**. Supports member self-service, health tracking, trainer management, session scheduling, bookings, and role-based authentication with an approval workflow for sensitive actions.
+
 ---
 Live Demo: Check out the full gym system here https://fullgymsystem.runasp.net/Account/Login
 ---
 
-### 📸 Screenshots
+## 🆕 Recent Updates
 
-| Home Page | Login Page |
-| :---: | :---: |
-| ![Home Page](screenshots/Home_page.png) | ![Login Page](screenshots/login-page.png) |
+### 🎨 Full Mobile-Responsive Redesign
+The entire UI has been rebuilt from the ground up with a dark glassmorphic design system:
+- **New CSS variable design system** — cohesive color palette (`--accent`, `--purple`, `--pink`), glass effects, and Inter font throughout
+- **Responsive sidebar navigation** — drawer-style hamburger menu on mobile/tablet replacing the collapsing navbar; zero horizontal overflow at 320px–768px
+- **Animated dashboard** — circular SVG gauge stats and a live responsive ticker replace the static grid
+- **Admin card redesign** — Member and Trainer cards use circular action toggles in the card footer with correct z-index stacking (dropdowns no longer render behind sibling cards)
+- **Member space views** — Profile, Membership, Analytics, and Achievements pages optimized for all breakpoints
 
-| Members | Trainers / Member Plans |
-| :---: | :---: |
-| ![Members](screenshots/Member_page.png) | ![Trainers](screenshots/Member_palns.png) |
+### 🎥 Exercise Video & Form Library
+- New **Exercise** entity backed by SQL Server (`AddExercise` migration)
+- `ExercisesController` with AJAX video lookup for the guide player
+- `Views/Exercises/Index.cshtml` — guided video library browser with 3D form animations
+- `Workouts/Create.cshtml` — integrated exercise guide player modal
+- `DataSeeder` seeds 6 core exercises (Squat, Deadlift, Bench Press, Pull-Up, OHP, Barbell Row) with 3D animation video URLs on first run
 
-| Plans | Memberships |
-| :---: | :---: |
-| ![Plans](screenshots/Plans_page.png) | ![Memberships](screenshots/Membership_page.png) |
+### ⚡ DB Query Performance Optimizations
+- Added `FindAllAsync(predicate, tracking, includes)` to `IGenericRepository<T>` / `GenericRepository<T>` — server-side predicate filtering eliminates full-table memory loads
+- `BadgeService` refactored to use `FindAllAsync` with in-memory dictionaries, resolving N+1 query chains during gamification badge evaluation
+- `Leaderboard.cshtml` cleaned up redundant per-render DB hits
 
-| Sessions | Sessions Schedule |
-| :---: | :---: |
-| ![Sessions](screenshots/Session_Page.png) | ![Schedule](screenshots/SessionsSchedule_page.png) |
+### 🔐 Google OAuth & Email OTP
+- **Google OAuth association fix** — existing local accounts auto-link to Google login on first OAuth sign-in if emails match
+- **SMTP Email Service** — Brevo-backed `EmailService` sends real OTP emails for the Forgot Password flow (credentials via .NET User Secrets, never committed)
 
-| Admin — User Management | Admin — Delete Requests |
+---
+
+## 📸 Screenshots
+
+| Dashboard | Members |
 | :---: | :---: |
-| ![User Management](screenshots/UserManagement_page.png) | ![Delete Requests](screenshots/DeleteRequest_page.png) |
+| ![Dashboard](screenshots/dashboard.png) | ![Members](screenshots/members.png) |
+
+| Trainers | Sessions Schedule |
+| :---: | :---: |
+| ![Trainers](screenshots/trainers.png) | ![Sessions Schedule](screenshots/sessions.png) |
+
+| Plans | Plans Details |
+| :---: | :---: |
+| ![Plans](screenshots/plans.png) | ![Plans Details](screenshots/plans_detail.png) |
+
+| My Profile | My Membership |
+| :---: | :---: |
+| ![My Profile](screenshots/my_profile.png) | ![My Membership](screenshots/my_membership.png) |
+
+| My Analytics | Achievements |
+| :---: | :---: |
+| ![My Analytics](screenshots/my_analytics.png) | ![Achievements](screenshots/achievements.png) |
+
+---
 
 ## 🏗️ Architecture
 
@@ -49,7 +80,7 @@ GymmanagmentSystem/
 ## ✨ Features
 
 ### Public / Guest
-- ✅ Landing page with live gym stats (Total Members, Active Members, Trainers, Sessions by status)
+- ✅ Landing page with animated circular gauge stats (Total Members, Active Members, Trainers, Sessions by status)
 - ✅ Self-registration — automatically creates a linked Member profile, assigns the **Member** role, and subscribes to the **Basic Plan**
 
 ### Members (Admin/Manager-managed)
@@ -85,22 +116,26 @@ GymmanagmentSystem/
 - ✅ **My Workout Journal** — log custom workouts, adding exercises, sets, weights, and reps with interactive history details
 - ✅ **My Workout Plan** — generate rule-based weekly routines (Goals: Build Muscle, Lose Weight, Cardio) and copy days directly into the workout journal
 - ✅ **My Achievements** — gamified badges hub (e.g. Early Bird, Iron Lifter) and a global community leaderboard
+- ✅ **Exercise Library** — browse guided video library with 3D form animations for core lifts; integrated guide player on the workout creation page
 
 ### Authentication & Authorization
 - ✅ ASP.NET Core Identity (custom `AppUser`, linked to a `Member` or `Trainer` record via `MemberId`/`TrainerId`)
 - ✅ Roles: **Admin**, **Manager**, **Member**, **Trainer**
 - ✅ Public registration → automatically linked Member profile + **Member** role + Basic Plan membership
-- ✅ **Forgot Password with OTP** — self-service password recovery using 6-digit numeric OTP tokens sent to email
+- ✅ **Forgot Password with OTP** — self-service password recovery using 6-digit numeric OTP tokens sent via SMTP email
+- ✅ **Google OAuth** — sign in with Google; existing accounts auto-link on first OAuth login if emails match
 - ✅ Admin can assign/change roles and delete accounts via User Management page
 - ✅ Manager can create Members/Trainers/Sessions but cannot delete directly — submits a **Delete Request** for Admin approval/rejection
 
 ### Responsive Design
-- ✅ **Table-to-Cards Layouts** — dynamically folds wide tables into readable, vertical stacked card formats on viewport widths under `992px` (mobile/tablet)
-- ✅ **Smart Column Header Injector** — automatically shows column names on cards via custom CSS `data-label` injection
-- ✅ **Stackable Headers** — stacks action buttons below section titles on screens under `576px` to prevent layout overlaps
+- ✅ **Dark glassmorphic design system** — CSS variables, glass effects, Inter typography throughout
+- ✅ **Responsive drawer sidebar** — hamburger-triggered drawer nav on mobile/tablet, zero horizontal overflow at 320px+
+- ✅ **Animated dashboard gauges** — circular SVG progress rings and live stats ticker
+- ✅ **Admin card redesign** — circular action toggles with correct z-index stacking across all breakpoints
+- ✅ **Member space** — Profile, Membership, Analytics, Achievements optimized for 320px–1440px
 
 ### Data Seeding
-- ✅ Plans, Categories, 4 Trainers, 10 Members (with avatar photos), and 7 days of upcoming Sessions seeded automatically on first run
+- ✅ Plans, Categories, 4 Trainers, 10 Members (with avatar photos), 7 days of upcoming Sessions, 6 core Exercises with 3D guide videos seeded automatically on first run
 - ✅ Roles (Admin, Manager, Member, Trainer) and default Admin + Manager accounts seeded on startup
 - ✅ Idempotent — skips seeding if data already exists
 
@@ -115,7 +150,8 @@ GymmanagmentSystem/
 | ASP.NET Core Identity | Authentication & Authorization |
 | SQL Server | Database |
 | AutoMapper | Object mapping (ViewModel ↔ Entity) |
-| Bootstrap 5 | UI styling |
+| Bootstrap 5 | UI base / grid |
+| Vanilla CSS (custom) | Dark glassmorphic design system |
 | Bootstrap Icons | Icon set |
 | C# | Primary language |
 
@@ -126,7 +162,7 @@ GymmanagmentSystem/
 | Pattern | Where Used |
 |---------|-----------|
 | **3-Tier Architecture** | Full project structure |
-| **Generic Repository** | `IGenericRepository<T>` in DAL, with `Include` overloads for eager loading |
+| **Generic Repository** | `IGenericRepository<T>` in DAL with `FindAllAsync` for server-side predicate filtering and eager-load includes |
 | **Unit of Work** | `IUnitOfWork` wrapping all repositories |
 | **Result Pattern** | `Result<T>` returned from all service methods |
 | **AutoMapper** | `MappingProfile` in BLL |
@@ -160,32 +196,39 @@ GymmanagmentSystem/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Moha-sami/GymmanagmentSystem.git
-   cd GymmanagmentSystem
+   git clone https://github.com/Moha-sami/Gym_managment_System.git
+   cd Gym_managment_System
    ```
 
 2. **Set up the connection string**
 
-   In `GymmanagmentSystem.PL/appsettings.json`, update:
+   In `GymmanagmentSystem/appsettings.json`, update:
    ```json
    "ConnectionStrings": {
      "DefaultConnection": "Server=YOUR_SERVER;Database=GymDB;Trusted_Connection=True;"
    }
    ```
 
-3. **Apply migrations**
+3. **Configure SMTP (optional — for OTP email)**
+
+   Use .NET User Secrets to avoid committing credentials:
    ```bash
-   dotnet ef database update --project GymManagment.DAL --startup-project GymmanagmentSystem.PL
+   dotnet user-secrets set "SmtpSettings:Password" "YOUR_SMTP_KEY" --project GymmanagmentSystem
    ```
 
-4. **Run the application**
+4. **Apply migrations**
    ```bash
-   dotnet run --project GymmanagmentSystem.PL
+   dotnet ef database update --project GymManagment.DAL --startup-project GymmanagmentSystem
    ```
 
-   On first run, the database will be automatically seeded with sample Plans, Categories, Trainers, Members, Sessions, Roles, and Admin/Manager accounts.
+5. **Run the application**
+   ```bash
+   dotnet run --project GymmanagmentSystem
+   ```
 
-5. Open your browser, register a new account (gets a Member profile + Basic Plan automatically), or log in with the Admin account above to manage the gym.
+   On first run, the database will be automatically seeded with sample Plans, Categories, Trainers, Members, Sessions, Exercises, Roles, and Admin/Manager accounts.
+
+6. Open your browser, register a new account (gets a Member profile + Basic Plan automatically), or log in with the Admin account above to manage the gym.
 
 ---
 
@@ -205,12 +248,16 @@ GymManagment.DAL/
 │   ├── Session.cs
 │   ├── Booking.cs
 │   ├── DeleteRequest.cs
+│   ├── Exercise.cs (guided video library entries)
+│   ├── WorkoutLog.cs / WorkoutExerciseLog.cs / WorkoutSetLog.cs
+│   ├── BadgeDefinition.cs / MemberBadge.cs
+│   ├── MemberWorkoutPlan.cs
 │   └── Enum/ (Gender, Specialty, Categories, DeleteTargetType, DeleteRequestStatus)
 ├── DbContext/
 │   └── GymDbcontext.cs (IdentityDbContext)
 └── Repositories/
-    ├── Interfaces/ (IGenericRepository, IUnitOfWork)
-    └── Class/ (GenericRepository, UnitOfWork)
+    ├── Interfaces/ (IGenericRepository<T> with FindAllAsync, IUnitOfWork)
+    └── Class/ (GenericRepository<T>, UnitOfWork)
 
 GymMangment.BLL/
 ├── Common/
@@ -220,16 +267,21 @@ GymMangment.BLL/
 ├── Services/
 │   ├── Interfaces/
 │   └── Class/ (MemberService, PlanService, TrainerService, SessionService,
-│                MembershipService, ScheduleService, AnalyticsService, FileService)
+│                MembershipService, ScheduleService, AnalyticsService,
+│                BadgeService, WorkoutService, WorkoutPlanService, FileService)
 └── ViewModels/
     ├── MemberViewModels/
     ├── HealthRecordsViewModels/
     ├── PlansViewModels/
     ├── TrainerViewModels/
     ├── SessionsViewModels/
-    ├── MembershipViewModels/ (incl. MyMembershipViewModel)
+    ├── MembershipViewModels/
     ├── BookingViewModels/
-    └── AccountViewModels/ (Login, Register, User)
+    ├── WorkoutViewModels/
+    ├── WorkoutPlanViewModels/
+    ├── BadgeViewModels/
+    ├── AnalyticsViewModels/
+    └── AccountViewModels/ (Login, Register, ForgotPassword, ResetPassword, VerifyOtp)
 
 GymmanagmentSystem.PL/
 ├── Controllers/
@@ -241,16 +293,23 @@ GymmanagmentSystem.PL/
 │   ├── MembershipsController.cs (incl. MyMembership, UpgradePlan)
 │   ├── SessionsScheduleController.cs
 │   ├── BookingsController.cs (incl. MyBookings)
-│   ├── AccountController.cs
+│   ├── AccountController.cs (incl. Google OAuth, OTP Forgot Password)
 │   ├── AdminController.cs
+│   ├── ExercisesController.cs
+│   ├── WorkoutsController.cs
+│   ├── AchievementsController.cs
+│   ├── AnalyticsController.cs
+│   ├── WorkoutPlanController.cs
 │   └── DeleteRequestsController.cs
 ├── Services/
-│   └── FileService.cs (implements IFileService)
+│   ├── FileService.cs
+│   └── EmailService.cs (SMTP via Brevo)
 ├── DataSeeder.cs
 ├── Views/
 │   └── (one folder per controller, plus Shared/_Layout.cshtml)
 └── wwwroot/
-    ├── data/ (plans.json, members.json, trainers.json — seed sources)
+    ├── css/ (style.css, custom.css)
+    ├── data/ (announcement.json)
     └── images/
         ├── avatars/ (seeded member default photos)
         └── uploads/ (member profile photos uploaded via Create)
