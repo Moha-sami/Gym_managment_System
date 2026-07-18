@@ -1,0 +1,55 @@
+/* Custom CSS for RPG Gym Console */
+:root {
+  --accent-color: #00ffff; /* Neon cyan */
+  --bg-dark: #0d0c15;
+  --glass-bg: rgba(255,255,255,0.1);
+  --glass-border: rgba(255,255,255,0.2);
+  --glass-shadow: 0 8px 32px 0 rgba(31,38,135,0.37);
+}
+
+/* Circular gauge */
+.gauge {
+  width: 150px;
+  height: 150px;
+  position: relative;
+}
+.gauge svg {
+  transform: rotate(-90deg);
+}
+.gauge circle {
+  fill: none;
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+.gauge .bg {
+  stroke: var(--glass-bg);
+}
+.gauge .progress {
+  stroke: var(--accent-color);
+  stroke-dasharray: 440;
+  stroke-dashoffset: 440;
+  animation: progress 2s ease-out forwards;
+}
+@keyframes progress {
+  to { stroke-dashoffset: calc(440 - (440 * var(--progress-percent) / 100)); }
+}
+
+/* Badge badge style */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 0.5rem;
+}
+.badge-grid .badge {
+  width: 70px;
+  height: 70px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--accent-color);
+  backdrop-filter: blur(5px);
+}

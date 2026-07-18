@@ -2,212 +2,297 @@
 @model MemberToUpdateViewModel
 @{
     ViewData["Title"] = "My Profile";
+    var badges = ViewBag.EarnedBadges as List<GymMangment.BLL.ViewModels.BadgeViewModels.MemberBadgeViewModel> ?? new List<GymMangment.BLL.ViewModels.BadgeViewModels.MemberBadgeViewModel>();
+    int badgeCount = badges.Count;
+    string athleteRank = "Bronze Recruit";
+    string rankColor = "#00f0ff";
+    
+    if (badgeCount >= 10) { athleteRank = "Legendary Champion"; rankColor = "#ffc107"; }
+    else if (badgeCount >= 5) { athleteRank = "Elite Competitor"; rankColor = "#d63384"; }
+    else if (badgeCount >= 2) { athleteRank = "Silver Challenger"; rankColor = "#6f42c1"; }
 }
 
+<style>
+    .badge-item {
+        perspective: 1000px;
+    }
+    .badge-ring {
+        transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .badge-item:hover .badge-ring {
+        transform: rotateY(180deg);
+        box-shadow: 0 0 20px rgba(214, 51, 132, 0.7) !important;
+    }
+    .form-label {
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+    .section-divider {
+        border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .glass-input {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        color: #ffffff !important;
+        border-radius: 12px !important;
+        padding: 10px 14px !important;
+    }
+    .glass-input:focus {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border-color: #00f0ff !important;
+        box-shadow: 0 0 12px rgba(0, 240, 255, 0.25) !important;
+    }
+    .glass-input[type="file"]::file-selector-button {
+        background: linear-gradient(135deg, #7c3aed, #db2777);
+        border: none;
+        color: #ffffff;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 6px 14px;
+        margin-right: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .glass-input[type="file"]::file-selector-button:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+    .glass-select {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        color: #ffffff !important;
+        border-radius: 12px !important;
+    }
+    .glass-select option {
+        background: #0f0c1e !important;
+        color: #ffffff !important;
+    }
+</style>
+
 <div class="container mt-4">
-    <header class="mb-4">
-        <h3 class="text-primary-color">My Profile</h3>
-        <p class="text-muted">Update your personal information</p>
+    <header class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 text-white">
+        <div>
+            <h3 class="text-neon mb-0 text-uppercase fw-bold" style="letter-spacing: 1px;">Training Console</h3>
+            <p class="text-white-50 mb-0">Manage athlete statistics and personal record details</p>
+        </div>
+        <div class="d-flex gap-2 header-buttons-wrap">
+            <a asp-controller="Memberships" asp-action="MyMembership" class="btn-glow-pill">
+                <i class="bi bi-card-checklist me-1"></i>My Membership
+            </a>
+            <a asp-controller="Analytics" asp-action="MyProgress" class="btn-glow-pill">
+                <i class="bi bi-graph-up-arrow me-1"></i>My Analytics
+            </a>
+        </div>
     </header>
 
     <div class="row g-4">
         <!-- Left Column: Profile form -->
         <div class="col-lg-8">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body p-4">
-                    <div class="mb-4 pb-3 border-bottom d-flex align-items-center gap-3">
+            <div class="glass-card p-4 h-100 text-white">
+                <div class="mb-4 pb-3 border-bottom border-white-10 d-flex align-items-center gap-4 profile-header-wrap">
+                    <div class="position-relative">
                         @if (!string.IsNullOrEmpty(Model.CurrentPhoto))
                         {
-                            <img src="@Model.CurrentPhoto" class="rounded-circle"
-                                 style="width:80px;height:80px;object-fit:cover;" />
+                            <img src="@Model.CurrentPhoto" id="profilePhotoPreview" class="rounded-circle border border-2 border-white-20 shadow"
+                                 style="width:90px;height:90px;object-fit:cover;" />
                         }
                         else
                         {
-                            <img src="~/images/User.jpg" class="rounded-circle"
-                                 style="width:80px;height:80px;object-fit:cover;" />
+                            <img src="~/images/User.jpg" id="profilePhotoPreview" class="rounded-circle border border-2 border-white-20 shadow"
+                                 style="width:90px;height:90px;object-fit:cover;" />
                         }
-                        <div>
-                            <small class="text-muted d-block mb-1">Profile For</small>
-                            <h4 class="mb-0 text-black">@Model.Name</h4>
-                        </div>
+                        <span class="position-absolute bottom-0 end-0 badge rounded-pill bg-primary-color border border-dark" style="font-size: 10px; padding: 5px 8px;">LVL @badgeCount</span>
                     </div>
+                    <div>
+                        <small class="text-white-50 d-block mb-1 text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 1px;">Athlete Name</small>
+                        <h4 class="mb-0 text-white fw-bold">@Model.Name</h4>
+                        <span class="badge rounded-pill mt-1" style="background-color: @rankColor; border: 1px solid rgba(255,255,255,0.15); font-size: 10px; padding: 4px 10px;">@athleteRank</span>
+                    </div>
+                </div>
 
-                    <form asp-controller="Members" asp-action="MyProfile" method="post"
-                          enctype="multipart/form-data">
-                        <input type="hidden" asp-for="Id" />
-                        <input type="hidden" asp-for="Name" />
+                <form asp-controller="Members" asp-action="MyProfile" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="Name" />
 
-                        <!-- Personal Information -->
-                        <div class="section-header mb-3">
-                            <h5 class="text-primary fw-bold">Personal Information</h5>
-                            <hr class="mt-2">
-                        </div>
+                    <!-- Personal Information -->
+                    <div class="mb-4">
+                        <h5 class="text-neon fw-bold text-uppercase fs-6 mb-3" style="letter-spacing: 0.5px;">Personal Information</h5>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label asp-for="Email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
-                                <input asp-for="Email" type="email" class="form-control" />
+                                <label asp-for="Email" class="form-label text-white-50 fw-semibold">Email <span class="text-danger">*</span></label>
+                                <input asp-for="Email" type="email" class="form-control glass-input" />
                                 <span asp-validation-for="Email" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="Phone" class="form-label fw-semibold">Phone <span class="text-danger">*</span></label>
-                                <input asp-for="Phone" class="form-control" />
+                                <label asp-for="Phone" class="form-label text-white-50 fw-semibold">Phone <span class="text-danger">*</span></label>
+                                <input asp-for="Phone" class="form-control glass-input" />
                                 <span asp-validation-for="Phone" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="BuildingNumber" class="form-label fw-semibold">Building No. <span class="text-danger">*</span></label>
-                                <input asp-for="BuildingNumber" class="form-control" />
+                                <label asp-for="BuildingNumber" class="form-label text-white-50 fw-semibold">Building No. <span class="text-danger">*</span></label>
+                                <input asp-for="BuildingNumber" class="form-control glass-input" />
                                 <span asp-validation-for="BuildingNumber" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="City" class="form-label fw-semibold">City <span class="text-danger">*</span></label>
-                                <input asp-for="City" class="form-control" />
+                                <label asp-for="City" class="form-label text-white-50 fw-semibold">City <span class="text-danger">*</span></label>
+                                <input asp-for="City" class="form-control glass-input" />
                                 <span asp-validation-for="City" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="Street" class="form-label fw-semibold">Street <span class="text-danger">*</span></label>
-                                <input asp-for="Street" class="form-control" />
+                                <label asp-for="Street" class="form-label text-white-50 fw-semibold">Street <span class="text-danger">*</span></label>
+                                <input asp-for="Street" class="form-control glass-input" />
                                 <span asp-validation-for="Street" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="Photo" class="form-label fw-semibold">Update Photo</label>
-                                <input asp-for="Photo" type="file" class="form-control"
-                                       accept=".jpg,.jpeg,.png,.webp" />
-                                <small class="text-muted">Optional. Max 2MB. JPG, PNG or WebP.</small>
+                                <label asp-for="Photo" class="form-label text-white-50 fw-semibold">Update Photo</label>
+                                <input asp-for="Photo" type="file" class="form-control glass-input" accept=".jpg,.jpeg,.png,.webp" />
+                                <small class="text-white-50" style="font-size: 11px;">Optional. Max 2MB. JPG, PNG or WebP.</small>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Health Record -->
-                        <div class="section-header mb-3 mt-4">
-                            <h5 class="text-primary fw-bold">Health Record</h5>
-                            <hr class="mt-2">
-                        </div>
+                    <div class="section-divider my-4"></div>
+
+                    <!-- Health Record -->
+                    <div class="mb-4">
+                        <h5 class="text-neon fw-bold text-uppercase fs-6 mb-3" style="letter-spacing: 0.5px;">Health Record</h5>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label asp-for="Height" class="form-label fw-semibold">Height (cm)</label>
-                                <input asp-for="Height" type="number" step="0.1" class="form-control" />
+                                <label asp-for="Height" class="form-label text-white-50 fw-semibold">Height (cm)</label>
+                                <input asp-for="Height" type="number" step="0.1" class="form-control glass-input" />
                                 <span asp-validation-for="Height" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="Weight" class="form-label fw-semibold">Weight (kg)</label>
-                                <input asp-for="Weight" type="number" step="0.1" class="form-control" />
+                                <label asp-for="Weight" class="form-label text-white-50 fw-semibold">Weight (kg)</label>
+                                <input asp-for="Weight" type="number" step="0.1" class="form-control glass-input" />
                                 <span asp-validation-for="Weight" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="BloodType" class="form-label fw-semibold">Blood Type</label>
-                                <select asp-for="BloodType" class="form-select">
-                                    <option value="">Select</option>
-                                    <option>A+</option>
-                                    <option>A-</option>
-                                    <option>B+</option>
-                                    <option>B-</option>
-                                    <option>O+</option>
-                                    <option>O-</option>
-                                    <option>AB+</option>
-                                    <option>AB-</option>
+                                <label asp-for="BloodType" class="form-label text-white-50 fw-semibold">Blood Type</label>
+                                <select asp-for="BloodType" class="form-select glass-select">
+                                    <option value="" class="bg-dark">Select</option>
+                                    <option class="bg-dark">A+</option>
+                                    <option class="bg-dark">A-</option>
+                                    <option class="bg-dark">B+</option>
+                                    <option class="bg-dark">B-</option>
+                                    <option class="bg-dark">O+</option>
+                                    <option class="bg-dark">O-</option>
+                                    <option class="bg-dark">AB+</option>
+                                    <option class="bg-dark">AB-</option>
                                 </select>
                                 <span asp-validation-for="BloodType" class="text-danger"></span>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="Note" class="form-label fw-semibold">Notes</label>
-                                <input asp-for="Note" class="form-control" />
+                                <label asp-for="Note" class="form-label text-white-50 fw-semibold">Notes</label>
+                                <input asp-for="Note" class="form-control glass-input" />
                             </div>
                         </div>
+                    </div>
 
-                        <div class="d-flex justify-content-end mt-4 pt-3 border-top">
-                            <button type="submit" class="btn btn-primary" id="saveBtn"
-                                    onclick="showLoading(this)">
-                                <span class="spinner-border spinner-border-sm d-none" id="spinner" role="status" aria-hidden="true"></span>
-                                <span id="btnText">Save Changes</span>
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="d-flex justify-content-end mt-4 pt-3 border-top border-white-10 save-btn-row">
+                        <button type="submit" class="btn btn-neon rounded-pill px-4 py-2" id="saveBtn" onclick="showLoading(this)">
+                            <span class="spinner-border spinner-border-sm d-none" id="spinner" role="status" aria-hidden="true"></span>
+                            <span id="btnText">Save Changes</span>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
         <!-- Right Column: Interactive BMI Dashboard & Badges -->
         <div class="col-lg-4">
             <!-- Health Card -->
-            <div class="card shadow-sm border-0 bg-light mb-4">
-                <div class="card-body p-4">
-                    <h4 class="text-primary-color fw-bold mb-3">Health Dashboard</h4>
-                    <p class="text-muted small">Your Body Mass Index (BMI) is calculated in real-time based on your weight and height.</p>
+            <div class="glass-card p-4 mb-4 text-white">
+                <h4 class="text-neon fw-bold mb-3 fs-5 text-uppercase" style="letter-spacing: 0.5px;">Health Metrics</h4>
+                <p class="text-white-50 small mb-4">Your Body Mass Index (BMI) is tracked dynamically below.</p>
 
-                    <!-- BMI Display Box -->
-                    <div class="text-center py-4 bg-white rounded-3 shadow-sm border mb-4">
-                        <h6 class="text-muted mb-1 text-uppercase small fw-bold">Body Mass Index (BMI)</h6>
-                        <div class="display-4 fw-bold text-primary-color my-2" id="bmiScore">
+                <!-- SVG Gauge Dial -->
+                <div class="text-center py-4 bg-transparent rounded-3 border border-white-10 mb-4 position-relative overflow-hidden" style="background: rgba(255,255,255,0.01) !important;">
+                    <svg width="200" height="120" class="mx-auto d-block">
+                        <!-- Background Track -->
+                        <path d="M20,110 A80,80 0 0,1 180,110" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="12" stroke-linecap="round" />
+                        <!-- Gauge Value arc -->
+                        <path id="gaugeArc" d="M20,110 A80,80 0 0,1 180,110" fill="none" stroke="url(#gaugeGradient)" stroke-width="14" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251" style="transition: stroke-dashoffset 1s cubic-bezier(0.1, 0.8, 0.2, 1);" />
+                        
+                        <!-- Gradients -->
+                        <defs>
+                            <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#00f0ff" />
+                                <stop offset="50%" stop-color="#6f42c1" />
+                                <stop offset="100%" stop-color="#d63384" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    
+                    <div class="position-absolute start-50 translate-middle-x" style="bottom: 12px; width: 100%;">
+                        <h6 class="text-white-50 mb-0 text-uppercase small fw-bold" style="font-size: 9px; letter-spacing: 1px;">Body Mass Index</h6>
+                        <div class="fs-1 fw-bold text-white my-1" id="bmiScore" style="letter-spacing: -1px;">
                             @(Model.BMI?.ToString("F1") ?? "--")
                         </div>
-                        <span class="badge fs-6 px-3 py-2 rounded-pill" id="bmiCategoryBadge">
+                        <span class="badge fs-6 px-3 py-1 rounded-pill" id="bmiCategoryBadge" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); font-size: 11px !important;">
                             @(Model.BMICategory ?? "No Data")
                         </span>
                     </div>
+                </div>
 
-                    <!-- Progress Slider -->
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between small text-muted mb-1" style="font-size: 0.8rem;">
-                            <span>Underweight</span>
-                            <span>Normal</span>
-                            <span>Overweight</span>
-                            <span>Obese</span>
-                        </div>
-                        <div class="progress" style="height: 10px;">
-                            <div id="bmiProgressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <div class="d-flex justify-content-between small text-muted mt-1" style="font-size: 0.75rem;">
-                            <span>&lt; 18.5</span>
-                            <span>18.5 - 24.9</span>
-                            <span>25.0 - 29.9</span>
-                            <span>&gt;= 30.0</span>
-                        </div>
+                <!-- Progress Slider reference ranges -->
+                <div class="mb-4 px-2">
+                    <div class="d-flex justify-content-between small text-white-50 mb-1" style="font-size: 0.75rem;">
+                        <span>Under</span>
+                        <span>Normal</span>
+                        <span>Over</span>
+                        <span>Obese</span>
                     </div>
+                    <div class="progress" style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px;">
+                        <div id="bmiProgressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
 
-                    <!-- Health Recommendation Section -->
-                    <div class="bg-white p-3 rounded-3 border">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <i class="bi bi-heart-pulse-fill text-danger fs-5"></i>
-                            <h6 class="mb-0 fw-bold">Training Advice</h6>
-                        </div>
-                        <p class="text-muted small mb-0" id="bmiRecommendation">
-                            Provide your height and weight to receive a fitness recommendation.
-                        </p>
+                <!-- Health Recommendation Section -->
+                <div class="glass-card p-3" style="background: rgba(255,255,255,0.02) !important;">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-heart-pulse-fill text-danger fs-5"></i>
+                        <h6 class="mb-0 fw-bold text-white">Training Advice</h6>
                     </div>
+                    <p class="text-white-50 small mb-0" id="bmiRecommendation" style="font-size: 0.8rem; line-height: 1.4;">
+                        Provide your height and weight to receive a fitness recommendation.
+                    </p>
                 </div>
             </div>
 
             <!-- Achievements Card -->
-            <div class="card shadow-sm border-0 bg-light">
-                <div class="card-body p-4">
-                    <h4 class="text-primary-color fw-bold mb-3">My Achievements</h4>
-                    <p class="text-muted small">Your recently unlocked fitness badges.</p>
+            <div class="glass-card p-4 text-white">
+                <h4 class="text-neon fw-bold mb-3 fs-5 text-uppercase" style="letter-spacing: 0.5px;">My Achievements</h4>
+                <p class="text-white-50 small mb-3">Your unlocked fitness achievements console.</p>
 
-                    @if (ViewBag.EarnedBadges == null || !((List<GymMangment.BLL.ViewModels.BadgeViewModels.MemberBadgeViewModel>)ViewBag.EarnedBadges).Any())
-                    {
-                        <div class="text-center py-4 bg-white rounded-3 border">
-                            <i class="bi bi-trophy text-muted display-6 mb-2 d-block"></i>
-                            <p class="text-muted small mb-0">No badges earned yet.</p>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="bg-white p-3 rounded-3 border mb-3">
-                            <div class="d-flex flex-wrap gap-2 justify-content-center">
-                                @foreach (var badge in ((List<GymMangment.BLL.ViewModels.BadgeViewModels.MemberBadgeViewModel>)ViewBag.EarnedBadges).Take(4))
-                                {
-                                    <div class="text-center" style="width: 60px;" title="@badge.BadgeName - @badge.BadgeDescription">
-                                        <img src="@badge.BadgeIconPath" class="rounded-circle border border-2 border-warning shadow-sm" style="width: 40px; height: 40px; object-fit: cover;" />
-                                        <span class="d-block text-truncate fw-semibold text-dark mt-1" style="font-size: 8px;">@badge.BadgeName</span>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                    <div class="text-center">
-                        <a href="/Achievements/MyAchievements" class="btn btn-outline-primary btn-sm rounded-pill w-100 fw-bold text-decoration-none">
-                            View All Achievements <i class="bi bi-arrow-right-short ms-1"></i>
-                        </a>
+                @if (!badges.Any())
+                {
+                    <div class="text-center py-4 bg-transparent rounded-3 border border-white-10 mb-3" style="background: rgba(255,255,255,0.01) !important;">
+                        <i class="bi bi-trophy text-white-50 display-6 mb-2 d-block"></i>
+                        <p class="text-white-50 small mb-0">No badges earned yet.</p>
                     </div>
+                }
+                else
+                {
+                    <div class="p-3 rounded-3 border border-white-10 mb-3" style="background: rgba(255,255,255,0.01) !important;">
+                        <div class="d-flex flex-wrap gap-3 justify-content-center">
+                            @foreach (var badge in badges.Take(4))
+                            {
+                                <div class="text-center position-relative badge-item" style="width: 62px;" title="@badge.BadgeName - @badge.BadgeDescription">
+                                    <div class="badge-ring rounded-circle p-1 mb-1" style="background: linear-gradient(135deg, #6f42c1, #d63384); box-shadow: 0 0 10px rgba(111,66,193,0.3);">
+                                        <img src="@badge.BadgeIconPath" class="rounded-circle bg-dark" style="width: 44px; height: 44px; object-fit: cover;" />
+                                    </div>
+                                    <span class="d-block text-truncate fw-semibold text-white" style="font-size: 9px;">@badge.BadgeName</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                <div class="text-center">
+                    <a href="/Achievements/MyAchievements" class="btn btn-outline-light btn-sm rounded-pill w-100 fw-bold text-decoration-none py-2 bg-transparent" style="transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='transparent'">
+                        View All Achievements <i class="bi bi-arrow-right-short ms-1 text-neon"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -221,7 +306,7 @@
             if (e.target.files && e.target.files[0]) {
                 var reader = new FileReader();
                 reader.onload = function(e) {
-                    document.querySelector('.rounded-circle').src = e.target.result;
+                    document.getElementById('profilePhotoPreview').src = e.target.result;
                 }
                 reader.readAsDataURL(e.target.files[0]);
             }
@@ -243,6 +328,7 @@
             const bmiCategoryBadge = document.getElementById("bmiCategoryBadge");
             const bmiProgressBar = document.getElementById("bmiProgressBar");
             const bmiRecommendation = document.getElementById("bmiRecommendation");
+            const gaugeArc = document.getElementById("gaugeArc");
 
             function calculateBMI() {
                 const height = parseFloat(heightInput.value);
@@ -251,10 +337,11 @@
                 if (isNaN(height) || isNaN(weight) || height <= 0 || weight <= 0) {
                     bmiScore.innerText = "--";
                     bmiCategoryBadge.innerText = "No Data";
-                    bmiCategoryBadge.className = "badge bg-secondary fs-6 px-3 py-2 rounded-pill";
+                    bmiCategoryBadge.className = "badge fs-6 px-3 py-1 rounded-pill";
                     bmiProgressBar.style.width = "0%";
                     bmiProgressBar.className = "progress-bar bg-secondary";
                     bmiRecommendation.innerText = "Please enter valid height and weight values to get your BMI calculation.";
+                    gaugeArc.style.strokeDashoffset = "251"; // Empty gauge
                     return;
                 }
 
@@ -298,10 +385,21 @@
                 }
 
                 bmiCategoryBadge.innerText = category;
-                bmiCategoryBadge.className = `badge ${badgeClass} fs-6 px-3 py-2 rounded-pill`;
+                bmiCategoryBadge.className = `badge ${badgeClass} fs-6 px-3 py-1 rounded-pill`;
                 bmiProgressBar.style.width = `${progressWidth}%`;
                 bmiProgressBar.className = `progress-bar ${progressClass}`;
                 bmiRecommendation.innerText = recommendation;
+
+                // Animate SVG Gauge Arc
+                // Scale BMI value linearly between 15 (empty = 251 offset) and 35 (full = 0 offset)
+                const minBmi = 15;
+                const maxBmi = 35;
+                let percentage = (bmi - minBmi) / (maxBmi - minBmi);
+                percentage = Math.max(0, Math.min(1, percentage)); // Clamp between 0 and 1
+                
+                const maxCircumference = 251; 
+                const targetOffset = maxCircumference * (1 - percentage);
+                gaugeArc.style.strokeDashoffset = targetOffset.toString();
             }
 
             heightInput.addEventListener("input", calculateBMI);

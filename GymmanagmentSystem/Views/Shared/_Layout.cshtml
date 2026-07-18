@@ -3,327 +3,288 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - GymmanagmentSystem</title>
+    <title>@ViewData["Title"] - Power Fitness</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
-    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/style.css?v=3" asp-append-version="true" />
     <link rel="stylesheet" href="~/GymmanagmentSystem.styles.css" asp-append-version="true" />
     <link rel="icon" type="image/png" href="~/my-gym-icon.png?v=3" />
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-            /* Responsive navbar fixes - keeps everything visible without breaking */
-            .navbar-nav {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-                .navbar-nav .nav-link {
-                    white-space: nowrap;
-                    padding: 0.5rem 0.75rem !important;
-                    font-size: 1rem;
-                }
-
-            /* On tablets and small laptops, shrink font and padding so all items fit */
-            @@media (max-width: 1199.98px) {
-                .navbar-nav .nav-link {
-                    font-size: 0.85rem !important;
-                    padding: 0.4rem 0.6rem !important;
-                }
-
-                .navbar-brand img {
-                    max-height: 40px;
-                }
-            }
-
-            /* On mobile, keep the collapsed menu as is */
-            @@media (max-width: 991.98px) {
-                .navbar-nav .nav-link {
-                    font-size: 1rem !important;
-                    padding: 0.6rem 1rem !important;
-                    width: 100%;
-                    text-align: center;
-                }
-
-                .navbar-nav {
-                    flex-direction: column;
-                    align-items: center;
-                }
-            }
-
-            /* Prevent any overflow */
-            .navbar {
-                overflow: visible;
-            }
-
-            .navbar-collapse {
-                max-height: 80vh;
-                overflow-y: auto;
-            }
-
-            /* .container {
-                max-width: 90%;
-                padding-left: 15px;
-                padding-right: 15px;
-            } */
+        :root {
+            --sidebar-w: 240px;
+            --bg: #07060f;
+            --glass-bg: rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.08);
+            --accent: #00f0ff;
+            --purple: #7c3aed;
+            --pink: #db2777;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; background: var(--bg) !important; color: #fff; font-family: 'Inter', sans-serif; min-height: 100vh; overflow-x: hidden; }
+        .shell { display: flex; min-height: 100vh; background: var(--bg); }
+        .sidebar { width: var(--sidebar-w); flex-shrink: 0; background: rgba(12, 10, 24, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-right: 1px solid var(--glass-border); display: flex; flex-direction: column; padding: 24px 0; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; z-index: 200; transition: transform 0.3s ease; }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 0 20px 24px; border-bottom: 1px solid var(--glass-border); margin-bottom: 16px; text-decoration: none; }
+        .logo-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--purple), var(--pink)); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .logo-icon i { font-size: 18px; color: #fff; }
+        .logo-text { font-size: 0.85rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; line-height: 1.2; }
+        .logo-text small { display: block; font-size: 0.6rem; font-weight: 400; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; }
+        .nav-label { font-size: 0.6rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); padding: 12px 20px 4px; display: block; }
+        .sidebar-nav { list-style: none; padding: 0; margin: 0; }
+        .sidebar-nav li { padding: 2px 12px; }
+        .sidebar-nav a, .sidebar-nav button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; border-radius: 12px; font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.55); text-decoration: none; border: none; background: none; cursor: pointer; transition: all 0.25s ease; position: relative; font-family: 'Inter', sans-serif; }
+        .sidebar-nav a:hover, .sidebar-nav button:hover { color: #fff; background: rgba(255,255,255,0.06); }
+        .sidebar-nav a.active { color: #fff; background: linear-gradient(135deg, rgba(124,58,237,0.25), rgba(219,39,119,0.15)); border: 1px solid rgba(124,58,237,0.3); }
+        .sidebar-nav a.active i { color: var(--accent); }
+        .sidebar-nav a.active::before { content: ''; position: absolute; left: -12px; top: 50%; transform: translateY(-50%); width: 3px; height: 60%; background: var(--accent); border-radius: 0 3px 3px 0; box-shadow: 0 0 8px var(--accent); }
+        .sidebar-nav a i, .sidebar-nav button i { font-size: 1rem; width: 20px; flex-shrink: 0; }
+        .sidebar-footer { margin-top: auto; padding: 16px 12px 0; border-top: 1px solid var(--glass-border); }
+        .main-wrap { margin-left: var(--sidebar-w); width: calc(100% - var(--sidebar-w)); min-width: 0; flex: 1; display: flex; flex-direction: column; min-height: 100vh; background: var(--bg); }
+        .topbar { position: sticky; top: 0; z-index: 100; background: rgba(7,6,15,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--glass-border); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 12px; position: relative; }
+        .topbar-title { font-size: 1rem; font-weight: 700; color: #fff; letter-spacing: -0.3px; }
+        .topbar-user { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; color: rgba(255,255,255,0.8); font-weight: 600; }
+        .user-dot { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), var(--pink)); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: #fff; box-shadow: 0 2px 10px rgba(124,58,237,0.3); }
+        .sidebar-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; padding: 4px; }
+        .topbar-announcement {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 200, 0, 0.08);
+            border: 1px solid rgba(255, 200, 0, 0.25);
+            color: #ffd700;
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.15);
+            animation: announcementGlow 3s infinite alternate ease-in-out;
+            max-width: 45%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        @@keyframes announcementGlow {
+            0% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.15); border-color: rgba(255, 200, 0, 0.25); }
+            100% { box-shadow: 0 0 22px rgba(255, 215, 0, 0.45); border-color: rgba(255, 200, 0, 0.5); }
+        }
+        .announcement-icon { color: #ffcc00; animation: iconPulse 1.5s infinite ease-in-out; }
+        @@keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.25); }
+        }
+        .page-content { flex: 1; background: var(--bg); }
+        .alert-glass { border-radius: 12px; border: 1px solid; padding: 12px 16px; font-size: 0.85rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .alert-success { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: #86efac; }
+        .alert-danger  { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.3); color: #fca5a5; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 199; }
+        .sidebar-overlay.show { display: block; }
+        @@media (max-width: 991px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-toggle { display: flex; align-items: center; }
+            .main-wrap { margin-left: 0; width: 100%; }
+            .topbar-announcement { position: static !important; transform: none !important; max-width: 100% !important; margin: 8px 0 !important; white-space: normal !important; text-align: center !important; }
+        }
     </style>
 </head>
 <body>
-    @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
-    @{
-        var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment Env
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
 
-        string IsActive(params string[] controllers)
-        {
-            return controllers.Contains(currentController, StringComparer.OrdinalIgnoreCase) ? "active" : "";
-        }
-
-        // Load gym announcement from JSON file
-        var announcementPath = System.IO.Path.Combine(Env.WebRootPath, "data", "announcement.json");
-        GymMangment.BLL.ViewModels.AnnouncementViewModel? announcement = null;
-        if (System.IO.File.Exists(announcementPath))
-        {
-            try
-            {
-                var json = System.IO.File.ReadAllText(announcementPath);
-                announcement = System.Text.Json.JsonSerializer.Deserialize<GymMangment.BLL.ViewModels.AnnouncementViewModel>(json);
-            }
-            catch { }
-        }
-    }
-
-    @if (announcement != null && announcement.IsActive && !string.IsNullOrEmpty(announcement.Message))
+    string IsActive(params string[] controllers)
     {
-        <div class="alert alert-@announcement.StyleClass alert-dismissible fade show rounded-0 mb-0 border-0 text-center py-3 position-relative" id="announcementBanner" role="alert" style="z-index: 1050; font-size: 1rem; font-weight: 500;">
-            <div class="container d-flex align-items-center justify-content-center gap-2">
-                <i class="bi bi-megaphone-fill fs-5"></i>
-                <span>@announcement.Message</span>
-            </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="top: 50%; transform: translateY(-50%); right: 1.5rem;"></button>
-        </div>
+        return controllers.Contains(currentController, StringComparer.OrdinalIgnoreCase) ? "active" : "";
     }
 
-    <header>
-        <nav class="navbar navbar-expand-lg bg-white my-3">
-            <div class="container">
-                <a class="navbar-brand" href="#">
-                    <img src="~/images/logo.jpg" alt="Logo" />
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav m-auto mb-2 mb-lg-0 mt-3 mt-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @IsActive("Home")" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-
-                        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @IsActive("Members")" asp-controller="Members" asp-action="Index">Members</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @IsActive("Trainers")" asp-controller="Trainers" asp-action="Index">Trainers</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @IsActive("Sessions")" asp-controller="Sessions" asp-action="Index">Sessions</a>
-                            </li>
-                        }
-
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @IsActive("Plans")" asp-controller="Plans" asp-action="Index">Plans</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @IsActive("Memberships")" asp-controller="Memberships" asp-action="Index">Memberships</a>
-                            </li>
-                        }
-
-                        <li class="nav-item">
-                            <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @IsActive("SessionsSchedule")" asp-controller="SessionsSchedule" asp-action="Index">Sessions Schedule</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @(currentController == "Achievements" && ViewContext.RouteData.Values["action"]?.ToString() == "Leaderboard" ? "active" : "")" asp-controller="Achievements" asp-action="Leaderboard">Leaderboard</a>
-                        </li>
-
-                        @if (User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @IsActive("DeleteRequests")" asp-controller="DeleteRequests" asp-action="Index">Delete Requests</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @IsActive("Admin")" asp-controller="Admin" asp-action="Users">Users</a>
-                            </li>
-                        }
-
-                        @if (User.IsInRole("Member"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @(currentController == "Members" && ViewContext.RouteData.Values["action"]?.ToString() == "MyProfile" ? "active" : "")"
-                                   asp-controller="Members" asp-action="MyProfile">My Profile</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @(currentController == "Memberships" && ViewContext.RouteData.Values["action"]?.ToString() == "MyMembership" ? "active" : "")"
-                                   asp-controller="Memberships" asp-action="MyMembership">My Membership</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @(currentController == "Bookings" && ViewContext.RouteData.Values["action"]?.ToString() == "MyBookings" ? "active" : "")"
-                                   asp-controller="Bookings" asp-action="MyBookings">My Bookings</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @IsActive("Workouts")"
-                                   asp-controller="Workouts" asp-action="MyJournal">My Workout Journal</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @(currentController == "Achievements" && ViewContext.RouteData.Values["action"]?.ToString() == "MyAchievements" ? "active" : "")"
-                                   asp-controller="Achievements" asp-action="MyAchievements">My Achievements</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @(currentController == "Analytics" && ViewContext.RouteData.Values["action"]?.ToString() == "MyProgress" ? "active" : "")"
-                                   asp-controller="Analytics" asp-action="MyProgress">My Analytics</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link px-3 py-2 mx-2 fw-bolder fs-5 @IsActive("WorkoutPlan")"
-                                   asp-controller="WorkoutPlan" asp-action="MyPlan">My Workout Plan</a>
-                            </li>
-                        }
-
-                        <li class="nav-item">
-                            <form asp-action="Logout" asp-controller="Account" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-link nav-link px-3 py-2 mx-2 fw-bolder fs-5 text-black-alternative" style="text-decoration: none;">
-                                    Logout
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-
-    <div class="container">
-        <main role="main" class="pb-3">
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-                    @TempData["SuccessMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            @if (TempData["WarningMessage"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                    @TempData["WarningMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                    @TempData["ErrorMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            @RenderBody()
-        </main>
-    </div>
-
-    <!-- Achievements Toast Notification Container -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
-        @if (TempData["NewBadges"] != null)
+    var announcementPath = System.IO.Path.Combine(Env.WebRootPath, "data", "announcement.json");
+    GymMangment.BLL.ViewModels.AnnouncementViewModel? announcement = null;
+    if (System.IO.File.Exists(announcementPath))
+    {
+        try
         {
-            var newBadgesJson = TempData["NewBadges"]?.ToString();
-            if (!string.IsNullOrEmpty(newBadgesJson))
-            {
-                var newBadges = System.Text.Json.JsonSerializer.Deserialize<List<string>>(newBadgesJson);
-                if (newBadges != null)
-                {
-                    foreach (var badgeName in newBadges)
-                    {
-                        <div class="toast align-items-center text-white bg-success border-0 shadow-lg mb-2" role="alert" aria-live="assertive" aria-atomic="true" style="border-radius: 12px;">
-                            <div class="d-flex">
-                                <div class="toast-body d-flex align-items-center gap-3 py-3 px-4">
-                                    <div class="fs-1">🏆</div>
-                                    <div>
-                                        <strong class="d-block text-uppercase small opacity-75">Achievement Unlocked!</strong>
-                                        <span class="fs-5 fw-bold">@badgeName</span>
-                                        <span class="d-block small opacity-90 mt-1">Check your Achievements profile!</span>
-                                    </div>
-                                </div>
-                                <button type="button" class="btn-close btn-close-white m-auto me-3" data-bs-dismiss="toast" aria-label="Close"></button>
-                            </div>
-                        </div>
-                    }
-                }
-            }
+            var json = System.IO.File.ReadAllText(announcementPath);
+            announcement = System.Text.Json.JsonSerializer.Deserialize<GymMangment.BLL.ViewModels.AnnouncementViewModel>(json);
         }
+        catch { }
+    }
+
+    var rawName = User.Identity?.Name ?? "";
+    var displayName = rawName;
+    if (displayName.Contains("@"))
+    {
+        var emailParts = displayName.Split('@');
+        var namePart = emailParts[0].Replace(".", " ").Replace("_", " ").Replace("-", " ");
+        displayName = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(namePart);
+    }
+    var userInitial = displayName.Length > 0 ? displayName[0].ToString().ToUpper() : "U";
+}
+
+<div class="shell">
+  <nav class="sidebar" id="sidebar">
+    <a href="/" class="sidebar-logo">
+      <div class="logo-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+      <div class="logo-text">Power Fitness<small>Management</small></div>
+    </a>
+
+    <span class="nav-label">Main</span>
+    <ul class="sidebar-nav">
+      <li><a asp-controller="Home" asp-action="Index" class="@IsActive("Home")"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+    </ul>
+
+    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+    {
+      <span class="nav-label">Manage</span>
+      <ul class="sidebar-nav">
+        <li><a asp-controller="Members" asp-action="Index" class="@IsActive("Members")"><i class="bi bi-people"></i> Members</a></li>
+        <li><a asp-controller="Trainers" asp-action="Index" class="@IsActive("Trainers")"><i class="bi bi-person-badge"></i> Trainers</a></li>
+        <li><a asp-controller="Sessions" asp-action="Index" class="@IsActive("Sessions")"><i class="bi bi-calendar3"></i> Sessions</a></li>
+        <li><a asp-controller="SessionsSchedule" asp-action="Index" class="@IsActive("SessionsSchedule")"><i class="bi bi-clock"></i> Schedule</a></li>
+        <li><a asp-controller="Achievements" asp-action="Leaderboard" class="@(currentController == "Achievements" && currentAction == "Leaderboard" ? "active" : "")"><i class="bi bi-trophy"></i> Leaderboard</a></li>
+        <li><a asp-controller="Exercises" asp-action="Index" class="@IsActive("Exercises")"><i class="bi bi-activity"></i> Exercise Library</a></li>
+      </ul>
+    }
+
+    @if (User.IsInRole("Admin"))
+    {
+      <span class="nav-label">Admin</span>
+      <ul class="sidebar-nav">
+        <li><a asp-controller="Plans" asp-action="Index" class="@IsActive("Plans")"><i class="bi bi-card-list"></i> Plans</a></li>
+        <li><a asp-controller="Memberships" asp-action="Index" class="@IsActive("Memberships")"><i class="bi bi-credit-card"></i> Memberships</a></li>
+        <li><a asp-controller="Admin" asp-action="Users" class="@IsActive("Admin")"><i class="bi bi-person-gear"></i> Users</a></li>
+        <li><a asp-controller="DeleteRequests" asp-action="Index" class="@IsActive("DeleteRequests")"><i class="bi bi-trash3"></i> Delete Requests</a></li>
+      </ul>
+    }
+
+    @if (User.IsInRole("Member"))
+    {
+      <span class="nav-label">My Space</span>
+      <ul class="sidebar-nav">
+        <li><a asp-controller="Members" asp-action="MyProfile" class="@(currentController=="Members"&&currentAction=="MyProfile"?"active":"")"><i class="bi bi-person-circle"></i> My Profile</a></li>
+        <li><a asp-controller="Achievements" asp-action="MyAchievements" class="@(currentController=="Achievements"&&currentAction=="MyAchievements"?"active":"")"><i class="bi bi-award"></i> My Achievements</a></li>
+        <li><a asp-controller="Workouts" asp-action="MyJournal" class="@IsActive("Workouts")"><i class="bi bi-journal-bookmark"></i> Workout Journal</a></li>
+        <li><a asp-controller="SessionsSchedule" asp-action="Index" class="@IsActive("SessionsSchedule")"><i class="bi bi-clock"></i> Sessions Schedule</a></li>
+        <li><a asp-controller="Achievements" asp-action="Leaderboard" class="@(currentController=="Achievements"&&currentAction=="Leaderboard"?"active":"")"><i class="bi bi-trophy"></i> Leaderboard</a></li>
+        <li><a asp-controller="Exercises" asp-action="Index" class="@IsActive("Exercises")"><i class="bi bi-activity"></i> Exercise Library</a></li>
+      </ul>
+    }
+
+    <div class="sidebar-footer">
+      <ul class="sidebar-nav">
+        <li>
+          <form asp-action="Logout" asp-controller="Account" method="post">
+            <button type="submit"><i class="bi bi-box-arrow-left"></i> Logout</button>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="main-wrap">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="bi bi-list"></i></button>
+        <span class="topbar-title">@(ViewData["Title"] ?? "Dashboard")</span>
+      </div>
+
+      @if (announcement != null && announcement.IsActive && !string.IsNullOrEmpty(announcement.Message))
+      {
+        <div class="topbar-announcement">
+          <i class="bi bi-megaphone-fill announcement-icon"></i>
+          <span>@announcement.Message</span>
+        </div>
+      }
+
+      <div class="topbar-user">
+        <div class="user-dot">@userInitial</div>
+        <span>@displayName</span>
+      </div>
     </div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+    <div class="page-content">
+      @if (TempData["SuccessMessage"] != null)
+      {
+        <div class="alert-glass alert-success"><i class="bi bi-check-circle-fill"></i> @TempData["SuccessMessage"]</div>
+      }
+      @if (TempData["WarningMessage"] != null)
+      {
+        <div class="alert-glass alert-danger"><i class="bi bi-exclamation-triangle-fill"></i> @TempData["WarningMessage"]</div>
+      }
+      @if (TempData["ErrorMessage"] != null)
+      {
+        <div class="alert-glass alert-danger"><i class="bi bi-x-circle-fill"></i> @TempData["ErrorMessage"]</div>
+      }
+      @RenderBody()
+    </div>
+  </div>
+</div>
 
-    <script>
-        setTimeout(function () {
-            document.querySelectorAll('.alert:not(#announcementBanner)').forEach(function (alertEl) {
-                var bsAlert = bootstrap.Alert.getOrCreateInstance(alertEl);
-                bsAlert.close();
-            });
-        }, 3000);
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1100;">
+  @if (TempData["NewBadges"] != null)
+  {
+    var newBadgesJson = TempData["NewBadges"]?.ToString();
+    if (!string.IsNullOrEmpty(newBadgesJson))
+    {
+      var newBadges = System.Text.Json.JsonSerializer.Deserialize<List<string>>(newBadgesJson);
+      if (newBadges != null)
+      {
+        foreach (var badgeName in newBadges)
+        {
+          <div class="toast align-items-center text-white border-0 shadow-lg mb-2" role="alert"
+               style="border-radius:12px;background:linear-gradient(135deg,rgba(124,58,237,0.9),rgba(219,39,119,0.9));backdrop-filter:blur(12px);">
+            <div class="d-flex">
+              <div class="toast-body d-flex align-items-center gap-3 py-3 px-4">
+                <div class="fs-1">&#x1F3C6;</div>
+                <div>
+                  <strong class="d-block text-uppercase small opacity-75">Achievement Unlocked!</strong>
+                  <span class="fs-5 fw-bold">@badgeName</span>
+                </div>
+              </div>
+              <button type="button" class="btn-close btn-close-white m-auto me-3" data-bs-dismiss="toast"></button>
+            </div>
+          </div>
+        }
+      }
+    }
+  }
+</div>
 
-        // Initialize achievement toasts
-        document.querySelectorAll('.toast').forEach(function (toastEl) {
-            var toast = new bootstrap.Toast(toastEl, { delay: 6000 });
-            toast.show();
-        });
-
-        // Global Delete Request prompt for Managers
-        $(document).on('submit', '.delete-request-form', function (e) {
-            var form = this;
-            if ($(form).data('confirmed')) {
-                return true;
-            }
-            e.preventDefault();
-
-            Swal.fire({
-                title: 'Delete Request Reason',
-                text: 'Please specify the reason for deleting this item:',
-                input: 'textarea',
-                inputPlaceholder: 'Type your reason here (e.g. member relocated, session cancelled)...',
-                inputAttributes: {
-                    'aria-label': 'Type your reason here'
-                },
-                showCancelButton: true,
-                confirmButtonText: 'Submit Request',
-                cancelButtonText: 'Cancel',
-                confirmButtonColor: '#dc3545',
-                cancelButtonColor: '#6c757d',
-                inputValidator: (value) => {
-                    if (!value || !value.trim()) {
-                        return 'You must provide a reason for the deletion request!';
-                    }
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    var reasonInput = $(form).find('input[name="reason"]');
-                    if (reasonInput.length === 0) {
-                        reasonInput = $('<input>').attr({
-                            type: 'hidden',
-                            name: 'reason'
-                        });
-                        $(form).append(reasonInput);
-                    }
-                    reasonInput.val(result.value);
-                    $(form).data('confirmed', true);
-                    form.submit();
-                }
-            });
-        });
-    </script>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@await RenderSectionAsync("Scripts", required: false)
+<script>
+  setTimeout(function () { document.querySelectorAll('.alert-glass').forEach(function(el){el.remove();}); }, 3000);
+  document.querySelectorAll('.toast').forEach(function(t){ new bootstrap.Toast(t,{delay:6000}).show(); });
+  var sidebar=document.getElementById('sidebar');
+  var overlay=document.getElementById('sidebarOverlay');
+  var toggleBtn=document.getElementById('sidebarToggle');
+  if(toggleBtn){
+    toggleBtn.addEventListener('click',function(){sidebar.classList.toggle('open');overlay.classList.toggle('show');});
+    overlay.addEventListener('click',function(){sidebar.classList.remove('open');overlay.classList.remove('show');});
+  }
+  $(document).on('submit','.delete-request-form',function(e){
+    var form=this;
+    if($(form).data('confirmed')){return true;}
+    e.preventDefault();
+    Swal.fire({title:'Delete Request Reason',text:'Please specify the reason for deleting this item:',input:'textarea',inputPlaceholder:'Type your reason here...',inputAttributes:{'aria-label':'Type your reason here'},showCancelButton:true,confirmButtonText:'Submit Request',cancelButtonText:'Cancel',confirmButtonColor:'#dc3545',cancelButtonColor:'#6c757d',inputValidator:(value)=>{if(!value||!value.trim())return 'You must provide a reason!';}
+    }).then((result)=>{
+      if(result.isConfirmed){
+        var reasonInput=$(form).find('input[name="reason"]');
+        if(reasonInput.length===0)reasonInput=$('<input>').attr({type:'hidden',name:'reason'}).appendTo(form);
+        reasonInput.val(result.value);
+        $(form).data('confirmed',true);
+        form.submit();
+      }
+    });
+  });
+</script>
 </body>
 </html>

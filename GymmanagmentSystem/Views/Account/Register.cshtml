@@ -1,119 +1,359 @@
-﻿@model GymMangment.BLL.ViewModels.AccountViewModels.RegisterViewModel
+@model GymMangment.BLL.ViewModels.AccountViewModels.RegisterViewModel
 @{
-    ViewData["Title"] = "Register";
     Layout = null;
 }
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Register - Gym Management</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
-    <link rel="stylesheet" href="~/css/style.css" asp-append-version="true" />
+    <title>Create Account – Power Fitness</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="~/my-gym-icon.png?v=3" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --accent:   #00f0ff;
+            --purple:   #7c3aed;
+            --pink:     #db2777;
+            --bg:       #07060f;
+            --glass-bg: rgba(255,255,255,0.04);
+            --glass-border: rgba(255,255,255,0.09);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* ─── Animated background ─── */
+        .bg-scene {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-image {
+            position: absolute;
+            inset: 0;
+            background: url('/images/workout1_gym.jpg') center/cover no-repeat;
+            filter: brightness(0.15) saturate(1.4);
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(130px);
+            opacity: 0.45;
+            animation: drift 20s infinite alternate ease-in-out;
+        }
+        .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, var(--purple), transparent 70%); top: -200px; left: -200px; }
+        .orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, var(--pink), transparent 70%); bottom: -150px; right: -150px; animation-delay: -8s; }
+        .orb-3 { width: 400px; height: 400px; background: radial-gradient(circle, #0ea5e9, transparent 70%); top: 40%; right: 10%; animation-delay: -14s; }
+
+        @@keyframes drift {
+            0%   { transform: translate(0,0) scale(1); }
+            50%  { transform: translate(40px,-60px) scale(1.1); }
+            100% { transform: translate(-30px,30px) scale(0.95); }
+        }
+
+        /* ─── Form Card ─── */
+        .register-card-glass {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 640px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border-radius: 28px;
+            padding: 44px 40px;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+            animation: fadeUp 0.7s ease both;
+        }
+
+        @@keyframes fadeUp {
+            from { opacity: 0; transform: translateY(28px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            box-shadow: 0 8px 24px rgba(124,58,237,0.4);
+        }
+        .auth-icon i { font-size: 28px; color: #fff; }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .form-header h2 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+        .form-header p {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.875rem;
+        }
+
+        /* ─── Glass Form Controls ─── */
+        .field-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-control-dark, .form-select-dark {
+            width: 100%;
+            background: rgba(255,255,255,0.06) !important;
+            border: 1px solid rgba(255,255,255,0.12) !important;
+            border-radius: 14px !important;
+            padding: 12px 16px !important;
+            font-size: 0.88rem !important;
+            color: #fff !important;
+            transition: all 0.3s !important;
+            outline: none !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        .form-control-dark::placeholder { color: rgba(255,255,255,0.3); }
+        .form-control-dark:focus, .form-select-dark:focus {
+            border-color: var(--accent) !important;
+            background: rgba(0,240,255,0.05) !important;
+            box-shadow: 0 0 0 3px rgba(0,240,255,0.12) !important;
+        }
+        .form-select-dark option {
+            background: #0f0c1e !important;
+            color: #ffffff !important;
+        }
+        .form-control-dark[type="file"]::file-selector-button {
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            border: none;
+            color: #ffffff;
+            font-size: 0.78rem;
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 6px 12px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .text-danger { font-size: 0.75rem; color: #f87171 !important; margin-top: 4px; display: block; }
+
+        .info-callout {
+            background: rgba(0,240,255,0.08);
+            border: 1px solid rgba(0,240,255,0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--accent);
+            font-size: 0.82rem;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ─── Primary Action Button (Matches standard primary style / Book Spot / Login) ─── */
+        .btn-register {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--pink) 100%);
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 8px 24px rgba(124,58,237,0.4);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+        .btn-register::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(124,58,237,0.55);
+            color: #ffffff;
+        }
+        .btn-register:hover::before { opacity: 1; }
+        .btn-register:active { transform: translateY(0); }
+
+        .login-row {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.45);
+        }
+        .login-row a {
+            color: var(--accent);
+            font-weight: 600;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .login-row a:hover { opacity: 0.8; }
+
+        /* ─── Responsive ─── */
+        @Html.Raw("@media") (max-width: 768px) {
+            .register-card-glass { padding: 32px 24px; border-radius: 20px; }
+        }
+        @Html.Raw("@media") (max-width: 480px) {
+            body { padding: 16px 12px; }
+            .register-card-glass { padding: 24px 16px; border-radius: 18px; }
+            .form-header h2 { font-size: 1.5rem; }
+        }
+    </style>
 </head>
-<body class="bg-light">
+<body>
+    <!-- Animated background -->
+    <div class="bg-scene">
+        <div class="bg-image"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
 
-    <div class="container">
-        <div class="row justify-content-center align-items-center" style="min-height: 100vh;">
-            <div class="col-md-5">
-                <div class="card shadow-lg border-0">
-                    <div class="card-header bg-primary-color text-white text-center py-4">
-                        <i class="bi bi-person-plus display-5 mb-2"></i>
-                        <h3 class="mb-0">Create Account</h3>
-                        <p class="mb-0 opacity-75">Register for Gym Management</p>
-                    </div>
-                    <div class="card-body p-4">
-                        <form asp-action="Register" asp-controller="Account" method="post" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label asp-for="FullName" class="form-label fw-semibold">Full Name</label>
-                                <input asp-for="FullName" class="form-control" placeholder="Enter your full name" />
-                                <span asp-validation-for="FullName" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label asp-for="Email" class="form-label fw-semibold">Email Address</label>
-                                <input asp-for="Email" class="form-control" placeholder="Enter your email" />
-                                <span asp-validation-for="Email" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label asp-for="Password" class="form-label fw-semibold">Password</label>
-                                <input asp-for="Password" class="form-control" placeholder="Min 8 characters" />
-                                <span asp-validation-for="Password" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label asp-for="ConfirmPassword" class="form-label fw-semibold">Confirm Password</label>
-                                <input asp-for="ConfirmPassword" class="form-control" placeholder="Repeat your password" />
-                                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label asp-for="Phone" class="form-label fw-semibold">Phone Number</label>
-                                <input asp-for="Phone" class="form-control" placeholder="01XXXXXXXXX" />
-                                <span asp-validation-for="Phone" class="text-danger"></span>
-                            </div>
+    <div class="register-card-glass">
+        <div class="form-header">
+            <div class="auth-icon">
+                <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <h2>Create Account</h2>
+            <p>Join Power Fitness today and transform your athletic journey</p>
+        </div>
 
-                            <div class="mb-3">
-                                <label asp-for="DateOfBirth" class="form-label fw-semibold">Date of Birth</label>
-                                <input asp-for="DateOfBirth" type="date" class="form-control" />
-                                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
-                            </div>
+        <form asp-action="Register" asp-controller="Account" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
 
-                            <div class="mb-3">
-                                <label asp-for="Gender" class="form-label fw-semibold">Gender</label>
-                                <select asp-for="Gender" asp-items="Html.GetEnumSelectList<GymManagment.DAL.Models.Enum.Gender>()" class="form-select">
-                                    <option value="">-- Select Gender --</option>
-                                </select>
-                                <span asp-validation-for="Gender" class="text-danger"></span>
-                            </div>
-                            <div class="mb-3">
-                                <label asp-for="Photo" class="form-label fw-semibold">Profile Photo</label>
-                                <input asp-for="Photo" type="file" class="form-control" accept=".jpg,.jpeg,.png,.webp" />
-                                <small class="text-muted">Required. Max 2MB. JPG, PNG or WebP only.</small>
-                                <span asp-validation-for="Photo" class="text-danger"></span>
-                            </div>
+            <!-- Full Name -->
+            <div class="mb-3">
+                <label asp-for="FullName" class="field-label">Full Name <span class="text-danger">*</span></label>
+                <input asp-for="FullName" class="form-control-dark" placeholder="e.g. Alex Rivera" autocomplete="name" />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
 
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <label asp-for="BuildingNumber" class="form-label fw-semibold">Building No.</label>
-                                    <input asp-for="BuildingNumber" class="form-control" />
-                                    <span asp-validation-for="BuildingNumber" class="text-danger"></span>
-                                </div>
-                                <div class="col-6">
-                                    <label asp-for="City" class="form-label fw-semibold">City</label>
-                                    <input asp-for="City" class="form-control" />
-                                    <span asp-validation-for="City" class="text-danger"></span>
-                                </div>
-                            </div>
+            <!-- Email Address -->
+            <div class="mb-3">
+                <label asp-for="Email" class="field-label">Email Address <span class="text-danger">*</span></label>
+                <input asp-for="Email" type="email" class="form-control-dark" placeholder="alex@example.com" autocomplete="email" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
 
-                            <div class="mb-3 mt-2">
-                                <label asp-for="Street" class="form-label fw-semibold">Street</label>
-                                <input asp-for="Street" class="form-control" />
-                                <span asp-validation-for="Street" class="text-danger"></span>
-                            </div>
-
-                            <div class="alert alert-info py-2">
-                                <i class="bi bi-info-circle me-2"></i>
-                                <small>You will automatically get Member access after registration.</small>
-                            </div>
-
-                            <button type="submit" class="btn btn-fill w-100 py-2">
-                                <i class="bi bi-person-check me-2"></i>Create Account
-                            </button>
-                        </form>
-
-                        <hr class="my-4" />
-                        <p class="text-center text-muted mb-0">
-                            Already have an account?
-                            <a asp-action="Login" asp-controller="Account" class="text-primary-color fw-bold">Sign In</a>
-                        </p>
-                    </div>
+            <!-- Passwords Row -->
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                    <label asp-for="Password" class="field-label">Password <span class="text-danger">*</span></label>
+                    <input asp-for="Password" type="password" class="form-control-dark" placeholder="Min 8 characters" autocomplete="new-password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="col-12 col-md-6">
+                    <label asp-for="ConfirmPassword" class="field-label">Confirm Password <span class="text-danger">*</span></label>
+                    <input asp-for="ConfirmPassword" type="password" class="form-control-dark" placeholder="Repeat password" autocomplete="new-password" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                 </div>
             </div>
+
+            <!-- Contact & DOB Row -->
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                    <label asp-for="Phone" class="field-label">Phone Number <span class="text-danger">*</span></label>
+                    <input asp-for="Phone" type="tel" class="form-control-dark" placeholder="01012345678" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+                <div class="col-12 col-md-6">
+                    <label asp-for="DateOfBirth" class="field-label">Date of Birth <span class="text-danger">*</span></label>
+                    <input asp-for="DateOfBirth" type="date" class="form-control-dark" />
+                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Gender & Photo Row -->
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-md-6">
+                    <label asp-for="Gender" class="field-label">Gender <span class="text-danger">*</span></label>
+                    <select asp-for="Gender" asp-items="Html.GetEnumSelectList<GymManagment.DAL.Models.Enum.Gender>()" class="form-select-dark">
+                        <option value="">-- Select Gender --</option>
+                    </select>
+                    <span asp-validation-for="Gender" class="text-danger"></span>
+                </div>
+                <div class="col-12 col-md-6">
+                    <label asp-for="Photo" class="field-label">Profile Photo <span class="text-danger">*</span></label>
+                    <input asp-for="Photo" type="file" class="form-control-dark" accept=".jpg,.jpeg,.png,.webp" />
+                    <small class="text-white-50" style="font-size: 10px;">Required. Max 2MB. JPG, PNG, WebP.</small>
+                    <span asp-validation-for="Photo" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Address Row -->
+            <div class="row g-2 mb-4">
+                <div class="col-12 col-md-4">
+                    <label asp-for="BuildingNumber" class="field-label">Building No. <span class="text-danger">*</span></label>
+                    <input asp-for="BuildingNumber" class="form-control-dark" placeholder="12" />
+                    <span asp-validation-for="BuildingNumber" class="text-danger"></span>
+                </div>
+                <div class="col-12 col-md-4">
+                    <label asp-for="City" class="field-label">City <span class="text-danger">*</span></label>
+                    <input asp-for="City" class="form-control-dark" placeholder="Cairo" />
+                    <span asp-validation-for="City" class="text-danger"></span>
+                </div>
+                <div class="col-12 col-md-4">
+                    <label asp-for="Street" class="field-label">Street <span class="text-danger">*</span></label>
+                    <input asp-for="Street" class="form-control-dark" placeholder="Main St" />
+                    <span asp-validation-for="Street" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="info-callout">
+                <i class="bi bi-shield-check fs-5"></i>
+                <span>You will automatically get Member athlete access after completing registration.</span>
+            </div>
+
+            <button type="submit" class="btn-register" id="registerBtn">
+                <i class="bi bi-person-check-fill me-2"></i>Create Account
+            </button>
+        </form>
+
+        <div class="login-row">
+            Already have an account? <a asp-controller="Account" asp-action="Login">Sign In</a>
         </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
 </body>
 </html>

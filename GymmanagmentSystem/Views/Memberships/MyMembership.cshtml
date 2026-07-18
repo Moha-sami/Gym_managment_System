@@ -1,51 +1,118 @@
-﻿@model GymMangment.BLL.ViewModels.MembershipViewModels.MyMembershipViewModel
+@model GymMangment.BLL.ViewModels.MembershipViewModels.MyMembershipViewModel
 @{
     ViewData["Title"] = "My Membership";
 }
 
-<div class="container mt-5">
+<style>
+    .membership-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(20px);
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .membership-header {
+        background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(219,39,119,0.2));
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding: 40px 24px;
+        text-align: center;
+    }
+    .price-box {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 20px;
+        text-align: center;
+        margin-bottom: 24px;
+    }
+    .info-stat-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 16px;
+        padding: 16px;
+        text-align: center;
+    }
+    .status-badge-active {
+        background: rgba(34, 197, 94, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        font-size: 0.8rem;
+        padding: 5px 14px;
+        border-radius: 20px;
+    }
+    .status-badge-expired {
+        background: rgba(248, 113, 113, 0.15);
+        color: #fca5a5;
+        border: 1px solid rgba(248, 113, 113, 0.3);
+        font-size: 0.8rem;
+        padding: 5px 14px;
+        border-radius: 20px;
+    }
+</style>
+
+<div class="container py-4">
+    <header class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2 text-white">
+        <div>
+            <h3 class="text-neon mb-0 text-uppercase fw-bold" style="letter-spacing: 1px;">My Membership</h3>
+            <p class="text-white-50 mb-0">View your active subscription details and plan timeline</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-controller="Members" asp-action="MyProfile" class="btn-glow-pill">
+                <i class="bi bi-person-fill me-1"></i>My Profile
+            </a>
+            <a asp-controller="Analytics" asp-action="MyProgress" class="btn-glow-pill">
+                <i class="bi bi-graph-up-arrow me-1"></i>My Analytics
+            </a>
+        </div>
+    </header>
+
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card shadow-lg border-0">
-                <div class="card-header @(Model.IsActive ? "bg-primary-color" : "bg-secondary") text-white text-center py-5">
-                    <i class="bi bi-card-checklist display-4 mb-3"></i>
-                    <h2 class="mb-0">@Model.PlanName</h2>
-                    <span class="badge bg-light text-dark mt-2">@(Model.IsActive ? "Active" : "Expired")</span>
+        <div class="col-md-7 col-lg-6">
+            <div class="membership-card">
+                <div class="membership-header">
+                    <div class="mx-auto mb-3" style="width:70px;height:70px;background:linear-gradient(135deg,#7c3aed,#db2777);box-shadow:0 8px 24px rgba(124,58,237,0.4);border-radius:50%;display:flex !important;align-items:center;justify-content:center;">
+                        <i class="bi bi-card-checklist fs-2 text-white" style="font-size:2rem;display:inline-block;"></i>
+                    </div>
+                    <h2 class="fw-bold text-white mb-2">@Model.PlanName</h2>
+                    <span class="@(Model.IsActive ? "status-badge-active" : "status-badge-expired")">
+                        @(Model.IsActive ? "Active Plan" : "Expired")
+                    </span>
                 </div>
                 <div class="card-body p-4">
-                    <div class="text-center mb-4 py-3 bg-light rounded">
-                        <div class="display-4 fw-bold text-primary-color">@Model.Price.ToString("0")</div>
-                        <small class="text-muted fs-5">EGP</small>
+                    <div class="price-box">
+                        <div class="display-4 fw-extrabold text-neon">@Model.Price.ToString("0")</div>
+                        <small class="text-white-50 text-uppercase fw-semibold" style="letter-spacing:1px;font-size:0.75rem;">EGP Membership Rate</small>
                     </div>
 
-                    <p class="text-center text-muted mb-4">@Model.PlanDescription</p>
+                    <p class="text-center text-white-50 mb-4 small" style="line-height:1.6;">@Model.PlanDescription</p>
 
                     <div class="row g-3">
                         <div class="col-6">
-                            <div class="p-3 bg-light rounded text-center">
-                                <small class="text-muted d-block">Start Date</small>
-                                <strong>@Model.StartDate.ToString("MMM dd, yyyy")</strong>
+                            <div class="info-stat-card">
+                                <small class="text-white-50 d-block text-uppercase fw-semibold mb-1" style="font-size:0.68rem;letter-spacing:1px;">Start Date</small>
+                                <strong class="text-white">@Model.StartDate.ToString("MMM dd, yyyy")</strong>
                             </div>
                         </div>
                         <div class="col-6">
-                            <div class="p-3 bg-light rounded text-center">
-                                <small class="text-muted d-block">End Date</small>
-                                <strong>@Model.EndDate.ToString("MMM dd, yyyy")</strong>
+                            <div class="info-stat-card">
+                                <small class="text-white-50 d-block text-uppercase fw-semibold mb-1" style="font-size:0.68rem;letter-spacing:1px;">End Date</small>
+                                <strong class="text-white">@Model.EndDate.ToString("MMM dd, yyyy")</strong>
                             </div>
                         </div>
                         <div class="col-12">
-                            <div class="p-3 bg-light rounded text-center">
-                                <small class="text-muted d-block">Days Remaining</small>
-                                <strong class="@(Model.DaysRemaining <= 3 ? "text-danger" : "text-primary-color") fs-4">
+                            <div class="info-stat-card">
+                                <small class="text-white-50 d-block text-uppercase fw-semibold mb-1" style="font-size:0.68rem;letter-spacing:1px;">Days Remaining</small>
+                                <strong class="@(Model.DaysRemaining <= 3 ? "text-danger" : "text-neon") fs-3 fw-bold">
                                     @Model.DaysRemaining days
                                 </strong>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="card-footer bg-white border-0 p-4">
-                    <a asp-controller="Plans" asp-action="Index" class="btn btn-fill w-100">
-                        <i class="bi bi-arrow-repeat me-1"></i>View Other Plans
+                <div class="card-footer bg-transparent border-top border-white-10 p-4">
+                    <a asp-controller="Plans" asp-action="Index" class="btn btn-neon w-100 rounded-pill py-2.5">
+                        <i class="bi bi-arrow-repeat me-2"></i>Explore Other Plans
                     </a>
                 </div>
             </div>

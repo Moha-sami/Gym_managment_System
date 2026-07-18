@@ -1,93 +1,190 @@
-﻿@using GymMangment.BLL.ViewModels.PlansViewModels
+@using GymMangment.BLL.ViewModels.PlansViewModels
 @model IEnumerable<PlanViewModel>
 @{
-    ViewData["Title"] = "Plans";
+    ViewData["Title"] = "Membership Plans";
 }
 
-<div class="container">
-    <header class="d-flex justify-content-between mt-5 mb-4 align-items-center">
-        <div>
-            <h2 class="text-primary-color mb-0">Membership Plans</h2>
-            <p class="text-muted">Manage your gym membership packages</p>
-        </div>
-    </header>
+<style>
+/* ── Page Header ── */
+.plans-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:12px; }
+.page-heading { font-size:1.4rem; font-weight:800; color:#fff; letter-spacing:-0.5px; display:flex; align-items:center; gap:10px; margin:0; }
+.page-heading i { color:#ffd700; }
+.count-badge { background: rgba(0, 240, 255, 0.15); border: 1px solid rgba(0, 240, 255, 0.35); color: #00f0ff; font-size: 0.68rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; letter-spacing: 1px; text-transform: uppercase; box-shadow: 0 0 10px rgba(0, 240, 255, 0.15); }
 
-    @if (Model.Any())
-    {
-        <div class="row g-4">
-            @foreach (var plan in Model)
-            {
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm border-0 plan-card">
-                        <div class="card-header text-white text-center py-4 @(plan.IsActive ? "bg-primary-color" : "bg-secondary")">
-                            <h4 class="mb-0">@plan.Name</h4>
+/* ── Accent Plan Cards ── */
+.plan-glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 28px;
+    padding: 32px 24px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Color Accent Themes */
+.plan-accent-gold {
+    border-top: 4px solid #ffd700 !important;
+    border-color: rgba(255, 215, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.1);
+}
+.plan-accent-gold:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 215, 0, 0.6);
+    box-shadow: 0 16px 40px rgba(255, 215, 0, 0.25);
+}
+
+.plan-accent-cyan {
+    border-top: 4px solid #00f0ff !important;
+    border-color: rgba(0, 240, 255, 0.25);
+    box-shadow: 0 10px 30px rgba(0, 240, 255, 0.08);
+}
+.plan-accent-cyan:hover {
+    transform: translateY(-6px);
+    border-color: rgba(0, 240, 255, 0.5);
+    box-shadow: 0 16px 40px rgba(0, 240, 255, 0.2);
+}
+
+.plan-accent-pink {
+    border-top: 4px solid #db2777 !important;
+    border-color: rgba(219, 39, 119, 0.25);
+    box-shadow: 0 10px 30px rgba(219, 39, 119, 0.08);
+}
+.plan-accent-pink:hover {
+    transform: translateY(-6px);
+    border-color: rgba(219, 39, 119, 0.5);
+    box-shadow: 0 16px 40px rgba(219, 39, 119, 0.2);
+}
+
+.plan-accent-purple {
+    border-top: 4px solid #7c3aed !important;
+    border-color: rgba(124, 58, 237, 0.25);
+    box-shadow: 0 10px 30px rgba(124, 58, 237, 0.08);
+}
+.plan-accent-purple:hover {
+    transform: translateY(-6px);
+    border-color: rgba(124, 58, 237, 0.5);
+    box-shadow: 0 16px 40px rgba(124, 58, 237, 0.2);
+}
+
+.plan-badge-status {
+    position: absolute; top: 20px; right: 20px;
+    font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    padding: 4px 12px; border-radius: 20px;
+}
+.status-active { background: rgba(34, 197, 94, 0.15); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+.status-inactive { background: rgba(248, 113, 113, 0.15); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.3); }
+
+.plan-price-val { font-size: 2.6rem; font-weight: 800; color: #ffffff; line-height: 1; }
+.plan-price-curr { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin-left: 4px; }
+
+.empty-state { text-align:center; padding:60px 24px; color:rgba(255,255,255,0.3); }
+.empty-state i { font-size:3rem; margin-bottom:12px; display:block; }
+</style>
+
+<div class="plans-header">
+    <h1 class="page-heading">
+        <i class="bi bi-award-fill"></i>
+        Membership Packages
+        <span class="count-badge">@(Model?.Count() ?? 0) plans</span>
+    </h1>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <div class="row g-4">
+        @foreach (var plan in Model)
+        {
+            var pLower = (plan.Name ?? "").ToLower();
+            var accentClass = pLower switch {
+                var p when p.Contains("basic") || p.Contains("silver") || p.Contains("starter") => "plan-accent-cyan",
+                var p when p.Contains("premium") || p.Contains("gold") || p.Contains("vip") => "plan-accent-gold",
+                var p when p.Contains("annual") || p.Contains("platinum") || p.Contains("pro") => "plan-accent-pink",
+                _ => "plan-accent-purple"
+            };
+
+            var accentColor = pLower switch {
+                var p when p.Contains("basic") || p.Contains("silver") || p.Contains("starter") => "#00f0ff",
+                var p when p.Contains("premium") || p.Contains("gold") || p.Contains("vip") => "#ffd700",
+                var p when p.Contains("annual") || p.Contains("platinum") || p.Contains("pro") => "#f472b6",
+                _ => "#a78bfa"
+            };
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="plan-glass-card @accentClass">
+                    <span class="plan-badge-status @(plan.IsActive ? "status-active" : "status-inactive")">
+                        @(plan.IsActive ? "Active" : "Inactive")
+                    </span>
+
+                    <div class="mb-3">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <span class="badge rounded-circle p-2" style="background:@(accentColor)22; border:1px solid @(accentColor)55;">
+                                <i class="bi bi-lightning-charge-fill" style="color:@accentColor;"></i>
+                            </span>
+                            <h3 class="fw-bold text-white fs-4 mb-0">@plan.Name</h3>
                         </div>
-                        <div class="card-body d-flex flex-column">
-                            <div class="text-center mb-4">
-                                <div class="display-4 fw-bold text-primary-color">@plan.Price</div>
-                                <small class="text-muted">EGP</small>
+                        <span class="text-white-50 small"><i class="bi bi-clock me-1" style="color:@accentColor;"></i>@plan.DurationInDays Days Package</span>
+                    </div>
+
+                    <div class="my-3 py-3 border-top border-bottom border-white-10 text-center" style="background:rgba(255,255,255,0.02);border-radius:16px;">
+                        <span class="plan-price-val" style="text-shadow: 0 0 15px @(accentColor)44;">@plan.Price</span>
+                        <span class="plan-price-curr" style="color:@accentColor;">EGP</span>
+                    </div>
+
+                    <p class="text-white-50 small mb-4 flex-grow-1" style="line-height:1.5;">
+                        @plan.Description
+                    </p>
+
+                    <div class="d-flex flex-column gap-2 mt-auto">
+                        <a asp-controller="Plans" asp-action="Details" asp-route-id="@plan.Id" class="btn-glow-pill justify-content-center text-center">
+                            <i class="bi bi-eye"></i> View Package Specs
+                        </a>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <div class="d-flex gap-2">
+                                <a asp-controller="Plans" asp-action="EditPlan" asp-route-id="@plan.Id" class="btn-glow-pill flex-fill justify-content-center">
+                                    <i class="bi bi-pencil" style="color:#a78bfa !important;"></i> Edit
+                                </a>
+                                <form asp-controller="Plans" asp-action="ToggleActivation" asp-route-id="@plan.Id" method="post" class="flex-fill">
+                                    <button type="submit" class="btn-glow-pill w-100 justify-content-center" style="border-color:@(plan.IsActive ? "rgba(248,113,113,0.3)" : "rgba(34,197,94,0.3)") !important;">
+                                        @if (plan.IsActive)
+                                        {
+                                            <i class="bi bi-x-circle" style="color:#f87171 !important;"></i> <span style="color:#f87171;">Deactivate</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-check-circle" style="color:#4ade80 !important;"></i> <span style="color:#4ade80;">Activate</span>
+                                        }
+                                    </button>
+                                </form>
                             </div>
-
-                            <div class="mb-3">
-                                <p class="text-muted mb-2">
-                                    <i class="bi bi-calendar-check text-primary-color me-2"></i>
-                                    <strong>Duration:</strong> @plan.DurationInDays
-                                </p>
-                                <p class="text-muted mb-3">
-                                    <i class="bi bi-file-text text-primary-color me-2"></i>
-                                    <strong>Description:</strong>
-                                </p>
-                                <p class="small">@plan.Description</p>
-                            </div>
-
-                            <div class="mt-auto">
-                                <div class="d-grid gap-2">
-
-                                    <a asp-controller="Plans" asp-action="Details" asp-route-id="@plan.Id" class="btn btn-outline btn-sm">
-                                        <i class="bi bi-eye me-1"></i>View Details
-                                    </a>
-
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <div class="d-flex gap-2">
-                                            <a asp-controller="Plans" asp-action="EditPlan" asp-route-id="@plan.Id" class="btn btn-outline btn-sm flex-fill">
-                                                <i class="bi bi-pencil me-1"></i>Edit
-                                            </a>
-                                            <form asp-controller="Plans" asp-action="ToggleActivation" asp-route-id="@plan.Id" method="post" class="flex-fill">
-                                                <button type="submit" class="btn btn-outline btn-sm w-100 @(plan.IsActive ? "text-danger" : "text-success")">
-                                                    @if (plan.IsActive)
-                                                    {
-                                                        <i class="bi bi-x-circle me-1"></i> @:Deactivate
-                                                    }
-                                                    else
-                                                    {
-                                                        <i class="bi bi-check-circle me-1"></i> @:Activate
-                                                    }
-                                                </button>
-                                            </form>
-                                        </div>
-                                    }
-                                    else if (User.IsInRole("Member") && plan.IsActive)
-                                    {
-                                        <form asp-controller="Memberships" asp-action="UpgradePlan" asp-route-planId="@plan.Id" method="post">
-                                            <button type="submit" class="btn btn-fill btn-sm w-100">
-                                                <i class="bi bi-arrow-up-circle me-1"></i>Switch to this Plan
-                                            </button>
-                                        </form>
-                                    }
-                                </div>
-                            </div>
-                        </div>
+                        }
+                        else if (User.IsInRole("Member") && plan.IsActive)
+                        {
+                            <form asp-controller="Memberships" asp-action="UpgradePlan" asp-route-planId="@plan.Id" method="post">
+                                <button type="submit" class="btn btn-neon w-100 rounded-pill py-2">
+                                    <i class="bi bi-lightning-charge-fill me-1"></i> Switch to this Package
+                                </button>
+                            </form>
+                        }
                     </div>
                 </div>
-            }
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="glass-table-wrap">
+        <div class="empty-state">
+            <i class="bi bi-inbox"></i>
+            <h4>No Membership Packages Available</h4>
         </div>
-    }
-    else
-    {
-        <div class="text-center py-5">
-            <i class="bi bi-inbox display-1 text-muted"></i>
-            <h4 class="mt-3 text-muted">No Plans Available</h4>
-        </div>
-    }
-</div>
+    </div>
+}
