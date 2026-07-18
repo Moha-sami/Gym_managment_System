@@ -5,98 +5,297 @@
     ViewData["Title"] = "Trainers";
 }
 
-<div class="container">
-    <header class="d-flex flex-column flex-sm-row justify-content-between mt-5 mb-4 align-items-sm-center gap-3 text-center text-sm-start">
-        <div>
-            <h2 class="text-primary-color mb-0">Our Trainers</h2>
-            <p class="text-muted mb-0">Professional fitness instructors</p>
-        </div>
-        <a asp-controller="Trainers" asp-action="Create" class="btn btn-fill fw-medium rounded-pill px-4 py-3">
-            <i class="bi bi-plus-lg me-2"></i>Add Trainer
-        </a>
-    </header>
+<style>
+/* ── Page Header ── */
+.trainers-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
+.page-heading { font-size:1.4rem; font-weight:800; color:#fff; letter-spacing:-0.5px; display:flex; align-items:center; gap:10px; margin:0; }
+.page-heading i { color:#00f0ff; }
+.count-badge { background:rgba(0,240,255,0.1); border:1px solid rgba(0,240,255,0.2); color:#00f0ff; font-size:0.7rem; font-weight:600; padding:3px 10px; border-radius:20px; letter-spacing:0.5px; }
+.btn-add { display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,#7c3aed,#db2777); color:#fff; font-size:0.85rem; font-weight:600; padding:10px 20px; border-radius:12px; text-decoration:none; border:none; transition:all 0.3s; box-shadow:0 4px 16px rgba(124,58,237,0.35); }
+.btn-add:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(124,58,237,0.5); color:#fff; }
 
-    @if (Model != null && Model.Any())
-    {
-        <div class="table-responsive" style="overflow: visible;">
-            <table class="table table-borderless responsive-card-table">
-                <thead>
-                    <tr>
-                        <th><span>Name</span></th>
-                        <th><span>Email</span></th>
-                        <th><span>Phone</span></th>
-                        <th><span>Specialization</span></th>
-                        <th><span>Action</span></th>
-                    </tr>
-                </thead>
+/* ── Search Bar ── */
+.search-wrap { position:relative; margin-bottom:20px; }
+.search-wrap i { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:rgba(255,255,255,0.3); font-size:14px; }
+#trainerSearch { width:100%; max-width:340px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:10px 14px 10px 38px; color:#fff; font-size:0.85rem; outline:none; transition:border-color 0.3s; }
+#trainerSearch::placeholder { color:rgba(255,255,255,0.3); }
+#trainerSearch:focus { border-color:#00f0ff; }
 
-                <tbody>
-                    @foreach (var trainer in Model)
-                    {
-                        <tr>
-                            <td data-label="Name"><span class="fw-bold">@trainer.Name</span></td>
-                            <td data-label="Email"><span>@trainer.Email</span></td>
-                            <td data-label="Phone"><span>@trainer.Phone</span></td>
-                            <td data-label="Specialization">
-                                <span class="badge bg-primary-color">@trainer.Specialty</span>
-                            </td>
-                            <td class="action position-relative" data-label="Action">
-                                <div class="dropdown">
-                                    <button class="btn btn-link p-0 border-0" type="button" id="dropdownMenuButton-@trainer.Id" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <img src="~/images/action dots.jpg" alt="action icon" />
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="dropdownMenuButton-@trainer.Id">
-                                        <li>
-                                            <a asp-controller="Trainers" asp-action="Details" asp-route-id="@trainer.Id" class="dropdown-item d-flex align-items-center gap-3">
-                                                <i class="bi bi-eye text-primary-color"></i>
-                                                <span>View Details</span>
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <a asp-controller="Trainers" asp-action="EditTrainer" asp-route-id="@trainer.Id" class="dropdown-item d-flex align-items-center gap-3">
-                                                <i class="bi bi-pencil text-primary-color"></i>
-                                                <span>Edit Details</span>
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        @if (User.IsInRole("Admin"))
-                                        {
-                                            <li>
-                                                <a asp-controller="Trainers" asp-action="Delete" asp-route-id="@trainer.Id" class="dropdown-item d-flex align-items-center gap-3 text-danger">
-                                                    <i class="bi bi-trash"></i>
-                                                    <span>Delete</span>
-                                                </a>
-                                            </li>
-                                        }
-                                        else if (User.IsInRole("Manager"))
-                                        {
-                                            <li>
-                                                <form asp-controller="DeleteRequests" asp-action="SubmitRequest" method="post" class="delete-request-form">
-                                                    <input type="hidden" name="targetType" value="@DeleteTargetType.Trainer" />
-                                                    <input type="hidden" name="targetId" value="@trainer.Id" />
-                                                    <button type="submit" class="dropdown-item d-flex align-items-center gap-3 text-danger">
-                                                        <i class="bi bi-send"></i>
-                                                        <span>Request Delete</span>
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
-    else
-    {
-        <div class="text-center py-5">
-            <i class="bi bi-person-workspace display-1 text-muted"></i>
-            <h4 class="mt-3 text-muted">No Trainers Available</h4>
-            <p class="text-muted">Add your first trainer to get started</p>
-        </div>
-    }
+/* ── Specialty Chips ── */
+.spec-chip { display:inline-flex; align-items:center; gap:5px; font-size:0.72rem; font-weight:700; padding:4px 12px; border-radius:20px; text-transform:capitalize; }
+.spec-cyan    { background:rgba(0,240,255,0.12); border:1px solid rgba(0,240,255,0.35); color:#00f0ff; }
+.spec-gold    { background:rgba(255,215,0,0.15); border:1px solid rgba(255,215,0,0.35); color:#ffd700; }
+.spec-pink    { background:rgba(219,39,119,0.15); border:1px solid rgba(219,39,119,0.35); color:#f472b6; }
+.spec-purple  { background:rgba(124,58,237,0.15); border:1px solid rgba(124,58,237,0.35); color:#a78bfa; }
+
+/* ── Desktop Glass Table ── */
+.glass-table-wrap { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:20px; overflow:hidden; }
+.glass-table { width:100%; border-collapse:collapse; }
+.glass-table thead tr { border-bottom:1px solid rgba(255,255,255,0.07); }
+.glass-table thead th { padding:14px 16px; font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:1.2px; color:rgba(255,255,255,0.35); text-align:left; white-space:nowrap; }
+.glass-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.04); transition:background 0.2s; }
+.glass-table tbody tr:last-child { border-bottom:none; }
+.glass-table tbody tr:hover { background:rgba(255,255,255,0.04); }
+.glass-table tbody td { padding:14px 16px; vertical-align:middle; font-size:0.85rem; color:rgba(255,255,255,0.8); }
+.trainer-cell { display:flex; align-items:center; gap:12px; }
+.avatar-fallback { width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg,#00f0ff,#7c3aed); display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700; color:#fff; flex-shrink:0; }
+.trainer-name { font-weight:600; color:#fff; font-size:0.88rem; }
+.trainer-email { font-size:0.73rem; color:rgba(255,255,255,0.4); margin-top:1px; }
+
+.action-btn { background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:rgba(255,255,255,0.6); padding:6px 10px; cursor:pointer; transition:all 0.2s; font-size:1rem; }
+.action-btn:hover { background:rgba(255,255,255,0.12); color:#fff; }
+
+.dropdown-menu-dark-glass { background:rgba(15,12,30,0.95) !important; backdrop-filter:blur(20px) !important; border:1px solid rgba(255,255,255,0.1) !important; border-radius:14px !important; padding:6px !important; min-width:200px !important; box-shadow:0 16px 40px rgba(0,0,0,0.5) !important; }
+.dropdown-menu-dark-glass .dropdown-item { border-radius:8px !important; padding:9px 14px !important; color:rgba(255,255,255,0.7) !important; font-size:0.82rem !important; display:flex; align-items:center; gap:8px; transition:background 0.2s; }
+.dropdown-menu-dark-glass .dropdown-item:hover { background:rgba(255,255,255,0.08) !important; color:#fff !important; }
+.dropdown-menu-dark-glass .dropdown-item.text-danger { color:#f87171 !important; }
+.dropdown-menu-dark-glass .dropdown-divider { border-color:rgba(255,255,255,0.08) !important; margin:4px 0 !important; }
+
+/* ── Mobile Trainer Cards Grid ── */
+.mobile-cards-grid { display:none; }
+.trainer-mobile-card {
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.08);
+    backdrop-filter:blur(16px);
+    border-radius:20px;
+    padding:20px;
+    margin-bottom:14px;
+    position: relative;
+    z-index: 1;
+}
+.trainer-mobile-card:has(.dropdown-menu.show) {
+    z-index: 15 !important;
+}
+.mobile-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.mobile-card-info { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:4px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.06); }
+.mobile-info-label { font-size:0.62rem; text-transform:uppercase; letter-spacing:1px; color:rgba(255,255,255,0.35); margin-bottom:2px; display:block; }
+.mobile-info-val { font-size:0.82rem; color:rgba(255,255,255,0.8); }
+.mobile-card-footer { display:flex; justify-content:flex-end; padding-top:12px; margin-top:12px; border-top:1px solid rgba(255,255,255,0.06); }
+.btn-card-action { display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); color:rgba(255,255,255,0.8); font-size:1.1rem; border-radius:50%; cursor:pointer; transition:all 0.3s cubic-bezier(0.16,1,0.3,1); box-shadow:0 4px 10px rgba(0,0,0,0.15); }
+.btn-card-action:hover { background:linear-gradient(135deg,rgba(124,58,237,0.25),rgba(219,39,119,0.15)); border-color:rgba(124,58,237,0.35); color:#fff; box-shadow:0 0 12px rgba(124,58,237,0.25); transform:translateY(-2px); }
+.btn-card-action:active { transform:translateY(0); }
+
+.empty-state { text-align:center; padding:60px 24px; color:rgba(255,255,255,0.3); }
+.empty-state i { font-size:3rem; margin-bottom:12px; display:block; }
+.empty-state h4 { font-size:1rem; font-weight:600; color:rgba(255,255,255,0.5); }
+.empty-state p { font-size:0.82rem; margin-top:4px; }
+
+/* ── Responsive View Switcher ── */
+@@media (max-width:768px) {
+    #trainerSearch { max-width:100%; }
+    .glass-table-wrap { display:none; }
+    .mobile-cards-grid { display:block; }
+}
+</style>
+
+<div class="trainers-header">
+    <h1 class="page-heading">
+        <i class="bi bi-person-badge-fill"></i>
+        Our Trainers
+        <span class="count-badge">@(Model?.Count() ?? 0) instructors</span>
+    </h1>
+    <a asp-controller="Trainers" asp-action="Create" class="btn-add">
+        <i class="bi bi-plus-lg me-1"></i> Add Trainer
+    </a>
 </div>
+
+<div class="search-wrap">
+    <i class="bi bi-search"></i>
+    <input type="text" id="trainerSearch" placeholder="Search trainers by name, email or specialty..." autocomplete="off" />
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <!-- Desktop Table View -->
+    <div class="glass-table-wrap">
+        <table class="glass-table" id="trainersTable">
+            <thead>
+                <tr>
+                    <th>Instructor</th>
+                    <th>Phone</th>
+                    <th>Specialization</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var trainer in Model)
+                {
+                    var initials = trainer.Name.Length > 0 ? trainer.Name[0].ToString().ToUpper() : "T";
+                    var specLower = (trainer.Specialty ?? "").ToLower();
+                    var specClass = specLower switch {
+                        var s when s.Contains("weight") || s.Contains("strength") => "spec-cyan",
+                        var s when s.Contains("cardio") || s.Contains("hiit") => "spec-gold",
+                        var s when s.Contains("yoga") || s.Contains("pilates") => "spec-pink",
+                        _ => "spec-purple"
+                    };
+
+                    <tr class="trainer-row">
+                        <td>
+                            <div class="trainer-cell">
+                                <div class="avatar-fallback">@initials</div>
+                                <div>
+                                    <div class="trainer-name">@trainer.Name</div>
+                                    <div class="trainer-email">@trainer.Email</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="color:rgba(255,255,255,0.65);">@trainer.Phone</td>
+                        <td>
+                            <span class="spec-chip @specClass">
+                                <i class="bi bi-award-fill" style="font-size:0.6rem;"></i> @trainer.Specialty
+                            </span>
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="action-btn" type="button" id="drop-@trainer.Id" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark-glass" aria-labelledby="drop-@trainer.Id">
+                                    <li>
+                                        <a asp-controller="Trainers" asp-action="Details" asp-route-id="@trainer.Id" class="dropdown-item">
+                                            <i class="bi bi-eye" style="color:#00f0ff;"></i> View Details
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a asp-controller="Trainers" asp-action="EditTrainer" asp-route-id="@trainer.Id" class="dropdown-item">
+                                            <i class="bi bi-pencil" style="color:#a78bfa;"></i> Edit Profile
+                                        </a>
+                                    </li>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a asp-controller="Trainers" asp-action="Delete" asp-route-id="@trainer.Id" class="dropdown-item text-danger">
+                                                <i class="bi bi-trash3"></i> Delete
+                                            </a>
+                                        </li>
+                                    }
+                                    else if (User.IsInRole("Manager"))
+                                    {
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form asp-controller="DeleteRequests" asp-action="SubmitRequest" method="post" class="delete-request-form">
+                                                <input type="hidden" name="targetType" value="@DeleteTargetType.Trainer" />
+                                                <input type="hidden" name="targetId" value="@trainer.Id" />
+                                                <button type="submit" class="dropdown-item text-danger">
+                                                    <i class="bi bi-flag"></i> Request Delete
+                                                </button>
+                                            </form>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card View -->
+    <div class="mobile-cards-grid">
+        @foreach (var trainer in Model)
+        {
+            var initials = trainer.Name.Length > 0 ? trainer.Name[0].ToString().ToUpper() : "T";
+            var specLower = (trainer.Specialty ?? "").ToLower();
+            var specClass = specLower switch {
+                var s when s.Contains("weight") || s.Contains("strength") => "spec-cyan",
+                var s when s.Contains("cardio") || s.Contains("hiit") => "spec-gold",
+                var s when s.Contains("yoga") || s.Contains("pilates") => "spec-pink",
+                _ => "spec-purple"
+            };
+
+            <div class="trainer-mobile-card">
+                <div class="mobile-card-header">
+                    <div class="trainer-cell">
+                        <div class="avatar-fallback">@initials</div>
+                        <div>
+                            <div class="trainer-name">@trainer.Name</div>
+                            <div class="trainer-email">@trainer.Email</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mobile-card-info">
+                    <div>
+                        <span class="mobile-info-label">Phone</span>
+                        <div class="mobile-info-val">@trainer.Phone</div>
+                    </div>
+                    <div>
+                        <span class="mobile-info-label">Specialization</span>
+                        <div>
+                            <span class="spec-chip @specClass">
+                                <i class="bi bi-award-fill" style="font-size:0.6rem;"></i> @trainer.Specialty
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mobile-card-footer">
+                    <div class="dropdown">
+                        <button class="btn-card-action" type="button" id="drop-mob-@trainer.Id" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark-glass" aria-labelledby="drop-mob-@trainer.Id">
+                            <li>
+                                <a asp-controller="Trainers" asp-action="Details" asp-route-id="@trainer.Id" class="dropdown-item">
+                                    <i class="bi bi-eye" style="color:#00f0ff;"></i> View Details
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a asp-controller="Trainers" asp-action="EditTrainer" asp-route-id="@trainer.Id" class="dropdown-item">
+                                    <i class="bi bi-pencil" style="color:#a78bfa;"></i> Edit Profile
+                                </a>
+                            </li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a asp-controller="Trainers" asp-action="Delete" asp-route-id="@trainer.Id" class="dropdown-item text-danger">
+                                        <i class="bi bi-trash3"></i> Delete
+                                    </a>
+                                </li>
+                            }
+                            else if (User.IsInRole("Manager"))
+                            {
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form asp-controller="DeleteRequests" asp-action="SubmitRequest" method="post" class="delete-request-form">
+                                        <input type="hidden" name="targetType" value="@DeleteTargetType.Trainer" />
+                                        <input type="hidden" name="targetId" value="@trainer.Id" />
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="bi bi-flag"></i> Request Delete
+                                        </button>
+                                    </form>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="glass-table-wrap">
+        <div class="empty-state">
+            <i class="bi bi-person-workspace"></i>
+            <h4>No Trainers Registered</h4>
+            <p>Add your first instructor to manage sessions.</p>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        document.getElementById('trainerSearch').addEventListener('input', function() {
+            var q = this.value.toLowerCase();
+            document.querySelectorAll('#trainersTable .trainer-row, .trainer-mobile-card').forEach(function(el) {
+                el.style.display = el.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        });
+    </script>
+}
