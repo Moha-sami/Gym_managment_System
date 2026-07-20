@@ -5,6 +5,7 @@ A full-featured gym management web application built with **ASP.NET Core MVC** u
 ---
 Live Demo: Check out the full gym system here https://fullgymsystem.runasp.net/Account/Login
 ---
+<img width="1440" height="760" alt="image" src="https://github.com/user-attachments/assets/b65a55c2-aa97-4dfc-bbfe-9e2f891d3e2e" />
 
 ## 🆕 Recent Updates
 
