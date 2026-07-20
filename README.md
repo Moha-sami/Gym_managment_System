@@ -348,4 +348,4 @@ GymmanagmentSystem.PL/
 
 ## 📄 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source and available For anyone Want to Use it
