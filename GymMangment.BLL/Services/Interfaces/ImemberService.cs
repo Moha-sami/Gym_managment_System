@@ -1,4 +1,4 @@
-﻿using GymMangment.BLL.Common;
+using GymMangment.BLL.Common;
 using GymMangment.BLL.ViewModels.HealthRecordsViewModels;
 using GymMangment.BLL.ViewModels.MemberViewModels;
 
@@ -11,7 +11,7 @@ namespace GymMangment.BLL.Services.Interfaces
         Task<Result<MemberViewModel?>> GetMemberDetailsByIdAsync(int id, CancellationToken ct = default);
         Task<Result<HealthRecordViewModel?>> GetMemberHealthRecordAsync(int memberId, CancellationToken ct = default);
         Task<Result<MemberToUpdateViewModel?>> GetMemberToUpdateAsync(int memberId, CancellationToken ct = default);
-        Task<Result?> UpdateMemberAsync(int id, MemberToUpdateViewModel model, CancellationToken ct = default);   
+        Task<Result> UpdateMemberAsync(int id, MemberToUpdateViewModel model, CancellationToken ct = default);   
         Task<Result> DeleteMemberAsync(int memberId, CancellationToken ct = default);
     }
 }

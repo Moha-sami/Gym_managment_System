@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GymManagment.DAL.Models
 {
@@ -15,7 +15,7 @@ namespace GymManagment.DAL.Models
         public Member Member { get; set; } = default!;
         public int MemberID { get; set; }
 
-        public Plans Plans { get; set; }
+        public Plans Plans { get; set; } = default!;
         public int PlansID { get; set; }
     }
 }

@@ -1,8 +1,8 @@
-﻿namespace GymManagment.DAL.Models
+namespace GymManagment.DAL.Models
 {
     public class Session:BaseEntity
     {
-        public string Description { get; set; }
+        public string Description { get; set; } = default!;
 
         public int Capacity { get; set; }
         public DateTime StartDate { get; set; }
