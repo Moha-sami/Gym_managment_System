@@ -1,5 +1,7 @@
 # 🏋️ Gym Management System
 
+[![.NET Core CI](https://github.com/Moha-sami/Gym_managment_System/actions/workflows/ci.yml/badge.svg)](https://github.com/Moha-sami/Gym_managment_System/actions/workflows/ci.yml)
+
 A full-featured gym management web application built with **ASP.NET Core MVC** using a clean **3-Tier Architecture**. Supports member self-service, health tracking, trainer management, session scheduling, bookings, and role-based authentication with an approval workflow for sensitive actions.
 
 ---
