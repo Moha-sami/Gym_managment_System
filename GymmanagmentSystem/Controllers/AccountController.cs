@@ -159,7 +159,7 @@ namespace GymmanagmentSystem.PL.Controllers
         public IActionResult ExternalLogin(string provider = "Google")
         {
             // هنا نجبر الرابط أن يبدأ بـ https بغض النظر عن بروتوكول الطلب القادم
-            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", null, "https");
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", values: null, protocol: "https");
 
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return new ChallengeResult(provider, properties);

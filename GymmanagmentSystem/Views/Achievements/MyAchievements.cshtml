@@ -264,7 +264,7 @@
                                         <div class="badge-pct">@pct%</div>
                                     </div>
                                 }
-                                else if (!isLocked)
+                                else if (!isLocked && earned != null)
                                 {
                                     <div class="badge-earned-date">@earned?.EarnedAtUtc.ToLocalTime().ToString("MMM dd, yyyy")</div>
                                 }

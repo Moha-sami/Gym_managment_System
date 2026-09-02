@@ -101,9 +101,9 @@ namespace GymmanagmentSystem.PL.Controllers
             try
             {
                 var achievementsResult = await _badgeService.GetMemberAchievementsAsync(id, ct);
-                if (achievementsResult.Succeeded)
+                if (achievementsResult.Succeeded && achievementsResult.Data != null)
                 {
-                    ViewBag.EarnedBadges = achievementsResult.Data!.EarnedBadges;
+                    ViewBag.EarnedBadges = achievementsResult.Data.EarnedBadges;
                 }
             }
             catch { }
@@ -231,9 +231,9 @@ namespace GymmanagmentSystem.PL.Controllers
             try
             {
                 var achievementsResult = await _badgeService.GetMemberAchievementsAsync(targetId, ct);
-                if (achievementsResult.Succeeded)
+                if (achievementsResult.Succeeded && achievementsResult.Data != null)
                 {
-                    ViewBag.EarnedBadges = achievementsResult.Data!.EarnedBadges;
+                    ViewBag.EarnedBadges = achievementsResult.Data.EarnedBadges;
                 }
             }
             catch { }
@@ -309,8 +309,8 @@ namespace GymmanagmentSystem.PL.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AwardBadge(AwardBadgeViewModel model, CancellationToken ct)
         {
-            var adminId = _userManager.GetUserId(User);
-            var result = await _badgeService.AwardManualBadgeAsync(model.MemberId, model.BadgeDefinitionId, adminId!, ct);
+            var adminId = _userManager.GetUserId(User) ?? string.Empty;
+            var result = await _badgeService.AwardManualBadgeAsync(model.MemberId, model.BadgeDefinitionId, adminId, ct);
 
             if (result.Succeeded)
             {
